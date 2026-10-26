@@ -57,8 +57,8 @@ button{font:inherit;color:inherit}
 /* the name is Coolvetica set as fixed outlines (an image), not as a webfont: its desktop license does not allow web embedding */
 .wordmark{height:.72em;width:auto;fill:currentColor;display:block}
 h1{font-family:var(--dots);font-weight:400;font-size:min(120px, calc((100vw - 80px) / 5.6));line-height:1.1;letter-spacing:0;text-wrap:balance}
-h1 .name{pointer-events:auto;background:none;border:0;padding:0 .1em;font:inherit;color:inherit;line-height:inherit;text-wrap:balance;display:inline-flex;align-items:center;gap:.14em;white-space:nowrap}
-.caret{width:.3em;height:.3em;flex:none;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+h1 .name{pointer-events:auto;background:none;border:0;padding:0 .1em;font:inherit;color:inherit;line-height:inherit;text-wrap:balance;display:inline-flex;align-items:center;white-space:nowrap;position:relative}
+.caret{width:.3em;height:.3em;flex:none;position:absolute;left:100%;top:50%;margin:-.15em 0 0 .1em;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
 .name[aria-expanded="true"] .caret{transform:rotate(180deg)}
 .about{pointer-events:auto;position:absolute;top:calc(100% + 14px);left:50%;width:min(46ch, calc(100vw - 40px));margin-left:calc(min(46ch, calc(100vw - 40px)) / -2);display:grid;grid-template-rows:0fr;opacity:0;transform:translateY(-8px) scale(.97);
   transition:grid-template-rows .45s cubic-bezier(.2,.8,.2,1), opacity .3s ease, transform .45s cubic-bezier(.2,.8,.2,1);
