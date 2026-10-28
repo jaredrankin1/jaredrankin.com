@@ -118,7 +118,7 @@ a.btn{text-decoration:none}
 .card ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
 .study{display:flex;flex-direction:column;gap:6px;padding-top:10px;border-top:1.5px dashed var(--line)}
 .study b{font-weight:700}
-.card .why{padding-top:10px;border-top:1.5px dashed var(--line);color:var(--muted);font-size:14px}
+.card .why{color:var(--muted);font-size:14px}
 .chip{display:inline-block;background:var(--accent);color:var(--accent-ink);font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:5px 7px;border-radius:5px;vertical-align:middle}
 
 /* Resume drawer */
@@ -147,7 +147,7 @@ body{font-size:17px}
 .tag{font-size:18px}
 .hint{font-size:14px;color:var(--ink)}
 .kicker,.dates{font-size:13px}
-.card .why{font-size:15px}
+.card .why{font-size:14px}
 .btn{font-weight:700;font-size:15px}
 @media (max-width: 640px){
   .top{flex-direction:column}
@@ -221,10 +221,9 @@ const XP = {
   rub:{org:"ReUseBricks", role:"Vice President, Operations and Appraisals", dates:"Feb 2025 – Present", place:"", current:true,
     points:["Oversee database management, end-to-end order fulfillment and customer service."],
     study:[
-      ["Problem","A used LEGO set or minifigure is only worth what its condition says, and condition is usually judged by eye, so values for the same piece vary from seller to seller."],
-      ["What I built","A grading rubric that scores wear across five categories to a grade out of 10, tied to a valuation method. It underpins BrickCheck, where four photos get an AI grade that a ReUseBricks expert then verifies."],
-      ["Result","The same grades back ReUseBricks' USPAP-compliant appraisal reports for insurance, estate planning and tax, and set prices across a store of more than 1,400 listings."]],
-    link:{href:"https://reusebricks.com",text:"reusebricks.com",top:true},
+      ["Built","Built the five-category grading rubric and valuation method behind BrickCheck, ReUseBricks' minifigure grading service."],
+      ["Result","Those grades back the company's USPAP-compliant appraisals and prices across 1,400+ listings."]],
+    link:{href:"https://reusebricks.com",text:"reusebricks.com"},
     obj:"a brick and a pirate captain minifigure", why:"LEGO resale and appraisal is the core of the business."},
   isr:{org:"University of Michigan, Institute for Social Research", role:"Field Interviewer, Team Leader", dates:"Feb 2022 – Mar 2025", place:"Survey Research Center · Remote",
     points:["Led a team of 12 interviewers, maintaining data quality and adherence to project protocol.","Met or exceeded data collection and data quality targets on a national research study."],
@@ -261,7 +260,7 @@ const XP = {
   benchy:{org:"3D Printing", role:"Printing, calibration and design", dates:"", place:"", hobby:true, points:[],
     obj:"a Benchy", why:"The standard test model used to calibrate 3D printers."},
   skate:{org:"Inline Skating", role:"Community skate events", dates:"", place:"", hobby:true,
-    points:["Organizing community skate events with the Santa Cruz Rollers since 2022."],
+    points:["Organizing events with the Santa Cruz Rollers since 2022."],
     link:{href:"https://www.instagram.com/santacruzrollers/",text:"@santacruzrollers on Instagram"},
     obj:"an inline skate", why:"Drawn from a photo of Jared's own skates."},
   disco:{org:"Disco ball", role:"Just for fun.", dates:"", place:"", fun:true, points:[], obj:"a disco ball", why:""}
@@ -505,16 +504,19 @@ function showCard(id){
   const x=XP[id];selected=id;
   closeCard();openT=performance.now();card.style.opacity=0;
   card.innerHTML="";
-  const h=el("h3");h.append(cv(x.org));
-  if(x.current){h.append(" ",el("span","chip","Now"));}
-  if(x.fun){card.append(h,el("p","role",x.role));card.hidden=false;return;}
-  card.append(el("p","kicker",x.hobby?"Personal interest":x.dates+(x.place?" · "+x.place:"")),h,el("p","role",x.role));
-  const link=()=>{const a=el("a","card-link",x.link.text);a.href=x.link.href;a.target="_blank";a.rel="noopener";const pl=el("p");pl.append(a);return pl;};
-  if(x.link&&x.link.top) card.append(link());
-  if(x.points.length){const ul=el("ul");x.points.forEach(p=>ul.append(el("li",null,p)));card.append(ul);}
-  if(x.study) card.append(caseStudy(x));
-  if(x.link&&!x.link.top) card.append(link());
-  card.append(el("p","why","Represented by "+x.obj+". "+x.why));
+  // the organization (or hobby) is the title; role, dates and what he did are plain bullets under it
+  const h=el("h3");h.append(cv(x.org));card.append(h);
+  const ul=el("ul","facts"), li=(...c)=>{const i=el("li");i.append(...c);ul.append(i);};
+  if(x.fun) li(x.role);
+  else{
+    li(x.role);
+    const when=[x.dates,x.place].filter(Boolean).join(" · ");if(when) li(when);
+    x.points.forEach(p=>li(p));
+    (x.study||[]).forEach(([k,p])=>li(p));
+    if(x.link){const a=el("a","card-link",x.link.text);a.href=x.link.href;a.target="_blank";a.rel="noopener";li(a);}
+  }
+  card.append(ul);
+  if(!x.fun) card.append(el("p","why","Represented by "+x.obj+"."));
   card.hidden=false;
 }
 function renderList(target,ids){
