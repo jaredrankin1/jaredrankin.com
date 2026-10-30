@@ -698,7 +698,7 @@ function sample(src,cols,rows){
   return c.getImageData(0,0,cols,rows).data;
 }
 let dark=false;
-// dot matrix: one round dot per cell, in the photo's own color
+// pixel matrix: one square pixel per cell, in the photo's own color
 function tone(r,g,b){
   const L=.2126*r+.7152*g+.0722*b;
   if(!dark&&L>226){const t=(L-226)/29*.35;return [r*(1-t)+150*t,g*(1-t)+158*t,b*(1-t)+168*t];}
@@ -801,11 +801,11 @@ function paintSprite(m){
   for(const p of dark?m.darkDots:m.dots){
     const [r,g,b]=tone(Math.min(255,p.r),Math.min(255,p.g),Math.min(255,p.b));
     c.fillStyle=`rgb(${r|0},${g|0},${b|0})`;
-    c.beginPath();c.arc(p.x,p.y,m.P*.42*Math.min(1,.55+p.a*.5),0,Math.PI*2);c.fill();
+    c.fillRect(p.x-(m.P*.42*Math.min(1,.55+p.a*.5)),p.y-(m.P*.42*Math.min(1,.55+p.a*.5)),2*(m.P*.42*Math.min(1,.55+p.a*.5)),2*(m.P*.42*Math.min(1,.55+p.a*.5)));
   }
   for(const s of m.seeds||[]){
-    c.fillStyle="#FFFFFF";c.beginPath();c.arc(s.x,s.y,m.P*.5,0,Math.PI*2);c.fill();
-    c.fillStyle="#F4C21A";c.beginPath();c.arc(s.x,s.y,m.P*.42,0,Math.PI*2);c.fill();
+    c.fillStyle="#FFFFFF";c.fillRect(s.x-(m.P*.5),s.y-(m.P*.5),2*(m.P*.5),2*(m.P*.5));
+    c.fillStyle="#F4C21A";c.fillRect(s.x-(m.P*.42),s.y-(m.P*.42),2*(m.P*.42),2*(m.P*.42));
   }
   m.canvas=cv;
 }
@@ -895,7 +895,7 @@ function layoutTidy(){
     const m=b.plugin.sprite;
     b.plugin.slot={x:pad+(AW-inRow*cw)/2+(col+.5)*cw,y:top+(row+.5)*ch};
     b.plugin.kt=Math.min(1,.8*cw/m.w,.8*ch/m.h);
-    b.isSensor=reduced;b.restitution=.2;b.plugin.stuck=0;b.plugin.lastFar=undefined;
+    b.isSensor=reduced;b.restitution=.2;b.plugin.stuck=0;b.plugin.lastFar=undefined;b.plugin.t0=performance.now();
   });
 }
 function setTidy(on){
@@ -932,6 +932,8 @@ Events.on(engine,"afterUpdate",()=>{
       if(d>cap){dx*=cap/d;dy*=cap/d;}
       // when blocked by a neighbour, slide sideways around it instead of pushing head-on
       const pl=b.plugin, last=pl.lastFar??far;pl.stuck=far>12&&last-far<.15?(pl.stuck||0)+1:Math.max(0,(pl.stuck||0)-2);pl.lastFar=far;
+      // a jam that hasn't cleared after a few seconds lets the stuck object slip through to its spot
+      const late=performance.now()-pl.t0>3500;if(late&&far>24&&pl.stuck>30) b.isSensor=true; else if(b.isSensor&&far<12) b.isSensor=false;
       if(pl.stuck>8){const side=(pl.side||=(b.id%2?1:-1)), m=Math.min(6,pl.stuck*.25), n=Math.hypot(dx,dy)||1, ux=dx/n, uy=dy/n;dx-=uy*m*side;dy+=ux*m*side;if(pl.stuck>90){pl.side=-side;pl.stuck=20;}}
       const v=b.velocity;Body.setVelocity(b,{x:v.x*.7+dx*.3,y:v.y*.7+dy*.3});
       Body.setAngularVelocity(b,b.angularVelocity*.7-a*.03);
@@ -970,12 +972,17 @@ const STEP_MS=60000/96/4;
 function drawPads(m,o,now){
   const P=m.P, cols=Math.round(m.w/P), rows=Math.round(m.h/P);
   const step=Math.floor(now/STEP_MS)%16, into=(now%STEP_MS)/STEP_MS;
+  // pads snap to whole pixels with a one-pixel body-coloured gap between them, so they never run together
+  const span=(lo,hi,n)=>{const a=Math.round(lo*n), b=Math.round(hi*n), sz=Math.max(1,Math.floor((b-a-3)/4)), off=a+Math.floor((b-a-(sz*4+3))/2);return {a,b,sz,off};};
+  const hy=PAD_W/2*177/180, X=span(PAD_X[0]-PAD_W/2,PAD_X[3]+PAD_W/2,cols), Y=span(PAD_Y[0]-hy,PAD_Y[3]+hy,rows);
+  const cell=(i,j)=>{const x=(i+.5)*P-o.x, y=(j+.5)*P-o.y;ctx.rect(x-P*.42,y-P*.42,P*.84,P*.84);};
   const padDots=(r,c)=>{
-    const cx=PAD_X[c]*cols, cy=PAD_Y[r]*rows, hw=PAD_W*cols/2, hh=PAD_W*cols/2*(cols/rows)*(m.h/m.w)*(rows/cols);
-    for(let j=Math.round(cy-hh);j<=Math.round(cy+hh);j++)for(let i=Math.round(cx-hw);i<=Math.round(cx+hw);i++){
-      const x=(i+.5)*P-o.x, y=(j+.5)*P-o.y;ctx.moveTo(x+P*.42,y);ctx.arc(x,y,P*.42,0,Math.PI*2);
-    }
+    const i0=X.off+c*(X.sz+1), j0=Y.off+r*(Y.sz+1);
+    for(let j=j0;j<j0+Y.sz;j++)for(let i=i0;i<i0+X.sz;i++) cell(i,j);
   };
+  ctx.fillStyle="#C9262D";ctx.beginPath();
+  for(let j=Y.a;j<Y.b;j++)for(let i=X.a;i<X.b;i++) cell(i,j);
+  ctx.fill();
   ctx.fillStyle="#26292F";ctx.beginPath();
   for(let r=0;r<4;r++)for(let c=0;c<4;c++) padDots(r,c);
   ctx.fill();
@@ -1006,7 +1013,7 @@ function drawIris(m,o,now){
   }
   for(const [list,col] of [[blade,"#1B1D22"],[glass,"#3C536E"],[glint,"#C9D8EA"]]){
     ctx.fillStyle=col;ctx.beginPath();
-    for(const [x,y] of list){ctx.moveTo(x+P*.42,y);ctx.arc(x,y,P*.42,0,Math.PI*2);}
+    for(const [x,y] of list){ctx.rect(x-P*.42,y-P*.42,P*.84,P*.84);}
     ctx.fill();
   }
 }
@@ -1034,7 +1041,7 @@ function drawDisco(m,o,now){
   }
   for(const k in groups){
     ctx.fillStyle=`rgb(${k})`;ctx.beginPath();
-    for(const d of groups[k]){const x=d.x-o.x,y=d.y-o.y;ctx.moveTo(x+P*.42,y);ctx.arc(x,y,P*.42,0,Math.PI*2);}
+    for(const d of groups[k]){const x=d.x-o.x,y=d.y-o.y;ctx.rect(x-P*.42,y-P*.42,P*.84,P*.84);}
     ctx.fill();
   }
   // glints: four-pointed stars that bloom and fade on the ball's face
@@ -1080,7 +1087,7 @@ function drawBars(m,o,now){
     const n=Math.max(1,Math.round((base-top)*(.18+.82*lv)));
     const i0=Math.round(fx(-35+i*16.4)), i1=Math.round(fx(-35+i*16.4+11));
     ctx.fillStyle=`rgb(${col})`;ctx.beginPath();
-    for(let j=base;j>base-n;j--)for(let k=i0;k<i1;k++){const x=(k+.5)*P-o.x,y=(j+.5)*P-o.y;ctx.moveTo(x+P*.42,y);ctx.arc(x,y,P*.42,0,Math.PI*2);}
+    for(let j=base;j>base-n;j--)for(let k=i0;k<i1;k++){const x=(k+.5)*P-o.x,y=(j+.5)*P-o.y;ctx.rect(x-P*.42,y-P*.42,P*.84,P*.84);}
     ctx.fill();
   });
 }
@@ -1102,7 +1109,7 @@ function drawStalks(m,o,now){
   }
   for(const [list,col] of [[stalk,"#8A8456"],[eye,"#2A2A1E"]]){
     ctx.fillStyle=col;ctx.beginPath();
-    for(const [x,y] of list){ctx.moveTo(x+P*.42,y);ctx.arc(x,y,P*.42,0,Math.PI*2);}
+    for(const [x,y] of list){ctx.rect(x-P*.42,y-P*.42,P*.84,P*.84);}
     ctx.fill();
   }
 }
@@ -1129,12 +1136,12 @@ function drawPrint(m,o,now){
   const row=m.rows[m.rowKeys[n]];let last=null;
   for(let i=0;i<left;i++){
     const p=row[i], [r,g,b]=tone(Math.min(255,p.r),Math.min(255,p.g),Math.min(255,p.b));
-    ctx.fillStyle=`rgb(${r|0},${g|0},${b|0})`;ctx.beginPath();ctx.arc(p.x-o.x,p.y-o.y,P*.42*Math.min(1,.55+p.a*.5),0,Math.PI*2);ctx.fill();last=p;
+    ctx.fillStyle=`rgb(${r|0},${g|0},${b|0})`;ctx.fillRect(p.x-o.x-(P*.42*Math.min(1,.55+p.a*.5)),p.y-o.y-(P*.42*Math.min(1,.55+p.a*.5)),2*(P*.42*Math.min(1,.55+p.a*.5)),2*(P*.42*Math.min(1,.55+p.a*.5)));last=p;
   }
   // the nozzle: two dark dots riding just above the newest one
   const at=last||row[0];
   ctx.fillStyle="#3A3F47";ctx.beginPath();
-  for(const dy of [1,2]){ctx.moveTo(at.x-o.x+P*.42,at.y-o.y-dy*P);ctx.arc(at.x-o.x,at.y-o.y-dy*P,P*.42,0,Math.PI*2);}
+  for(const dy of [1,2]){ctx.rect(at.x-o.x-P*.42,at.y-o.y-dy*P-P*.42,P*.84,P*.84);}
   ctx.fill();
 }
 // dune buggy (Jared's own, facing right): headlights glow and throw a short beam ahead,
@@ -1144,7 +1151,7 @@ function dotsIn(P,o,test,out){
   return (x0,y0,x1,y1)=>{for(let j=Math.floor(y0/P);j<=Math.ceil(y1/P);j++)for(let i=Math.floor(x0/P);i<=Math.ceil(x1/P);i++){const x=(i+.5)*P,y=(j+.5)*P,v=test(x,y);if(v>0)out.push([x-o.x,y-o.y,v]);}};
 }
 function paintDots(list,P,rgb){
-  for(const [x,y,a] of list){ctx.fillStyle=`rgba(${rgb},${Math.min(1,a).toFixed(3)})`;ctx.beginPath();ctx.arc(x,y,P*.42,0,Math.PI*2);ctx.fill();}
+  for(const [x,y,a] of list){ctx.fillStyle=`rgba(${rgb},${Math.min(1,a).toFixed(3)})`;ctx.fillRect(x-(P*.42),y-(P*.42),2*(P*.42),2*(P*.42));}
 }
 function drawBuggy(m,o,now){
   const P=m.P, t=now/1000, W=m.w, H=m.h, R=.026*W;
