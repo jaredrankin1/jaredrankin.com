@@ -246,16 +246,16 @@ body{font-size:16px}
 </style>
 
 <div class="field" id="field">
-  <canvas id="world" role="img" aria-label="A full-screen field of dot-matrix objects drifting slowly and bumping into each other. Each one represents one of Jared's roles or interests. The same information is in the resume panel."></canvas>
+  <canvas id="world" role="img" aria-label="A full-screen field of pixel-art objects drifting slowly and bumping into each other. Each one represents one of Jared's roles or interests. The same information is in the resume panel."></canvas>
 </div>
-<p class="fallback" id="fallback" hidden>The floating objects couldn't load. Open the resume to see everything.</p>
+<p class="fallback" id="fallback" hidden>The interactive view couldn't load. Open the resume to see everything.</p>
 
 <div class="center">
   <div class="name-wrap">
     <h1><button class="name" id="nameBtn" type="button" aria-expanded="false" aria-controls="about"><span class="sr">Jared Rankin</span><svg class="wordmark" viewBox="4 295 5238 695" aria-hidden="true"><path d="M288 775C288 848 273 877 209 877C152 877 130 844 130 777V716H4V784C4 920 81 990 209 990C352 990 427 909 427 788V303H288ZM778 780C777 838 727 887 660 887C619 887 597 869 597 832C597 790 621 769 695 755C743 746 766 739 779 726ZM909 967V656C909 532 855 462 699 462C541 462 485 533 483 635H604C610 591 634 562 693 562C744 562 776 581 776 613C776 647 758 660 693 669C562 687 467 703 467 845C467 925 519 980 631 980C697 980 749 957 780 923C781 938 784 955 788 967ZM1096 967V711C1096 632 1135 592 1215 592C1227 592 1239 593 1251 595V462H1234C1181 462 1131 468 1088 534V475H966V967ZM1410 673C1415 605 1458 565 1510 565C1561 565 1609 600 1611 673ZM1745 755C1745 560 1665 462 1514 462C1363 462 1276 560 1276 712C1276 890 1358 980 1522 980C1627 980 1708 923 1738 822H1604C1595 856 1558 877 1516 877C1452 877 1410 829 1406 755ZM2023 874C1958 874 1912 813 1912 725C1912 624 1948 573 2024 573C2096 573 2133 626 2133 733C2133 816 2085 874 2023 874ZM2256 967V295H2128V539C2091 487 2043 462 1982 462C1855 462 1780 567 1780 716C1780 882 1869 980 1993 980C2053 980 2099 957 2130 907L2131 967ZM2865 418C2934 418 2962 455 2962 507C2962 558 2934 595 2860 595H2686V418ZM3074 967V779C3074 701 3052 668 2993 649C3057 626 3092 566 3092 495C3092 385 3011 303 2888 303H2551V967H2686V707H2834C2914 707 2938 732 2938 796V967ZM3430 780C3429 838 3379 887 3312 887C3271 887 3249 869 3249 832C3249 790 3273 769 3347 755C3395 746 3418 739 3431 726ZM3561 967V656C3561 532 3507 462 3351 462C3193 462 3137 533 3135 635H3256C3262 591 3286 562 3345 562C3396 562 3428 581 3428 613C3428 647 3410 660 3345 669C3214 687 3119 703 3119 845C3119 925 3171 980 3283 980C3349 980 3401 957 3432 923C3433 938 3436 955 3440 967ZM4064 967V626C4064 519 3995 462 3901 462C3822 462 3772 492 3742 547V475H3618V967H3748V685C3748 610 3781 572 3849 572C3911 572 3933 593 3933 669V967ZM4569 967 4408 656 4573 475H4414L4252 662V295H4121V967H4252V811L4315 746L4423 967ZM4737 967V475H4607V967ZM4737 416V295H4607V416ZM5242 967V626C5242 519 5173 462 5079 462C5000 462 4950 492 4920 547V475H4796V967H4926V685C4926 610 4959 572 5027 572C5089 572 5111 593 5111 669V967Z"/></svg><span class="caret knob" aria-hidden="true"></span></button></h1>
     <div class="about" id="about" aria-hidden="true" inert>
       <div class="about-inner">
-        <p class="tag">Vice President of Operations and Appraisals at <strong>ReUseBricks</strong>. Previously worked in survey research, community outreach, social services and public service across California and Texas.</p>
+        <p class="tag">Vice President of Operations and Appraisals at <strong>ReUseBricks</strong>, with prior experience in survey research, community outreach, social services and public service across California and Texas.</p>
         <div class="email-row">
           <span class="email" id="email">Jaredrankin1@gmail.com</span>
           <button class="btn" id="copyEmail" type="button">Copy</button>
@@ -294,7 +294,6 @@ body{font-size:16px}
   <ol class="jobs" id="edu"></ol>
   <h4>Interests</h4>
   <ol class="jobs" id="hobbies"></ol>
-  <footer>References available on request.</footer>
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
@@ -302,20 +301,20 @@ body{font-size:16px}
 <script>
 (function(){
 const XP = {
-  rub:{blurb:"Runs database management, order fulfillment and customer service. Built the grading rubric and valuation method behind BrickCheck, which backs the company's USPAP-compliant appraisals and pricing across 1,400+ listings. Also runs the company's social media, growing its Instagram and TikTok following by over 500%, with one TikTok passing 1M views.", org:"ReUseBricks", role:"Vice President, Operations and Appraisals", dates:"Feb 2025 – Present", place:"", current:true,
-    points:["Oversee database management, end-to-end order fulfillment and customer service.","Run social media across Instagram and TikTok, growing the following by over 500%; one TikTok passed 1M views."],
+  rub:{blurb:"Leads database management, order fulfillment and customer service. Built the grading rubric and valuation method behind BrickCheck, which supports USPAP-compliant appraisals and pricing across 1,400+ listings. Manages social media, growing the Instagram and TikTok following by over 500%, including a video with more than 1M views.", org:"ReUseBricks", role:"Vice President, Operations and Appraisals", dates:"Feb 2025 – Present", place:"", current:true,
+    points:["Lead database management, end-to-end order fulfillment and customer service.","Manage social media across Instagram and TikTok, growing the following by over 500%; one video surpassed 1M views."],
     study:[
       ["Built","Built the five-category grading rubric and valuation method behind BrickCheck, ReUseBricks' minifigure grading service."],
-      ["Result","Those grades back the company's USPAP-compliant appraisals and prices across 1,400+ listings."]],
+      ["Result","These grades support the company's USPAP-compliant appraisals and pricing across 1,400+ listings."]],
     link:{href:"https://reusebricks.com",text:"reusebricks.com"},
     obj:"a brick", why:"LEGO resale and appraisal is the core of the business."},
-  isr:{blurb:"Led a team of 12 interviewers on a national research study, keeping data quality and protocol on track and meeting or beating every collection target.", org:"University of Michigan, Institute for Social Research", role:"Field Interviewer, Team Leader", dates:"Feb 2022 – Mar 2025", place:"Survey Research Center · Remote",
+  isr:{blurb:"Led a team of 12 field interviewers on a national research study, maintaining data quality and protocol adherence while meeting or exceeding collection targets.", org:"University of Michigan, Institute for Social Research", role:"Field Interviewer, Team Leader", dates:"Feb 2022 – Mar 2025", place:"Survey Research Center · Remote",
     points:["Led a team of 12 interviewers, maintaining data quality and adherence to project protocol.","Met or exceeded data collection and data quality targets on a national research study."],
     obj:"Michigan with a maize M", why:"In University of Michigan maize and blue."},
-  census:{blurb:"Conducted Nonresponse Followup interviews and counted soup kitchens and outdoor locations without shelter for the 2020 Census.", org:"U.S. Census Bureau", role:"Enumerator", dates:"Aug 2020 – Oct 2020", place:"Remote",
+  census:{blurb:"Conducted Nonresponse Followup interviews and enumerated soup kitchens and outdoor locations without shelter for the 2020 Census.", org:"U.S. Census Bureau", role:"Enumerator", dates:"Aug 2020 – Oct 2020", place:"Remote",
     points:["Conducted Nonresponse Followup interviews and enumerated soup kitchens and temporary outdoor locations without shelter.","Represented the Bureau to the public and explained the value of an accurate count."],
     obj:"an animated bar chart", why:"For the data collected during the 2020 Census."},
-  garden:{blurb:"Developed support plans for clients experiencing or transitioning out of homelessness, alongside the project's organic farm.", org:"Homeless Garden Project", role:"Social Work Intern", dates:"Sep 2018 – Jun 2019", place:"Santa Cruz, CA",
+  garden:{blurb:"Developed support plans for clients experiencing or transitioning out of homelessness, at a nonprofit that pairs social services with an organic farm.", org:"Homeless Garden Project", role:"Social Work Intern", dates:"Sep 2018 – Jun 2019", place:"Santa Cruz, CA",
     points:["Developed support plans for clients experiencing or transitioning out of homelessness."],
     obj:"a strawberry", why:"The project runs an organic farm that provides job training and transitional employment."},
   tx:{blurb:"Handled the confidential delivery of official documents and served as a liaison between legislators and the public.", org:"Texas House of Representatives", role:"Clerk I, Messenger", dates:"Dec 2016 – Jul 2017", place:"Austin, TX",
@@ -324,28 +323,28 @@ const XP = {
   bees:{blurb:"Raised funds and public support for a campaign urging the EPA to ban pesticides harmful to honey bees.", org:"Environment Texas / TexPIRG", role:"Canvasser", dates:"Jun 2016 – Jul 2016", place:"Austin, TX",
     points:["Raised funds and public support for a campaign urging the EPA to ban pesticides harmful to honey bees."],
     obj:"a bumblebee", why:"For the pollinator protection campaign."},
-  media:{blurb:"Led video production for an outreach campaign for people experiencing homelessness in Santa Cruz County, later featured on KQED's The California Report.", org:"180/2020 Santa Cruz", role:"Media Intern", dates:"Sep 2015 – Jun 2016", place:"Santa Cruz, CA",
+  media:{blurb:"Led video production for a Santa Cruz County outreach campaign on behalf of people experiencing homelessness. The campaign was featured on KQED's The California Report.", org:"180/2020 Santa Cruz", role:"Media Intern", dates:"Sep 2015 – Jun 2016", place:"Santa Cruz, CA",
     points:["Led video and media production for an outreach campaign advocating for people experiencing homelessness in Santa Cruz County.","The project was featured on KQED's The California Report."],
     link:{href:"https://www.kqed.org/news/11005735/selling-landlords-on-formerly-homeless-tenants",text:"Read the KQED story"},
     obj:"a film camera", why:"For the video and media production work."},
-  hands:{blurb:"Ran outreach at fairs and colleges across Southern California to support amputees in Sierra Leone, and trained and supervised the team.", org:"Hands for Africa", role:"Community Outreach Specialist", dates:"Feb 2014 – Jan 2015", place:"Tustin, CA",
+  hands:{blurb:"Led outreach at fairs and colleges across Southern California in support of amputees in Sierra Leone, and trained and supervised the outreach team.", org:"Hands for Africa", role:"Community Outreach Specialist", dates:"Feb 2014 – Jan 2015", place:"Tustin, CA",
     points:["Conducted outreach at fairs and colleges across Los Angeles, Orange and San Diego counties to support amputees in Sierra Leone, and raised awareness of labor practices in the diamond trade.","Trained and supervised team members and managed materials and donations."],
     obj:"Sierra Leone", why:"The organization supported amputees affected by the country's civil war."},
-  ucsc:{blurb:"Studied sociology, with coursework in nonprofit development and grant writing.", org:"University of California, Santa Cruz", role:"BA, Sociology", dates:"2015 – 2020", place:"Santa Cruz, CA",
+  ucsc:{blurb:"Bachelor of Arts in Sociology, with coursework in nonprofit development and grant writing.", org:"University of California, Santa Cruz", role:"BA, Sociology", dates:"2015 – 2020", place:"Santa Cruz, CA",
     points:["Coursework in nonprofit development and grant writing."],
     obj:"a banana slug", why:"The UC Santa Cruz mascot."},
-  wwoof:{blurb:"Worked on three California farms, from Sol Seeker in Hollister to a Victorian-era chicken farm in Oakland, learning regenerative and biodynamic practices.", org:"Worldwide Opportunities on Organic Farms (WWOOF)", role:"Farm Volunteer", dates:"Sep 2017 – Jan 2018", place:"Hollister, Bonny Doon and Oakland, CA",
+  wwoof:{blurb:"Worked on three California farms, from Sol Seeker Farms in Hollister to a Victorian-era chicken farm in Oakland, gaining hands-on experience in regenerative and biodynamic agriculture.", org:"Worldwide Opportunities on Organic Farms (WWOOF)", role:"Farm Volunteer", dates:"Sep 2017 – Jan 2018", place:"Hollister, Bonny Doon and Oakland, CA",
     points:["Worked on three farms: Sol Seeker Farms in Hollister, Flipjack Ranch in Bonny Doon, and a Victorian-era chicken farm in Oakland.","Trained in regenerative and biodynamic farming practices."],
     obj:"a shovel", why:"For hands-on farm work."},
-  buggy:{blurb:"Restoring a dune buggy from the ground up with a friend. The engine rebuild is done, and the goal is road-ready next summer.", org:"Mechanics", role:"Dune buggy restoration", dates:"", place:"", hobby:true,
-    points:["Restoring a dune buggy from the ground up with a friend.","The engine rebuild is complete; the goal is to have it road-ready next summer."],
+  buggy:{blurb:"Co-restoring a dune buggy from the ground up. The engine rebuild is complete, and the target is road-ready by summer 2027.", org:"Mechanics", role:"Dune buggy restoration", dates:"", place:"", hobby:true,
+    points:["Co-restoring a dune buggy from the ground up.","Engine rebuild complete; targeting road-ready by summer 2027."],
     obj:"a dune buggy", why:"Drawn from a photo of the buggy itself."},
-  mpc:{org:"Music Production", role:"Beatmaking and sampling", dates:"", place:"", hobby:true, points:[],
+  mpc:{org:"Music Production", role:"Beat-making and sampling", dates:"", place:"", hobby:true, points:[],
     obj:"an MPC", why:"The drum machine and sampler used for production."},
   benchy:{org:"3D Printing", role:"Printing, calibration and design", dates:"", place:"", hobby:true, points:[],
     obj:"a Benchy", why:"The standard test model used to calibrate 3D printers."},
-  skate:{blurb:"Organizing community skate events with the Santa Cruz Rollers since 2022.", org:"Inline Skating", role:"Community skate events", dates:"", place:"", hobby:true,
-    points:["Organizing events with the Santa Cruz Rollers since 2022."],
+  skate:{blurb:"Has organized community skate events with the Santa Cruz Rollers since 2022.", org:"Inline Skating", role:"Community skate events", dates:"", place:"", hobby:true,
+    points:["Have organized community skate events with the Santa Cruz Rollers since 2022."],
     link:{href:"https://www.instagram.com/santacruzrollers/",text:"@santacruzrollers on Instagram"},
     obj:"an inline skate", why:"Drawn from a photo of Jared's own skates."},
   disco:{org:"Disco ball", role:"Just for fun.", dates:"", place:"", fun:true, points:[], obj:"a disco ball", why:""}
