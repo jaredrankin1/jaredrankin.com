@@ -276,6 +276,7 @@ body{font-size:16px}
     <div class="controls">
       <button class="btn" id="darkBtn" type="button" aria-pressed="false">Dark mode</button>
       <button class="btn" id="gravity" type="button" aria-pressed="false">Gravity</button>
+      <button class="btn" id="tidy" type="button" aria-pressed="false">Tidy</button>
     </div>
   </div>
 </div>
@@ -637,7 +638,7 @@ document.getElementById("copyEmail").addEventListener("click",e=>{
 });
 
 let world=null;
-if(!window.Matter){document.getElementById("fallback").hidden=false;["gravity","scatter"].forEach(i=>document.getElementById(i).disabled=true);return;}
+if(!window.Matter){document.getElementById("fallback").hidden=false;["gravity","tidy"].forEach(i=>document.getElementById(i).disabled=true);return;}
 const {Engine,Runner,Bodies,Body,Composite,Mouse,MouseConstraint,Events,Query,Vertices} = Matter;
 
 /* ---------- dot-matrix sprites ---------- */
@@ -814,7 +815,7 @@ const field=document.getElementById("field"), canvas=document.getElementById("wo
 let W=0,H=0,dpr=1,S=1;
 const engine=Engine.create({enableSleeping:false});engine.gravity.y=0;
 const runner=Runner.create();
-let walls=[], bodies=[], gravityOn=false;
+let walls=[], bodies=[], gravityOn=false, tidyOn=false;
 
 function size(){
   W=field.clientWidth;H=field.clientHeight;dpr=Math.min(window.devicePixelRatio||1,2);
@@ -866,19 +867,45 @@ function setDisco(on){
   const inWorld=bodies.includes(discoBody);
   if(on&&!inWorld){
     Body.setPosition(discoBody,{x:W/2,y:Math.min(H*.3,160*S)});Body.setAngle(discoBody,0);drift(discoBody);
-    bodies.push(discoBody);Composite.add(engine.world,discoBody);
+    bodies.push(discoBody);Composite.add(engine.world,discoBody);layoutTidy();
   } else if(!on&&inWorld){
     if(picked===discoBody) closeCard();
     bodies=bodies.filter(b=>b!==discoBody);Composite.remove(engine.world,discoBody);
+    discoBody.isSensor=false;if(discoBody.plugin.k&&discoBody.plugin.k!==1){Body.scale(discoBody,1/discoBody.plugin.k,1/discoBody.plugin.k);discoBody.plugin.k=1;}discoBody.plugin.kt=1;discoBody.plugin.slot=null;layoutTidy();
   }
 }
 function repaintAll(){
   for(const b of bodies.concat(discoBody&&!bodies.includes(discoBody)?[discoBody]:[])){const m=b.plugin.sprite;paintSprite(m);(m.fms||[]).forEach(paintSprite);}
 }
 
+// Tidy: every object glides upright into a grid cell between the name and the controls, shrinking if the cell is small
+function layoutTidy(){
+  if(!tidyOn) return;
+  const r=canvas.getBoundingClientRect(), nm=document.getElementById("nameBtn").getBoundingClientRect(), ct=document.querySelector(".controls").getBoundingClientRect();
+  const pad=Math.max(16,W*.03), top=Math.max(nm.bottom-r.top+18,pad), bot=Math.min(ct.top-r.top-14,H-pad);
+  const AW=W-2*pad, AH=Math.max(120,bot-top), n=bodies.length;
+  let cols=1,best=0;
+  for(let c=1;c<=n;c++){const rows=Math.ceil(n/c), s=Math.min(AW/c,AH/rows);if(s>best){best=s;cols=c;}}
+  const rows=Math.ceil(n/cols), cw=AW/cols, ch=AH/rows;
+  bodies.forEach((b,i)=>{
+    const row=Math.floor(i/cols), inRow=row===rows-1?n-row*cols:cols, col=i%cols;
+    const m=b.plugin.sprite;
+    b.plugin.slot={x:pad+(AW-inRow*cw)/2+(col+.5)*cw,y:top+(row+.5)*ch};
+    b.plugin.kt=Math.min(1,.8*cw/m.w,.8*ch/m.h);
+    b.isSensor=true;
+  });
+}
+function setTidy(on){
+  tidyOn=on;document.getElementById("tidy").setAttribute("aria-pressed",String(on));
+  if(on) layoutTidy();
+  else bodies.forEach(b=>{b.isSensor=false;b.plugin.kt=1;b.plugin.slot=null;if(!gravityOn&&!reduced) drift(b);});
+}
 let dragging=null, anchor=null;
 Events.on(engine,"afterUpdate",()=>{
   for(const b of bodies){
+    // ease each object's size toward its target (smaller in a tight Tidy grid, full size otherwise)
+    const k=b.plugin.k||1, kt=b.plugin.kt||1;
+    if(Math.abs(kt-k)>.002){const nk=reduced?kt:k+(kt-k)*.15;Body.scale(b,nk/k,nk/k);b.plugin.k=nk;}
     const p=b.position;
     if(p.x<-60||p.x>W+60||p.y<-60||p.y>H+60){Body.setPosition(b,{x:W/2,y:H/2});Body.setVelocity(b,{x:0,y:0});}
     if(b===openBody()&&b===dragging) anchor=null;
@@ -893,6 +920,13 @@ Events.on(engine,"afterUpdate",()=>{
       continue;
     }
     if(b===discoBody&&b!==dragging){Body.setAngle(b,b.angle*.9);Body.setAngularVelocity(b,0);}
+    if(tidyOn&&b.plugin.slot&&b!==dragging){
+      const s=b.plugin.slot, e=reduced?1:.1;
+      const a=((b.angle+Math.PI)%(Math.PI*2)+Math.PI*2)%(Math.PI*2)-Math.PI;
+      Body.setAngle(b,a*(1-e));Body.setAngularVelocity(b,0);
+      Body.setPosition(b,{x:p.x+(s.x-p.x)*e,y:p.y+(s.y-p.y)*e});Body.setVelocity(b,{x:0,y:0});
+      continue;
+    }
     if(gravityOn||b===dragging) continue;
     // ease every object back to its slow cruising speed after throws and collisions
     const v=b.velocity, sp=Math.hypot(v.x,v.y), want=reduced?0:b.plugin.cruise;
@@ -1137,7 +1171,7 @@ function frame(){
   if(discoBody&&bodies.includes(discoBody)) drawFlecks(discoBody,now);
   for(const b of bodies){
     const m=b.plugin.sprite, o=b.plugin.off;
-    const px=b.position.x, py=b.position.y, ang=b.angle, sc=1;
+    const px=b.position.x, py=b.position.y, ang=b.angle, sc=b.plugin.k||1;
     const xs=[0], ys=[0];
     for(const dx of xs)for(const dy of ys){
       ctx.save();ctx.translate(px+dx,py+dy);ctx.rotate(ang);if(sc!==1) ctx.scale(sc,sc);
@@ -1232,10 +1266,16 @@ dragging=null;canvas.classList.remove("dragging");canvas.classList.add("released
   readTheme();
   const gb=document.getElementById("gravity");
   gb.addEventListener("click",()=>{
+    if(!gravityOn&&tidyOn) setTidy(false);
     gravityOn=!gravityOn;gb.setAttribute("aria-pressed",String(gravityOn));
     engine.gravity.y=gravityOn?1:0;
     bodies.forEach(b=>{b.frictionAir=gravityOn?.01:0;b.restitution=gravityOn?.35:1;b.friction=gravityOn?.3:0;});
     if(!gravityOn) bodies.forEach(b=>{drift(b);Body.setVelocity(b,{x:b.velocity.x,y:b.velocity.y-2});});
+  });
+
+  document.getElementById("tidy").addEventListener("click",()=>{
+    if(!tidyOn&&gravityOn) gb.click();
+    setTidy(!tidyOn);
   });
 
   world={bump(id){bodies.filter(b=>b.plugin.item.xp===id).forEach(b=>{
@@ -1250,6 +1290,7 @@ dragging=null;canvas.classList.remove("dragging");canvas.classList.add("released
     const ns=Math.max(.7,Math.min(1.7,Math.sqrt(W*H)/720));
     if(Math.abs(ns-lastS)/lastS>.2){lastS=ns;spawn();}
     else bodies.forEach(b=>{const x=Math.max(40,Math.min(W-40,b.position.x)),y=Math.max(40,Math.min(H-40,b.position.y));if(x!==b.position.x||y!==b.position.y)Body.setPosition(b,{x,y});});
+    layoutTidy();
   },120);}).observe(field);
   document.addEventListener("visibilitychange",()=>{runner.enabled=!document.hidden;});
   Runner.run(runner,engine);
