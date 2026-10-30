@@ -887,7 +887,10 @@ function layoutTidy(){
   let cols=1,best=0;
   for(let c=1;c<=n;c++){const rows=Math.ceil(n/c), s=Math.min(AW/c,AH/rows);if(s>best){best=s;cols=c;}}
   const rows=Math.ceil(n/cols), cw=AW/cols, ch=AH/rows;
-  bodies.forEach((b,i)=>{
+  // resume order: jobs newest first, then education, hobbies, and the disco ball last
+  const rank=[...ORDER,"ucsc",...HOBBIES,"disco"], at=b=>{const r=rank.indexOf(b.plugin.item.xp);return r<0?rank.length:r;};
+  const order=bodies.slice().sort((a,b)=>at(a)-at(b)||ITEMS.indexOf(a.plugin.item)-ITEMS.indexOf(b.plugin.item));
+  order.forEach((b,i)=>{
     const row=Math.floor(i/cols), inRow=row===rows-1?n-row*cols:cols, col=i%cols;
     const m=b.plugin.sprite;
     b.plugin.slot={x:pad+(AW-inRow*cw)/2+(col+.5)*cw,y:top+(row+.5)*ch};
