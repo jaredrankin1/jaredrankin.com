@@ -207,14 +207,11 @@ body{font-size:16px}
 .btn.primary{color:#fff;border-color:#000;text-shadow:0 -1px 0 rgba(0,0,0,.5);background:linear-gradient(180deg,#3A3C41,#141518);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 2px 0 #000,0 6px 10px -4px rgba(0,0,0,.5)}
 .email{background:var(--well);border:1px solid var(--key-edge);border-radius:9px;box-shadow:inset 0 2px 4px rgba(0,0,0,.16),0 1px 0 var(--engrave)}
-/* The whole page as the face of one device: warm brushed finish, stamped name, a recessed control tray,
+/* The whole page as the face of one device: soft warm finish, stamped name,
    a knob for the intro, and the dot objects floating just above the surface. */
-:root{--face-hi:#FAF9F6;--face-lo:#E9E8E3;--grain:.07;--tray-hi:#1E1F22;--tray-lo:#2E3034;--print:#6B6E73}
-:root[data-theme="dark"]{--face-hi:#23252A;--face-lo:#121316;--grain:.12;--tray-hi:#060607;--tray-lo:#15161A;--print:#8A8E95}
-.field{background:
-  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") repeat,
-  repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,rgba(0,0,0,.018) 1px 2px,transparent 2px 5px),
-  radial-gradient(120% 80% at 50% 0%,var(--face-hi),var(--face-lo));background-color:var(--face-lo)}
+:root{--face-hi:#FAF9F6;--face-lo:#E9E8E3}
+:root[data-theme="dark"]{--face-hi:#23252A;--face-lo:#121316}
+.field{background:radial-gradient(120% 80% at 50% 0%,var(--face-hi),var(--face-lo));background-color:var(--face-lo)}
 .field::before{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 120px rgba(0,0,0,.08)}
 :root[data-theme="dark"] .field::before{box-shadow:inset 0 0 160px rgba(0,0,0,.55)}
 .field canvas{filter:drop-shadow(0 7px 6px rgba(0,0,0,.13))}
@@ -231,17 +228,11 @@ body{font-size:16px}
 :root[data-theme="dark"] .knob{background:radial-gradient(circle at 35% 28%,#4A4D53 0,#2A2C31 45%,#141518 100%);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 2px 0 #000,0 6px 10px -3px rgba(0,0,0,.8)}
 :root[data-theme="dark"] .knob::after{background:#F2F2F0}
-/* control tray */
-.controls{position:relative;gap:10px;padding:8px;margin-top:20px;border-radius:14px;
-  background:linear-gradient(180deg,var(--tray-hi),var(--tray-lo));
-  box-shadow:inset 0 2px 5px rgba(0,0,0,.6),inset 0 -1px 0 rgba(255,255,255,.08),0 1px 0 rgba(255,255,255,.9)}
-:root[data-theme="dark"] .controls{box-shadow:inset 0 2px 5px rgba(0,0,0,.8),0 1px 0 rgba(255,255,255,.07)}
-.controls .btn::after{content:attr(data-label);position:absolute;left:0;right:0;bottom:calc(100% + 13px);text-align:center;
-  font:600 10px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--print);text-shadow:none;pointer-events:none}
+.controls{gap:10px}
 .hint{text-shadow:0 1px 0 var(--engrave)}
 /* resume drawer as a matching module */
 .drawer{border-left:1px solid var(--panel-edge);
-  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") repeat,linear-gradient(180deg,var(--panel-hi),var(--panel-lo));
+  background:linear-gradient(180deg,var(--panel-hi),var(--panel-lo));
   box-shadow:inset 1px 0 0 rgba(255,255,255,.8),-24px 0 50px -20px rgba(0,0,0,.45)}
 :root[data-theme="dark"] .drawer{box-shadow:inset 1px 0 0 rgba(255,255,255,.08),-24px 0 50px -16px rgba(0,0,0,.9)}
 .drawer h4{margin:28px 0 6px;padding:9px 13px;border-radius:9px;color:#F4F4F2;letter-spacing:.12em;
@@ -283,8 +274,8 @@ body{font-size:16px}
   <div class="bottom">
     <p class="hint">Each object represents a role or interest. Drag to move it, or tap to learn more.</p>
     <div class="controls">
-      <button class="btn" id="darkBtn" type="button" aria-pressed="false" data-label="Theme">Dark mode</button>
-      <button class="btn" id="gravity" type="button" aria-pressed="false" data-label="Physics">Gravity</button>
+      <button class="btn" id="darkBtn" type="button" aria-pressed="false">Dark mode</button>
+      <button class="btn" id="gravity" type="button" aria-pressed="false">Gravity</button>
     </div>
   </div>
 </div>
