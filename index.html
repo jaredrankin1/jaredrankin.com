@@ -157,43 +157,35 @@ body{font-size:16px}
   .hint{display:none}
   .card{left:max(16px, env(safe-area-inset-left, 0px));right:max(16px, env(safe-area-inset-right, 0px));width:auto;bottom:calc(env(safe-area-inset-bottom, 0px) + 70px)}
 }
-/* Glossy hardware skin: cards are brushed panels with corner screws and a black glass title display;
+/* Glossy hardware skin: cards are brushed panels with a black glass title display;
    buttons are keycaps with LEDs. Modelled on Jared's references (K.O. II, Braun-style controls). */
 :root{
-  --panel-hi:#FBFBF9;--panel-lo:#E3E3DF;--panel-edge:#BDBDB8;--screw-a:#8E8F8B;--screw-b:#D6D6D2;
+  --panel-hi:#FBFBF9;--panel-lo:#E3E3DF;--panel-edge:#BDBDB8;
   --glass-hi:#2C2E33;--glass-lo:#0B0C0E;--glass-ink:#F4F4F2;
   --key-hi:#FFFFFE;--key-lo:#E1E1DD;--key-edge:#B3B3AE;--key-base:#A6A6A1;
   --led:#FF5A1F;--led-off:#B9BAB6;--well:#ECECE8;--engrave:rgba(255,255,255,.9)}
 :root[data-theme="dark"]{
-  --panel-hi:#34363B;--panel-lo:#1D1E21;--panel-edge:#0B0C0E;--screw-a:#0E0F11;--screw-b:#4A4C52;
+  --panel-hi:#34363B;--panel-lo:#1D1E21;--panel-edge:#0B0C0E;
   --glass-hi:#1A1B1E;--glass-lo:#000;--glass-ink:#F4F4F2;
   --key-hi:#3C3E44;--key-lo:#202125;--key-edge:#0B0C0E;--key-base:#050506;
   --led-off:#4C4E54;--well:#141518;--engrave:rgba(0,0,0,.6)}
 .card{
-  background:
-    radial-gradient(circle at 13px 13px,var(--screw-a) 0 1.5px,var(--screw-b) 2px 3.4px,rgba(0,0,0,.22) 3.8px,transparent 4.4px),
-    radial-gradient(circle at calc(100% - 13px) 13px,var(--screw-a) 0 1.5px,var(--screw-b) 2px 3.4px,rgba(0,0,0,.22) 3.8px,transparent 4.4px),
-    radial-gradient(circle at 13px calc(100% - 13px),var(--screw-a) 0 1.5px,var(--screw-b) 2px 3.4px,rgba(0,0,0,.22) 3.8px,transparent 4.4px),
-    radial-gradient(circle at calc(100% - 13px) calc(100% - 13px),var(--screw-a) 0 1.5px,var(--screw-b) 2px 3.4px,rgba(0,0,0,.22) 3.8px,transparent 4.4px),
-    linear-gradient(180deg,var(--panel-hi),var(--panel-lo));
+  background:linear-gradient(180deg,var(--panel-hi),var(--panel-lo));
   border:1px solid var(--panel-edge);border-radius:20px;padding:24px 24px 22px;gap:12px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -2px 0 rgba(0,0,0,.06),0 1px 0 rgba(0,0,0,.06),0 26px 44px -20px rgba(0,0,0,.5),0 6px 12px -6px rgba(0,0,0,.25)}
 :root[data-theme="dark"] .card{box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 26px 44px -18px rgba(0,0,0,.85)}
 .card h3,.card ul.facts,.card .why{flex-shrink:0}
 .about .email-row{padding:2px 4px 14px}
-.card h3{position:relative;overflow:hidden;margin:0 -6px 2px;padding:13px 34px 13px 15px;border-radius:11px;color:var(--glass-ink);
+.card h3{position:relative;overflow:hidden;margin:0 -6px 2px;padding:13px 15px;border-radius:11px;color:var(--glass-ink);
   background:linear-gradient(180deg,var(--glass-hi) 0%,#16171A 55%,var(--glass-lo) 100%);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.2),inset 0 -1px 0 rgba(0,0,0,.7),0 1px 0 var(--engrave),0 0 0 1px rgba(0,0,0,.55)}
 .card h3::after{content:"";position:absolute;left:0;right:0;top:0;height:48%;border-radius:11px 11px 40% 40%/11px 11px 10px 10px;
   background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,.03));pointer-events:none}
-.card h3::before{content:"";position:absolute;right:14px;top:50%;width:7px;height:7px;margin-top:-3.5px;border-radius:50%;
-  background:radial-gradient(circle at 35% 30%,#FFD2B8 0,var(--led) 45%,#B8320A 100%);box-shadow:0 0 8px 1px rgba(255,90,31,.75)}
 .card ul.facts{list-style:none;padding-left:0;gap:8px}
 .card ul.facts li{position:relative;padding-left:20px}
 .card ul.facts li::before{content:"";position:absolute;left:2px;top:.58em;width:7px;height:7px;border-radius:50%;
   background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.8) 0,var(--led-off) 45%,rgba(0,0,0,.35) 100%);box-shadow:0 1px 0 var(--engrave)}
 .card ul.facts li:first-child{font-weight:700}
-.card ul.facts li:first-child::before{background:radial-gradient(circle at 35% 30%,#FFD2B8 0,var(--led) 45%,#B8320A 100%);box-shadow:0 0 7px rgba(255,90,31,.7)}
 .card .card-link{display:inline-block;padding:7px 13px 8px;border-radius:8px;color:#fff;text-decoration:none;font:700 14px/1.1 var(--body);
   background:linear-gradient(180deg,#FF8148,#EE5016);text-shadow:0 -1px 0 rgba(0,0,0,.25);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 2px 0 #B23A0C,0 5px 9px -3px rgba(0,0,0,.4);transition:transform .1s ease,box-shadow .1s ease}
@@ -207,10 +199,8 @@ body{font-size:16px}
 :root[data-theme="dark"] .btn{box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 2px 0 var(--key-base),0 6px 10px -4px rgba(0,0,0,.8)}
 .btn:hover{transform:none;filter:brightness(1.02)}
 .btn:active{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 0 0 var(--key-base),0 2px 4px -2px rgba(0,0,0,.4)}
-.btn[aria-pressed]::before{content:"";width:7px;height:7px;border-radius:50%;flex:none;
-  background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.8) 0,var(--led-off) 45%,rgba(0,0,0,.35) 100%)}
-.btn[aria-pressed="true"]{background:linear-gradient(180deg,var(--key-hi),var(--key-lo));color:var(--ink)}
-.btn[aria-pressed="true"]::before{background:radial-gradient(circle at 35% 30%,#FFD2B8 0,var(--led) 45%,#B8320A 100%);box-shadow:0 0 8px 1px rgba(255,90,31,.75)}
+.btn[aria-pressed="true"]{color:var(--ink);background:linear-gradient(180deg,var(--key-lo),var(--key-hi));transform:translateY(2px);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.18),0 0 0 var(--key-base),0 2px 4px -2px rgba(0,0,0,.35)}
 .btn.primary{color:#fff;border-color:#000;text-shadow:0 -1px 0 rgba(0,0,0,.5);background:linear-gradient(180deg,#3A3C41,#141518);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 2px 0 #000,0 6px 10px -4px rgba(0,0,0,.5)}
 .email{background:var(--well);border:1px solid var(--key-edge);border-radius:9px;box-shadow:inset 0 2px 4px rgba(0,0,0,.16),0 1px 0 var(--engrave)}
