@@ -174,6 +174,9 @@ body{font-size:16px}
   border:1px solid var(--panel-edge);border-radius:20px;padding:24px 24px 22px;gap:12px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -2px 0 rgba(0,0,0,.06),0 1px 0 rgba(0,0,0,.06),0 26px 44px -20px rgba(0,0,0,.5),0 6px 12px -6px rgba(0,0,0,.25)}
 :root[data-theme="dark"] .card{box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 26px 44px -18px rgba(0,0,0,.85)}
+.card h3 .sub{display:block;font:500 13.5px/1.45 var(--body);letter-spacing:0;color:rgba(255,255,255,.72);margin-top:7px}
+.card h3 .sub b{font-weight:600;color:#fff}
+.card .prose{font-size:15.5px;line-height:1.55;flex-shrink:0}
 .card h3,.card ul.facts,.card .why{flex-shrink:0}
 .about .email-row{padding:2px 4px 14px}
 .card h3{position:relative;overflow:hidden;margin:0 -6px 2px;padding:13px 15px;border-radius:11px;color:var(--glass-ink);
@@ -265,48 +268,48 @@ body{font-size:16px}
 <script>
 (function(){
 const XP = {
-  rub:{org:"ReUseBricks", role:"Vice President, Operations and Appraisals", dates:"Feb 2025 – Present", place:"", current:true,
+  rub:{blurb:"Runs database management, order fulfillment and customer service. Built the grading rubric and valuation method behind BrickCheck, which backs the company's USPAP-compliant appraisals and pricing across 1,400+ listings.", org:"ReUseBricks", role:"Vice President, Operations and Appraisals", dates:"Feb 2025 – Present", place:"", current:true,
     points:["Oversee database management, end-to-end order fulfillment and customer service."],
     study:[
       ["Built","Built the five-category grading rubric and valuation method behind BrickCheck, ReUseBricks' minifigure grading service."],
       ["Result","Those grades back the company's USPAP-compliant appraisals and prices across 1,400+ listings."]],
     link:{href:"https://reusebricks.com",text:"reusebricks.com"},
     obj:"a brick and a pirate captain minifigure", why:"LEGO resale and appraisal is the core of the business."},
-  isr:{org:"University of Michigan, Institute for Social Research", role:"Field Interviewer, Team Leader", dates:"Feb 2022 – Mar 2025", place:"Survey Research Center · Remote",
+  isr:{blurb:"Led a team of 12 interviewers on a national research study, keeping data quality and protocol on track and meeting or beating every collection target.", org:"University of Michigan, Institute for Social Research", role:"Field Interviewer, Team Leader", dates:"Feb 2022 – Mar 2025", place:"Survey Research Center · Remote",
     points:["Led a team of 12 interviewers, maintaining data quality and adherence to project protocol.","Met or exceeded data collection and data quality targets on a national research study."],
     obj:"Michigan with a maize M", why:"In University of Michigan maize and blue."},
-  census:{org:"U.S. Census Bureau", role:"Enumerator", dates:"Aug 2020 – Oct 2020", place:"Remote",
+  census:{blurb:"Conducted Nonresponse Followup interviews and counted soup kitchens and outdoor locations without shelter for the 2020 Census.", org:"U.S. Census Bureau", role:"Enumerator", dates:"Aug 2020 – Oct 2020", place:"Remote",
     points:["Conducted Nonresponse Followup interviews and enumerated soup kitchens and temporary outdoor locations without shelter.","Represented the Bureau to the public and explained the value of an accurate count."],
     obj:"an animated bar chart", why:"For the data collected during the 2020 Census."},
-  garden:{org:"Homeless Garden Project", role:"Social Work Intern", dates:"Sep 2018 – Jun 2019", place:"Santa Cruz, CA",
+  garden:{blurb:"Developed support plans for clients experiencing or transitioning out of homelessness, alongside the project's organic farm.", org:"Homeless Garden Project", role:"Social Work Intern", dates:"Sep 2018 – Jun 2019", place:"Santa Cruz, CA",
     points:["Developed support plans for clients experiencing or transitioning out of homelessness."],
     obj:"a strawberry", why:"The project runs an organic farm that provides job training and transitional employment."},
-  tx:{org:"Texas House of Representatives", role:"Clerk I, Messenger", dates:"Dec 2016 – Jul 2017", place:"Austin, TX",
+  tx:{blurb:"Handled the confidential delivery of official documents and served as a liaison between legislators and the public.", org:"Texas House of Representatives", role:"Clerk I, Messenger", dates:"Dec 2016 – Jul 2017", place:"Austin, TX",
     points:["Handled the retrieval, confidential handling and delivery of official documents.","Maintained decorum in the chamber and served as a liaison between legislators and the public."],
     obj:"the state of Texas", why:"The star marks Austin."},
-  bees:{org:"Environment Texas / TexPIRG", role:"Canvasser", dates:"Jun 2016 – Jul 2016", place:"Austin, TX",
+  bees:{blurb:"Raised funds and public support for a campaign urging the EPA to ban pesticides harmful to honey bees.", org:"Environment Texas / TexPIRG", role:"Canvasser", dates:"Jun 2016 – Jul 2016", place:"Austin, TX",
     points:["Raised funds and public support for a campaign urging the EPA to ban pesticides harmful to honey bees."],
     obj:"a bumblebee", why:"For the pollinator protection campaign."},
-  media:{org:"180/2020 Santa Cruz", role:"Media Intern", dates:"Sep 2015 – Jun 2016", place:"Santa Cruz, CA",
+  media:{blurb:"Led video production for an outreach campaign for people experiencing homelessness in Santa Cruz County, later featured on KQED's The California Report.", org:"180/2020 Santa Cruz", role:"Media Intern", dates:"Sep 2015 – Jun 2016", place:"Santa Cruz, CA",
     points:["Led video and media production for an outreach campaign advocating for people experiencing homelessness in Santa Cruz County.","The project was featured on KQED's The California Report."],
     obj:"a film camera", why:"For the video and media production work."},
-  hands:{org:"Hands for Africa", role:"Community Outreach Specialist", dates:"Feb 2014 – Jan 2015", place:"Tustin, CA",
+  hands:{blurb:"Ran outreach at fairs and colleges across Southern California to support amputees in Sierra Leone, and trained and supervised the team.", org:"Hands for Africa", role:"Community Outreach Specialist", dates:"Feb 2014 – Jan 2015", place:"Tustin, CA",
     points:["Conducted outreach at fairs and colleges across Los Angeles, Orange and San Diego counties to support amputees in Sierra Leone, and raised awareness of labor practices in the diamond trade.","Trained and supervised team members and managed materials and donations."],
     obj:"Sierra Leone", why:"The organization supported amputees affected by the country's civil war."},
-  ucsc:{org:"University of California, Santa Cruz", role:"BA, Sociology", dates:"2015 – 2020", place:"Santa Cruz, CA",
+  ucsc:{blurb:"Studied sociology, with coursework in nonprofit development and grant writing.", org:"University of California, Santa Cruz", role:"BA, Sociology", dates:"2015 – 2020", place:"Santa Cruz, CA",
     points:["Coursework in nonprofit development and grant writing."],
     obj:"a banana slug", why:"The UC Santa Cruz mascot."},
-  wwoof:{org:"Worldwide Opportunities on Organic Farms (WWOOF)", role:"Farm Volunteer", dates:"Sep 2017 – Jan 2018", place:"Hollister, Bonny Doon and Oakland, CA",
+  wwoof:{blurb:"Worked on three California farms, from Sol Seeker in Hollister to a Victorian-era chicken farm in Oakland, learning regenerative and biodynamic practices.", org:"Worldwide Opportunities on Organic Farms (WWOOF)", role:"Farm Volunteer", dates:"Sep 2017 – Jan 2018", place:"Hollister, Bonny Doon and Oakland, CA",
     points:["Worked on three farms: Sol Seeker Farms in Hollister, Flipjack Ranch in Bonny Doon, and a Victorian-era chicken farm in Oakland.","Trained in regenerative and biodynamic farming practices."],
     obj:"a shovel", why:"For hands-on farm work."},
-  buggy:{org:"Mechanics", role:"Dune buggy restoration", dates:"", place:"", hobby:true,
+  buggy:{blurb:"Restoring a dune buggy from the ground up with a friend. The engine rebuild is done, and the goal is road-ready next summer.", org:"Mechanics", role:"Dune buggy restoration", dates:"", place:"", hobby:true,
     points:["Restoring a dune buggy from the ground up with a friend.","The engine rebuild is complete; the goal is to have it road-ready next summer."],
     obj:"a dune buggy", why:"Drawn from a photo of the buggy itself."},
   mpc:{org:"Music Production", role:"Beatmaking and sampling", dates:"", place:"", hobby:true, points:[],
     obj:"an MPC", why:"The drum machine and sampler used for production."},
   benchy:{org:"3D Printing", role:"Printing, calibration and design", dates:"", place:"", hobby:true, points:[],
     obj:"a Benchy", why:"The standard test model used to calibrate 3D printers."},
-  skate:{org:"Inline Skating", role:"Community skate events", dates:"", place:"", hobby:true,
+  skate:{blurb:"Organizing community skate events with the Santa Cruz Rollers since 2022.", org:"Inline Skating", role:"Community skate events", dates:"", place:"", hobby:true,
     points:["Organizing events with the Santa Cruz Rollers since 2022."],
     link:{href:"https://www.instagram.com/santacruzrollers/",text:"@santacruzrollers on Instagram"},
     obj:"an inline skate", why:"Drawn from a photo of Jared's own skates."},
@@ -551,18 +554,14 @@ function showCard(id){
   const x=XP[id];selected=id;
   closeCard();openT=performance.now();card.style.opacity=0;
   card.innerHTML="";
-  // the organization (or hobby) is the title; role, dates and what he did are plain bullets under it
-  const h=el("h3");h.append(cv(x.org));card.append(h);
-  const ul=el("ul","facts"), li=(...c)=>{const i=el("li");i.append(...c);ul.append(i);};
-  if(x.fun) li(x.role);
-  else{
-    li(x.role);
-    const when=[x.dates,x.place].filter(Boolean).join(" · ");if(when) li(when);
-    x.points.forEach(p=>li(p));
-    (x.study||[]).forEach(([k,p])=>li(p));
-    if(x.link){const a=el("a","card-link",x.link.text);a.href=x.link.href;a.target="_blank";a.rel="noopener";li(a);}
-  }
-  card.append(ul);
+  // everything about the role sits on the black display; the panel below holds one plain sentence
+  const h=el("h3");h.append(cv(x.org));
+  const sub=el("span","sub");sub.append(el("b",null,x.role));
+  const when=x.hobby?"Personal interest":[x.dates,x.place].filter(Boolean).join(" · ");
+  if(when&&!x.fun){sub.append(el("br"),when);}
+  h.append(sub);card.append(h);
+  if(x.blurb) card.append(el("p","prose",x.blurb));
+  if(x.link){const a=el("a","card-link",x.link.text);a.href=x.link.href;a.target="_blank";a.rel="noopener";const pl=el("p");pl.append(a);card.append(pl);}
   card.hidden=false;
 }
 function renderList(target,ids){
