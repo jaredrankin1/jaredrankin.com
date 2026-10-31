@@ -330,6 +330,7 @@ body{font-size:16px}
       <button class="btn" id="darkBtn" type="button" aria-pressed="false">Dark mode</button>
       <button class="btn" id="gravity" type="button" aria-pressed="false">Gravity</button>
       <button class="btn" id="tidy" type="button" aria-pressed="false">Tidy</button>
+      <button class="btn" id="phoneBtn" type="button" aria-pressed="false">Phone mode</button>
     </div>
   </div>
 </div>
@@ -849,7 +850,7 @@ document.getElementById("copyEmail").addEventListener("click",e=>{
 });
 
 let world=null;
-if(!window.Matter){document.getElementById("fallback").hidden=false;["gravity","tidy"].forEach(i=>document.getElementById(i).disabled=true);return;}
+if(!window.Matter){document.getElementById("fallback").hidden=false;["gravity","tidy","phoneBtn"].forEach(i=>document.getElementById(i).disabled=true);return;}
 const {Engine,Runner,Bodies,Body,Composite,Mouse,MouseConstraint,Events,Query,Vertices} = Matter;
 
 /* ---------- dot-matrix sprites ---------- */
@@ -871,6 +872,7 @@ const ITEMS=[
   {src:"skate",xp:"skate"},
   {src:"disco",xp:"disco",darkOnly:true}
 ];
+const APP={"rub":"ReUseBricks", "creator":"Creator", "isr":"ISR", "census":"Census", "garden":"Garden", "wwoof":"WWOOF", "tx":"Texas House", "bees":"TexPIRG", "media":"180/2020", "hands":"Hands", "ucsc":"UCSC", "buggy":"Buggy", "mpc":"Music", "benchy":"3D Print", "skate":"Skate", "disco":"Disco"};
 const sources={};
 // flip-book items: six frames named like bee1_f0..bee1_f5
 const frameNames=it=>[0,1,2,3,4,5].map(k=>it.frames+"_f"+k);
@@ -1026,7 +1028,7 @@ const field=document.getElementById("field"), canvas=document.getElementById("wo
 let W=0,H=0,dpr=1,S=1;
 const engine=Engine.create({enableSleeping:false});engine.gravity.y=0;
 const runner=Runner.create();
-let walls=[], bodies=[], gravityOn=false, tidyOn=false;
+let walls=[], bodies=[], gravityOn=false, tidyOn=false, phoneOn=false;
 
 function size(){
   W=field.clientWidth;H=field.clientHeight;dpr=Math.min(window.devicePixelRatio||1,2);
@@ -1104,13 +1106,24 @@ function layoutTidy(){
   order.forEach((b,i)=>{
     const row=Math.floor(i/cols), inRow=row===rows-1?n-row*cols:cols, col=i%cols;
     const m=b.plugin.sprite;
-    b.plugin.slot={x:pad+(AW-inRow*cw)/2+(col+.5)*cw,y:top+(row+.5)*ch};
-    b.plugin.kt=Math.min(1,.8*cw/m.w,.8*ch/m.h);
+    const cx=pad+(AW-inRow*cw)/2+(col+.5)*cw, cy=top+(row+.5)*ch;
+    if(phoneOn){
+      // phone mode: each object sits inside a glossy app tile with its name underneath, like a home screen
+      const lab=ch>70?16:0, T=Math.min(cw*.74,(ch-lab)*.82,128), kt=Math.min(1,.66*T/m.w,.66*T/m.h), o=b.plugin.off;
+      b.plugin.tile=T;b.plugin.lab=lab;b.plugin.kt=kt;
+      // steer the body so the tile (centred on the picture, not the hull) lands in the cell
+      b.plugin.slot={x:cx-(m.w/2-o.x)*kt,y:cy-lab/2-(m.h/2-o.y)*kt};
+    } else {
+      b.plugin.slot={x:cx,y:cy};
+      b.plugin.kt=Math.min(1,.8*cw/m.w,.8*ch/m.h);
+    }
     b.isSensor=reduced;b.restitution=.2;b.plugin.stuck=0;b.plugin.lastFar=undefined;b.plugin.t0=performance.now();
   });
 }
-function setTidy(on){
-  tidyOn=on;document.getElementById("tidy").setAttribute("aria-pressed",String(on));
+function setTidy(on,phone=false){
+  tidyOn=on;phoneOn=on&&phone;
+  document.getElementById("tidy").setAttribute("aria-pressed",String(on&&!phone));
+  document.getElementById("phoneBtn").setAttribute("aria-pressed",String(phoneOn));
   if(on) layoutTidy();
   else bodies.forEach(b=>{b.isSensor=false;b.restitution=1;b.plugin.kt=1;b.plugin.slot=null;if(!gravityOn&&!reduced) drift(b);});
 }
@@ -1393,6 +1406,33 @@ function drawBuggy(m,o,now){
   }
   paintDots(smoke,P,"150,154,160");
 }
+// a squircle app tile in the iOS 6 spirit: soft shadow, bevelled edge, and a gloss sweep laid over the picture
+function squircle(c,x,y,s){const r=s*.225;c.beginPath();c.roundRect(x,y,s,s,r);}
+function tileBox(b,m,o,sc){const T=b.plugin.tile||100;return {x:(m.w/2-o.x)-T/2/sc,y:(m.h/2-o.y)-T/2/sc,s:T/sc};}
+function tile(b,m,o,sc,ta,gloss){
+  const {x,y,s}=tileBox(b,m,o,sc);
+  ctx.save();ctx.globalAlpha*=ta;
+  if(!gloss){
+    ctx.shadowColor=dark?"rgba(0,0,0,.55)":"rgba(20,24,32,.28)";ctx.shadowBlur=14/sc;ctx.shadowOffsetY=5/sc;
+    const g=ctx.createLinearGradient(0,y,0,y+s);
+    if(dark){g.addColorStop(0,"#5A5F69");g.addColorStop(1,"#23262C");} else {g.addColorStop(0,"#FFFFFF");g.addColorStop(1,"#D3D7DE");}
+    ctx.fillStyle=g;squircle(ctx,x,y,s);ctx.fill();
+    ctx.shadowColor="transparent";
+    ctx.lineWidth=1.2/sc;ctx.strokeStyle=dark?"rgba(0,0,0,.6)":"rgba(30,34,42,.22)";ctx.stroke();
+    const i=1.4/sc;ctx.lineWidth=1/sc;ctx.strokeStyle=dark?"rgba(255,255,255,.14)":"rgba(255,255,255,.9)";squircle(ctx,x+i,y+i,s-2*i);ctx.stroke();
+  } else {
+    squircle(ctx,x,y,s);ctx.clip();
+    const g=ctx.createLinearGradient(0,y,0,y+s*.5);g.addColorStop(0,"rgba(255,255,255,.55)");g.addColorStop(1,"rgba(255,255,255,.06)");
+    ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(x+s/2,y-s*.32,s*.95,s*.8,0,0,Math.PI*2);ctx.fill();
+  }
+  ctx.restore();
+}
+function appLabel(b,m,o,sc,ta){
+  const {x,y,s}=tileBox(b,m,o,sc), lx=(x+s/2)*sc, ly=(y+s)*sc, a=b.angle;
+  const wx=b.position.x+lx*Math.cos(a)-ly*Math.sin(a), wy=b.position.y+lx*Math.sin(a)+ly*Math.cos(a);
+  ctx.save();ctx.globalAlpha=ta;ctx.font="600 12px "+getComputedStyle(document.documentElement).getPropertyValue("--body");
+  ctx.textAlign="center";ctx.textBaseline="top";ctx.fillStyle=T["--ink"];ctx.fillText(APP[b.plugin.item.xp]||"",wx,wy+5);ctx.restore();
+}
 function frame(){
   const now=performance.now();
   ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
@@ -1406,6 +1446,8 @@ function frame(){
       // the object you're holding, or whose card is open, pulses gently
       if(!reduced&&(b===dragging||(b===picked&&!card.hidden))){const k=1+.075*(.5-.5*Math.cos(now/1000*Math.PI*2/.9));ctx.scale(k,k);}
       const it=b.plugin.item, cv=it.frames&&!reduced?m.frames[Math.floor(now*it.fps/1000)%m.frames.length]:m.canvas;
+      const ta=b.plugin.ta=(b.plugin.ta||0)+((phoneOn&&b.plugin.slot?1:0)-(b.plugin.ta||0))*(reduced?1:.12);
+      if(ta>.01) tile(b,m,o,sc,ta,false);
       if(it.src==="benchy"&&!reduced) drawPrint(m,o,now); else ctx.drawImage(cv,-o.x,-o.y,m.w,m.h);
       if(b.plugin.item.src==="mpc") drawPads(m,o,now);
       if(b.plugin.item.src==="camera") drawIris(m,o,now);
@@ -1413,7 +1455,9 @@ function frame(){
       if(b.plugin.item.src==="slugfront") drawStalks(m,o,now);
       if(b.plugin.item.src==="buggy") drawBuggy(m,o,now);
       if(b===discoBody) drawDisco(m,o,now);
+      if(ta>.01) tile(b,m,o,sc,ta,true);
       ctx.restore();
+      if(ta>.01&&b.plugin.lab) appLabel(b,m,o,sc,ta);
     }
   }
   if(hover&&bodies.includes(hover)&&hover!==openBody()) label(hover);
@@ -1503,7 +1547,11 @@ dragging=null;canvas.classList.remove("dragging");canvas.classList.add("released
 
   document.getElementById("tidy").addEventListener("click",()=>{
     if(!tidyOn&&gravityOn) gb.click();
-    setTidy(!tidyOn);
+    setTidy(!(tidyOn&&!phoneOn));
+  });
+  document.getElementById("phoneBtn").addEventListener("click",()=>{
+    if(!tidyOn&&gravityOn) gb.click();
+    setTidy(!phoneOn,true);
   });
 
   world={bump(id){bodies.filter(b=>b.plugin.item.xp===id).forEach(b=>{
