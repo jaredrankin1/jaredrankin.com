@@ -1,0 +1,5 @@
+silueta.onnx is the "silueta" background-removal model distributed by rembg
+(https://github.com/danielgatis/rembg), a compact retraining of U^2-Net
+(https://github.com/xuebinqin/U-2-Net). Both projects are released under the
+Apache License 2.0. It runs in the visitor's browser with ONNX Runtime Web
+(MIT License); no photo is uploaded anywhere.
