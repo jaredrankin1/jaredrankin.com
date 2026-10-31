@@ -728,7 +728,7 @@ function showCard(id){
   if(x.lens) card.append(lensRow(x.lens));
   if(x.link||x.cs){const pl=el("p","keys");
     if(x.cs){const c=el("a","btn primary",x.cs.text);c.href="#"+x.cs.id;c.addEventListener("click",e=>{e.preventDefault();openCase();});pl.append(c);}
-    for(const l of [x.link,...(x.links||[])].filter(Boolean)){const a=el("a","card-link",l.text);a.href=l.href;a.target="_blank";a.rel="noopener";pl.append(a);}
+    for(const l of [x.link,...(x.links||[])].filter(Boolean)){const a=el("a","card-link",l.text);a.href=l.href;if(/^https?:/.test(l.href)){a.target="_blank";a.rel="noopener";}pl.append(a);}
     card.append(pl);}
   if(x.remove){const pl=el("p","keys"),a=el("a","card-link remove","Remove");a.href="#";a.setAttribute("role","button");a.addEventListener("click",e=>{e.preventDefault();closeCard();x.remove();});pl.append(a);card.append(pl);}
   card.hidden=false;
@@ -744,7 +744,7 @@ function renderList(target,ids){
     if(x.points.length){const ul=el("ul");x.points.forEach(p=>ul.append(el("li",null,p)));li.append(ul);}
     if(x.study) li.append(caseStudy(x));
     if(x.cs){const c=el("a","btn primary cs-open",x.cs.text);c.href="#"+x.cs.id;c.addEventListener("click",e=>{e.preventDefault();openCase();});const pl=el("p");pl.append(c);li.append(pl);}
-    for(const l of [x.link,...(x.links||[])].filter(Boolean)){const a=el("a","card-link",l.text);a.href=l.href;a.target="_blank";a.rel="noopener";const pl=el("p");pl.append(a);li.append(pl);}
+    for(const l of [x.link,...(x.links||[])].filter(Boolean)){const a=el("a","card-link",l.text);a.href=l.href;if(/^https?:/.test(l.href)){a.target="_blank";a.rel="noopener";}const pl=el("p");pl.append(a);li.append(pl);}
     const b=el("button","find","Find "+x.obj);b.type="button";
     b.addEventListener("click",()=>{setDrawer(false);picked=bodies.find(x=>x.plugin.item.xp===id)||null;showCard(id);if(world) world.bump(id);});
     li.append(b);target.append(li);
