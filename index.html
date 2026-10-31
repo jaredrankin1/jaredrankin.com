@@ -1250,7 +1250,7 @@ function spawn(){
     placed.push({x,y,r:rad*.9});
     const b=Bodies.fromVertices(x,y,[hull.map(p=>({x:p.x,y:p.y}))],{restitution:1,friction:0,frictionStatic:0,frictionAir:0,density:.001});
     Body.setAngle(b,(Math.random()-.5)*.9);
-    b.plugin={item:it,sprite:m,off:c,cruise:(.22+Math.random()*.22)*Math.max(.7,S)};
+    b.plugin={item:it,sprite:m,off:c,hullOff:c,hullRel:hull.map(p=>({x:p.x-c.x,y:p.y-c.y})),shape:"hull",cruise:(.22+Math.random()*.22)*Math.max(.7,S)};
     if(!reduced) drift(b);
     return b;
   });
@@ -1267,7 +1267,7 @@ function setExtra(b,on){
   const inWorld=bodies.includes(b);
   if(on&&!inWorld){
     Body.setPosition(b,{x:W*.7,y:Math.min(H*.35,180*S)});Body.setAngle(b,0);if(!reduced) drift(b);
-    bodies.push(b);Composite.add(engine.world,b);layoutTidy();
+    bodies.push(b);Composite.add(engine.world,b);fitPhone(b);layoutTidy();
   } else if(!on&&inWorld){
     if(picked===b) closeCard();
     bodies=bodies.filter(x=>x!==b);Composite.remove(engine.world,b);
@@ -1279,7 +1279,7 @@ function setDisco(on){
   const inWorld=bodies.includes(discoBody);
   if(on&&!inWorld){
     Body.setPosition(discoBody,{x:W/2,y:Math.min(H*.3,160*S)});Body.setAngle(discoBody,0);drift(discoBody);
-    bodies.push(discoBody);Composite.add(engine.world,discoBody);layoutTidy();
+    bodies.push(discoBody);Composite.add(engine.world,discoBody);fitPhone(discoBody);layoutTidy();
   } else if(!on&&inWorld){
     if(picked===discoBody) closeCard();
     bodies=bodies.filter(b=>b!==discoBody);Composite.remove(engine.world,discoBody);
@@ -1318,13 +1318,47 @@ function layoutTidy(){
     }
     b.isSensor=reduced;b.restitution=.2;b.plugin.stuck=0;b.plugin.lastFar=undefined;b.plugin.t0=performance.now();
   });
+  order.forEach(setShape);
 }
-function setTidy(on,phone=false){
-  tidyOn=on;phoneOn=on&&phone;
-  document.getElementById("tidy").setAttribute("aria-pressed",String(on&&!phone));
-  document.getElementById("phoneBtn").setAttribute("aria-pressed",String(phoneOn));
+function setTidy(on){
+  tidyOn=on;
+  document.getElementById("tidy").setAttribute("aria-pressed",String(on));
   if(on) layoutTidy();
-  else bodies.forEach(b=>{b.isSensor=false;b.restitution=1;b.plugin.kt=1;b.plugin.slot=null;if(!gravityOn&&!reduced) drift(b);});
+  else bodies.forEach(b=>{b.isSensor=false;b.restitution=gravityOn?.35:1;b.plugin.slot=null;fitPhone(b);if(!gravityOn&&!reduced) drift(b);});
+}
+// Phone mode: every object sits in a glossy app tile and collides as that tile, floating free or tidied into a grid
+function freeTile(){return Math.round(Math.max(72,Math.min(118,92*S)));}
+function fitPhone(b){
+  const pl=b.plugin, m=pl.sprite;
+  if(!tidyOn){
+    if(phoneOn){const T=freeTile();pl.tile=T;pl.lab=16;pl.kt=Math.min(1,.66*T/m.w,.66*T/m.h);}
+    else pl.kt=1;
+  }
+  setShape(b);
+}
+// swap the collider between the object's outline and its tile, keeping the picture exactly where it is on screen
+function setShape(b){
+  const pl=b.plugin, m=pl.sprite, k=pl.k||1, want=phoneOn?"tile:"+pl.tile+":"+pl.kt:"hull";
+  if(pl.shape===want) return;
+  const ca=Math.cos(b.angle), sa=Math.sin(b.angle), rot=v=>({x:v.x*ca-v.y*sa,y:v.x*sa+v.y*ca});
+  const off=pl.off, o0=rot({x:off.x*k,y:off.y*k}), origin={x:b.position.x-o0.x,y:b.position.y-o0.y};
+  let rel, noff;
+  if(phoneOn){
+    // a rounded square, sized so it ends up T across once the size easing reaches its target
+    const side=pl.tile*k/(pl.kt||1), sq=Bodies.rectangle(0,0,side,side,{chamfer:{radius:side*.225}});
+    rel=sq.vertices.map(v=>({x:v.x,y:v.y}));noff={x:m.w/2,y:m.h/2};
+  } else {rel=pl.hullRel.map(v=>({x:v.x*k,y:v.y*k}));noff=pl.hullOff;}
+  const n0=rot({x:noff.x*k,y:noff.y*k}), pos={x:origin.x+n0.x,y:origin.y+n0.y};
+  const vel=b.velocity, av=b.angularVelocity, ang=b.angle;
+  Body.setVertices(b,rel.map(v=>{const w=rot(v);return {x:pos.x+w.x,y:pos.y+w.y};}));
+  Body.setPosition(b,pos);Body.setAngle(b,ang);Body.setVelocity(b,vel);Body.setAngularVelocity(b,av);
+  pl.off=noff;pl.shape=want;
+}
+function setPhone(on){
+  phoneOn=on;
+  document.getElementById("phoneBtn").setAttribute("aria-pressed",String(on));
+  if(tidyOn) layoutTidy(); else bodies.forEach(fitPhone);
+  if(tidyOn) bodies.forEach(setShape);
 }
 let dragging=null, anchor=null;
 Events.on(engine,"afterUpdate",()=>{
@@ -1702,7 +1736,7 @@ function frame(){
       // the object you're holding, or whose card is open, pulses gently
       if(!reduced&&(b===dragging||(b===picked&&!card.hidden))){const k=1+.075*(.5-.5*Math.cos(now/1000*Math.PI*2/.9));ctx.scale(k,k);}
       const it=b.plugin.item, cv=it.frames&&!reduced?m.frames[Math.floor(now*it.fps/1000)%m.frames.length]:m.canvas;
-      const ta=b.plugin.ta=(b.plugin.ta||0)+((phoneOn&&b.plugin.slot?1:0)-(b.plugin.ta||0))*(reduced?1:.12);
+      const ta=b.plugin.ta=(b.plugin.ta||0)+((phoneOn?1:0)-(b.plugin.ta||0))*(reduced?1:.12);
       if(ta>.01) tile(b,m,o,sc,ta,false);
       if(it.src==="benchy"&&!reduced) drawPrint(m,o,now); else ctx.drawImage(cv,-o.x,-o.y,m.w,m.h);
       if(b.plugin.item.src==="mpc") drawPads(m,o,now);
@@ -1804,7 +1838,7 @@ dragging=null;canvas.classList.remove("dragging");canvas.classList.add("released
 
   document.getElementById("tidy").addEventListener("click",()=>{
     if(!tidyOn&&gravityOn) gb.click();
-    setTidy(!(tidyOn&&!phoneOn));
+    setTidy(!tidyOn);
   });
   const mb=document.getElementById("medBtn"), xb=document.getElementById("discoBtn");
   xb.addEventListener("click",()=>{
@@ -1819,10 +1853,7 @@ dragging=null;canvas.classList.remove("dragging");canvas.classList.add("released
     repaintAll();setDragon(on);if(on) Chant.start(); else Chant.stop();
     // the controls row can change height with the new font, so re-fit the Tidy grid
     setTimeout(layoutTidy,60);});
-  document.getElementById("phoneBtn").addEventListener("click",()=>{
-    if(!tidyOn&&gravityOn) gb.click();
-    setTidy(!phoneOn,true);
-  });
+  document.getElementById("phoneBtn").addEventListener("click",()=>setPhone(!phoneOn));
 
   world={bump(id){bodies.filter(b=>b.plugin.item.xp===id).forEach(b=>{
     const a=Math.atan2(H/2-b.position.y,W/2-b.position.x);Body.setVelocity(b,{x:Math.cos(a)*5,y:Math.sin(a)*5});Body.setAngularVelocity(b,.05);
@@ -1836,7 +1867,7 @@ dragging=null;canvas.classList.remove("dragging");canvas.classList.add("released
     const ns=Math.max(.7,Math.min(1.7,Math.sqrt(W*H)/720));
     if(Math.abs(ns-lastS)/lastS>.2){lastS=ns;spawn();}
     else bodies.forEach(b=>{const x=Math.max(40,Math.min(W-40,b.position.x)),y=Math.max(40,Math.min(H-40,b.position.y));if(x!==b.position.x||y!==b.position.y)Body.setPosition(b,{x,y});});
-    layoutTidy();
+    layoutTidy();if(!tidyOn) bodies.forEach(fitPhone);
   },120);}).observe(field);
   document.addEventListener("visibilitychange",()=>{runner.enabled=!document.hidden;for(const a of [Chant,Groove]) if(a.c&&a.on){if(document.hidden) a.c.suspend(); else a.c.resume();}});
   Runner.run(runner,engine);
