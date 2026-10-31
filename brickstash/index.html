@@ -794,7 +794,7 @@ const {Engine,Runner,Bodies,Body,Composite,Mouse,MouseConstraint,Events,Query,Ve
 
 /* ---------- dot-matrix sprites ---------- */
 const ITEMS=[
-  {src:"plus",xp:"plus",w:96},
+  {src:"plus",xp:"plus",w:96,alwaysTile:true},
   {src:"disco",xp:"disco",darkOnly:true},
   {src:"dragon",xp:"dragon",medOnly:true,w:180},
   {src:"floor",xp:"floor",discoOnly:true,w:120}
@@ -1481,7 +1481,7 @@ function layoutTidy(){
     const row=Math.floor(i/cols), inRow=row===rows-1?n-row*cols:cols, col=i%cols;
     const m=b.plugin.sprite;
     const cx=pad+(AW-inRow*cw)/2+(col+.5)*cw, cy=top+(row+.5)*ch;
-    if(phoneOn){
+    if(tiled(b)){
       // phone mode: each object sits inside a glossy app tile with its name underneath, like a home screen
       const lab=ch>70?16:0, T=Math.min(cw*.74,(ch-lab)*.82,128), kt=Math.min(1,.66*T/m.w,.66*T/m.h), o=b.plugin.off;
       b.plugin.tile=T;b.plugin.lab=lab;b.plugin.kt=kt;
@@ -1502,23 +1502,24 @@ function setTidy(on){
   else bodies.forEach(b=>{b.isSensor=false;b.restitution=gravityOn?.35:1;b.plugin.slot=null;fitPhone(b);if(!gravityOn&&!reduced) drift(b);});
 }
 // Phone mode: every object sits in a glossy app tile and collides as that tile, floating free or tidied into a grid
+const tiled=b=>phoneOn||!!b.plugin.item.alwaysTile;
 function freeTile(){return Math.round(Math.max(72,Math.min(118,92*S)));}
 function fitPhone(b){
   const pl=b.plugin, m=pl.sprite;
   if(!tidyOn){
-    if(phoneOn){const T=freeTile();pl.tile=T;pl.lab=16;pl.kt=Math.min(1,.66*T/m.w,.66*T/m.h);}
+    if(tiled(b)){const T=freeTile();pl.tile=T;pl.lab=16;pl.kt=Math.min(1,.66*T/m.w,.66*T/m.h);}
     else pl.kt=1;
   }
   setShape(b);
 }
 // swap the collider between the object's outline and its tile, keeping the picture exactly where it is on screen
 function setShape(b){
-  const pl=b.plugin, m=pl.sprite, k=pl.k||1, want=phoneOn?"tile:"+pl.tile+":"+pl.kt:"hull";
+  const pl=b.plugin, m=pl.sprite, k=pl.k||1, want=tiled(b)?"tile:"+pl.tile+":"+pl.kt:"hull";
   if(pl.shape===want) return;
   const ca=Math.cos(b.angle), sa=Math.sin(b.angle), rot=v=>({x:v.x*ca-v.y*sa,y:v.x*sa+v.y*ca});
   const off=pl.off, o0=rot({x:off.x*k,y:off.y*k}), origin={x:b.position.x-o0.x,y:b.position.y-o0.y};
   let rel, noff;
-  if(phoneOn){
+  if(tiled(b)){
     // a rounded square, sized so it ends up T across once the size easing reaches its target
     const side=pl.tile*k/(pl.kt||1), sq=Bodies.rectangle(0,0,side,side,{chamfer:{radius:side*.225}});
     rel=sq.vertices.map(v=>({x:v.x,y:v.y}));noff={x:m.w/2,y:m.h/2};
@@ -1911,7 +1912,7 @@ function frame(){
       // the object you're holding, or whose card is open, pulses gently
       if(!reduced&&(b===dragging||(b===picked&&!card.hidden))){const k=1+.075*(.5-.5*Math.cos(now/1000*Math.PI*2/.9));ctx.scale(k,k);}
       const it=b.plugin.item, cv=it.frames&&!reduced?m.frames[Math.floor(now*it.fps/1000)%m.frames.length]:m.canvas;
-      const ta=b.plugin.ta=(b.plugin.ta||0)+((phoneOn?1:0)-(b.plugin.ta||0))*(reduced?1:.12);
+      const ta=b.plugin.ta=(b.plugin.ta||0)+((tiled(b)?1:0)-(b.plugin.ta||0))*(reduced?1:.12);
       if(ta>.01) tile(b,m,o,sc,ta,false);
       if(it.src==="benchy"&&!reduced) drawPrint(m,o,now); else ctx.drawImage(cv,-o.x,-o.y,m.w,m.h);
       if(b.plugin.item.src==="mpc") drawPads(m,o,now);
@@ -1981,7 +1982,8 @@ function hit(p){
 }
 
 loadSources().then(()=>{
-  size();spawn();readTheme();
+  size();spawn();readTheme();bodies.forEach(fitPhone);
+  {const p=bodies.find(b=>b.plugin.item.alwaysTile);if(p){Body.setPosition(p,{x:W/2,y:H/2});Body.setAngle(p,0);}}
   const mouse=Mouse.create(canvas);
   ["mousewheel","DOMMouseScroll","wheel"].forEach(ev=>canvas.removeEventListener(ev,mouse.mousewheel));
   const mc=MouseConstraint.create(engine,{mouse,constraint:{stiffness:.15,damping:.1,render:{visible:false}}});
