@@ -1195,10 +1195,21 @@ async function cutoutFig(photo){
   if(!keep) keep=cleanMask(plainMask(d));
   if(!keep) throw new Error("nothing found");
   const mc=document.createElement("canvas");mc.width=mc.height=MS;const mx2=mc.getContext("2d"),md=mx2.createImageData(MS,MS);
-  for(let i=0;i<MS*MS;i++) md.data[i*4+3]=keep[i];mx2.putImageData(md,0,0);
-  // the mask is scaled up to the photo, and the photo is cut out with it at full resolution
+  // feather the edge a little: soften the mask, then pull the soft edge just inside the outline so no backdrop halo shows
+  let fm=Float32Array.from(keep,v=>v/255);
+  for(let pass=0;pass<2;pass++){
+    const nb=new Float32Array(MS*MS);
+    for(let y=0;y<MS;y++)for(let x=0;x<MS;x++){let sum=0,n=0;
+      for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy;if(X>=0&&Y>=0&&X<MS&&Y<MS){sum+=fm[Y*MS+X];n++;}}
+      nb[y*MS+x]=sum/n;}
+    fm=nb;
+  }
+  for(let i=0;i<MS*MS;i++){const v=Math.max(0,Math.min(1,(fm[i]-.25)/.75));md.data[i*4+3]=Math.round(v*v*(3-2*v)*255);}
+  mx2.putImageData(md,0,0);
+  // the mask is scaled up to the photo (smoothly, so its steps don't show), and the photo is cut out with it at full resolution
   const W0=photo.width,H0=photo.height,o=document.createElement("canvas");o.width=W0;o.height=H0;
-  const ox=o.getContext("2d",{willReadFrequently:true});ox.imageSmoothingQuality="high";ox.drawImage(mc,0,0,W0,H0);
+  const ox=o.getContext("2d",{willReadFrequently:true});ox.imageSmoothingQuality="high";
+  ox.filter="blur("+(Math.max(W0,H0)/MS*.6).toFixed(2)+"px)";ox.drawImage(mc,0,0,W0,H0);ox.filter="none";
   ox.globalCompositeOperation="source-in";ox.drawImage(photo,0,0);ox.globalCompositeOperation="source-over";
   const od=ox.getImageData(0,0,W0,H0).data;let x0=W0,y0=H0,x1=-1,y1=-1;
   for(let yy=0;yy<H0;yy++)for(let xx=0;xx<W0;xx++) if(od[(yy*W0+xx)*4+3]>30){if(xx<x0)x0=xx;if(xx>x1)x1=xx;if(yy<y0)y0=yy;if(yy>y1)y1=yy;}
