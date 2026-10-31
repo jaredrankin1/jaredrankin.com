@@ -441,6 +441,7 @@ html.medieval .cam{background:var(--vel-mottle),var(--vel-grain),linear-gradient
   <p class="tip">Plain background, light from one side, a hand's length away.</p>
   <div class="keys">
     <button class="btn go" id="camShoot" type="button">Take photo</button>
+    <button class="btn" id="camFlash" type="button" aria-pressed="false" hidden>Flash off</button>
     <button class="btn" id="camPick" type="button">Choose file</button>
     <button class="btn" id="camClose" type="button">Cancel</button>
   </div>
@@ -1125,7 +1126,7 @@ function tinted(cv,col){
 }
 // every object blinks like a console light: its own colour and rhythm, flashing on, plain, then dimmed
 function blink(b,cv,m,o,now){
-  if(reduced) return;
+  if(reduced||b.plugin.item.fig) return;
   const pl=b.plugin;if(!pl.jw){pl.jw={col:JEWELS[b.id%JEWELS.length],per:280+((b.id*397)%900),ph:(b.id*733)%1000};}
   const st=Math.floor((now+pl.jw.ph)/pl.jw.per)%4;
   if(st===0||st===2){
@@ -1491,25 +1492,52 @@ function removeFig(id,quiet){
   const b=bodies.find(x=>x.plugin.item.xp===id);if(b){if(picked===b) picked=null;bodies=bodies.filter(x=>x!==b);Composite.remove(engine.world,b);}
   delete XP[id];delete APP[id];delete sources[id];delete PHOTO[id];layoutTidy();
 }
-/* camera: on a phone, + opens the camera app; on a computer, a viewfinder opens here, with Choose file as the fallback */
+/* camera: a viewfinder opens here, phone or computer, so the flash can be timed to the shot.
+   Flash turns the phone's light on, waits for the exposure to settle, then takes the picture with the light still on.
+   Choose file (or a browser with no camera access) falls back to the phone's own camera app or a saved photo. */
 const figFile=document.getElementById("figFile"), cam=document.getElementById("cam"), camVideo=document.getElementById("camVideo"), camTip=cam.querySelector(".tip"), CAM_TIP=camTip.textContent;
-let camStream=null;
+const camFlash=document.getElementById("camFlash");
+let camStream=null, flashWanted=false, shooting=false;
+const camTrack=()=>camStream&&camStream.getVideoTracks()[0];
+function canTorch(){const t=camTrack();try{return !!(t&&t.getCapabilities&&t.getCapabilities().torch);}catch(_){return false;}}
+async function setTorch(on){const t=camTrack();if(!t) return false;try{await t.applyConstraints({advanced:[{torch:on}]});return true;}catch(_){return false;}}
+function showFlash(){camFlash.textContent=flashWanted?"Flash on":"Flash off";camFlash.setAttribute("aria-pressed",String(flashWanted));camFlash.classList.toggle("go",flashWanted);}
 async function openCamera(){
   loadModel().catch(()=>{});
-  if(matchMedia("(pointer: coarse)").matches||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){figFile.click();return;}
-  cam.hidden=false;camTip.textContent=CAM_TIP;const shoot=document.getElementById("camShoot");shoot.hidden=false;shoot.disabled=true;
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){figFile.click();return;}
+  cam.hidden=false;camTip.textContent=CAM_TIP;const shoot=document.getElementById("camShoot");shoot.hidden=false;shoot.disabled=true;camFlash.hidden=true;
   try{
-    camStream=await within(navigator.mediaDevices.getUserMedia({video:{facingMode:"environment",width:{ideal:1280},height:{ideal:1280}},audio:false}),15000);
+    camStream=await within(navigator.mediaDevices.getUserMedia({video:{facingMode:"environment",width:{ideal:1920},height:{ideal:1920}},audio:false}),15000);
     camVideo.srcObject=camStream;await camVideo.play();shoot.disabled=false;shoot.focus();
+    camFlash.hidden=!canTorch();showFlash();
   }catch(_){
     // no camera, or it isn't allowed here: say so, and offer a file instead
+    closeCamera();cam.hidden=false;
     shoot.hidden=true;camTip.textContent="The camera isn't available here. Choose a photo of a minifig instead.";document.getElementById("camPick").focus();
   }
 }
-function closeCamera(){cam.hidden=true;if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}camVideo.srcObject=null;}
+function closeCamera(){cam.hidden=true;if(camStream){setTorch(false);camStream.getTracks().forEach(t=>t.stop());camStream=null;}camVideo.srcObject=null;}
+async function grabPhoto(lit){
+  const t=camTrack();
+  // with the light already on, the live frame is lit and taken right now, so there's no flash lag;
+  // otherwise a full-resolution still where the browser offers one (Android Chrome), else the live frame
+  if(!lit&&t&&window.ImageCapture){
+    try{const blob=await within(new ImageCapture(t).takePhoto(flashWanted?{fillLightMode:"flash"}:{}),4000);
+      const bm=await createImageBitmap(blob);return photoCanvas(bm,1024);}catch(_){}
+  }
+  return photoCanvas(camVideo,1024);
+}
+camFlash.addEventListener("click",()=>{flashWanted=!flashWanted;showFlash();});
 document.getElementById("camClose").addEventListener("click",closeCamera);
 document.getElementById("camPick").addEventListener("click",()=>{closeCamera();figFile.click();});
-document.getElementById("camShoot").addEventListener("click",()=>{const c=photoCanvas(camVideo,1024);closeCamera();addFig(c);});
+document.getElementById("camShoot").addEventListener("click",async()=>{
+  if(shooting) return;shooting=true;const shoot=document.getElementById("camShoot");shoot.disabled=true;
+  try{
+    const lit=flashWanted&&await setTorch(true);
+    if(lit){camTip.textContent="Hold still…";await new Promise(r=>setTimeout(r,900));}
+    const c=await grabPhoto(lit);closeCamera();addFig(c);
+  }finally{shooting=false;shoot.disabled=false;camTip.textContent=CAM_TIP;}
+});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!cam.hidden) closeCamera();});
 figFile.addEventListener("change",()=>{
   const f=figFile.files[0];figFile.value="";if(!f) return;
