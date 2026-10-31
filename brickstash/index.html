@@ -360,7 +360,7 @@ html.medieval .cam{background:var(--vel-mottle),var(--vel-grain),linear-gradient
     <h1><button class="name" id="nameBtn" type="button" aria-expanded="false" aria-controls="about"><span class="sr">BrickStash</span><svg class="wordmark" viewBox="18 -691 4484 719" aria-hidden="true"><path d="M157-113L157-292L335-292C397-292 435-266 435-208C435-154 397-113 333-113ZM324-549C389-549 416-528 416-477C416-430 387-405 332-405L157-405L157-549ZM322 0C489 0 570-77 570-198C570-293 525-338 469-359C515-378 550-426 550-483C550-594 480-664 350-664L23-664L23 0ZM730 0L730-256C730-335 769-375 849-375C861-375 873-374 885-372L885-505L868-505C815-505 765-499 722-433L722-492L600-492L600 0ZM1054 0L1054-492L924-492L924 0ZM1054-551L1054-672L924-672L924-551ZM1425-178C1420-125 1380-96 1329-96C1278-96 1233-148 1233-255C1233-362 1278-397 1333-397C1382-397 1419-367 1426-316L1557-316C1549-432 1462-505 1334-505C1196-505 1104-428 1104-252C1104-76 1196 13 1330 13C1449 13 1542-64 1556-178ZM2042 0L1881-311L2046-492L1887-492L1725-305L1725-672L1594-672L1594 0L1725 0L1725-156L1788-221L1896 0ZM2582-468C2577-595 2483-686 2315-686C2153-686 2072-601 2072-482C2072-398 2112-350 2183-318C2230-297 2283-285 2365-267C2448-249 2468-222 2468-183C2468-124 2421-89 2339-89C2250-89 2193-131 2191-199L2057-199C2060-50 2174 23 2338 23C2493 23 2603-42 2603-188C2603-282 2557-323 2499-349C2450-371 2377-389 2302-407C2228-425 2199-449 2199-491C2199-541 2240-569 2318-569C2402-569 2443-536 2450-468ZM2919-196C2919-135 2895-100 2843-100C2790-100 2768-136 2768-198L2768-400L3040-400L3040-492L2768-492L2768-625L2640-625L2640-185C2640-79 2697 13 2841 13C2980 13 3040-80 3040-184L3040-324L2919-324ZM3391-187C3390-129 3340-80 3273-80C3232-80 3210-98 3210-135C3210-177 3234-198 3308-212C3356-221 3379-228 3392-241ZM3522 0L3522-311C3522-435 3468-505 3312-505C3154-505 3098-434 3096-332L3217-332C3223-376 3247-405 3306-405C3357-405 3389-386 3389-354C3389-320 3371-307 3306-298C3175-280 3080-264 3080-122C3080-42 3132 13 3244 13C3310 13 3362-10 3393-44C3394-29 3397-12 3401 0ZM4000-343C3993-449 3929-505 3787-505C3637-505 3580-442 3580-359C3580-315 3596-277 3642-248C3677-226 3723-212 3806-192C3848-182 3885-171 3885-136C3885-99 3844-85 3798-85C3735-85 3696-112 3696-158L3562-158C3564-58 3648 13 3799 13C3939 13 4014-48 4014-150C4014-214 3985-248 3933-269C3895-284 3842-295 3786-311C3733-326 3706-338 3706-367C3706-396 3734-408 3783-408C3842-408 3868-391 3875-343ZM4497 0L4497-348C4497-446 4427-505 4326-505C4260-505 4200-472 4181-428L4181-672L4051-672L4051 0L4181 0L4181-282C4181-348 4217-402 4282-402C4341-402 4366-379 4366-305L4366 0Z"/></svg><span class="gname" aria-hidden="true">BrickStash</span><span class="caret knob" aria-hidden="true"></span></button></h1>
     <div class="about" id="about" aria-hidden="true" inert>
       <div class="about-inner">
-        <p class="tag">Tap <strong>+</strong> to photograph a minifig. The background is removed right here on your device, the photo never leaves it, and the fig joins the page. Your figs stay in this browser.</p>
+        <p class="tag">Tap <strong>+</strong> to photograph a minifig. The background is cut out right here on your device, and the photo is sent to <a href="https://brickognize.com" target="_blank" rel="noopener">Brickognize</a> to name the fig. Your figs stay in this browser.</p>
         <div class="email-row">
           <span class="email" id="email" hidden>Jaredrankin1@gmail.com</span>
           <button class="btn" id="copyEmail" type="button" hidden>Copy</button>
@@ -1076,9 +1076,28 @@ let figs=[];
 try{figs=JSON.parse(localStorage.getItem(FIG_KEY)||"[]").filter(f=>f&&f.id&&f.src);}catch(_){figs=[];}
 function saveFigs(){try{localStorage.setItem(FIG_KEY,JSON.stringify(figs));return true;}catch(_){return false;}}
 function figXP(f){
-  XP[f.id]={org:f.name,role:"Added "+new Date(f.t).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}),dates:"",place:"",fun:true,points:[],obj:"a minifig",why:"",
+  const added="Added "+new Date(f.t).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}), m=f.match;
+  XP[f.id]={org:m?m.name:f.name,role:m?m.id+" · "+added:added,dates:"",place:"",fun:true,points:[],obj:"a minifig",why:"",
+    blurb:m?"Identified by Brickognize, "+Math.round(m.score*100)+"% match.":"",
+    link:m&&m.url?{href:m.url,text:"View on BrickLink"}:null,
     remove:()=>removeFig(f.id)};
-  APP[f.id]=f.name;
+  APP[f.id]=m?m.short:f.name;
+}
+/* ---------- naming the fig: the photo goes to Brickognize's image search, which returns its best catalogue match ---------- */
+async function identifyFig(photo){
+  try{
+    const blob=await new Promise(r=>photo.toBlob(r,"image/jpeg",.9));if(!blob) return null;
+    const fd=new FormData();fd.append("query_image",blob,"fig.jpg");
+    const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),20000);
+    const res=await fetch("https://api.brickognize.com/predict/figs/?top_k_items=1",{method:"POST",body:fd,signal:ctl.signal});clearTimeout(t);
+    if(!res.ok) return null;
+    const it=((await res.json()).items||[])[0];
+    if(!it||!(it.score>=.5)) return null;
+    const bl=(it.external_sites||[]).find(x=>/bricklink/i.test(x.name||x.url||""));
+    // a short label for Phone mode: the name before any dash or comma
+    const short=String(it.name).split(/ - |, |\(/)[0].trim().slice(0,22)||it.id;
+    return {id:String(it.id),name:String(it.name),short,score:it.score,url:bl?bl.url:"https://www.bricklink.com/v2/catalog/catalogitem.page?M="+encodeURIComponent(it.id),thumb:it.img_url||""};
+  }catch(_){return null;}
 }
 const figItem=f=>({src:f.id,xp:f.id,fig:true});
 // saved figs go in before the plus, so Tidy and Phone mode list them first and the plus last
@@ -1289,6 +1308,8 @@ let figCount=figs.reduce((n,f)=>Math.max(n,f.n||0),0), busy=false;
 async function addFig(photo){
   if(busy) return;busy=true;
   say(modelP?"Cutting out your fig…":"Loading the cutout tool (first time only)…",0);
+  // naming runs alongside the cutout and the animation
+  const idP=identifyFig(photo);
   try{
     await nextFrame();
     const res=await cutoutFig(photo);
@@ -1312,7 +1333,13 @@ async function addFig(photo){
     bodies.push(b);Composite.add(engine.world,b);fitPhone(b);
     if(gravityOn){b.frictionAir=.01;b.restitution=.35;b.friction=.3;} else if(!reduced) drift(b);
     layoutTidy();
-    say("Here's your fig. Drag it, throw it, or try Gravity.");
+    say("Here's your fig. Asking Brickognize which one it is…",0);
+    const match=await idP;
+    if(match&&figs.includes(f)){
+      f.match=match;saveFigs();figXP(f);
+      if(picked===b&&!card.hidden) showCard(f.id);
+      say("Looks like "+match.name+" ("+match.id+"). Tap it for the BrickLink page.",6000);
+    } else say("Here's your fig. Brickognize couldn't name this one, so it's "+f.name+".",5000);
   }catch(e){
     console.warn(e);
     say("Couldn't find a fig in that photo. Try a plainer background.");
