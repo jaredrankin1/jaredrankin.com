@@ -304,6 +304,34 @@ body{font-size:16px}
 @media (prefers-reduced-motion: reduce){
   .btn,.drawer,.drawer[hidden],.about,.caret,.cs,.cs[hidden]{transition:none}
 }
+
+/* Medieval mode: every surface becomes vellum (warm calfskin with grain and soft mottling),
+   display strips become oxblood leather, links and the Resume key are rubricated red */
+html.medieval{--vel-grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35  0 0 0 0 .24  0 0 0 0 .12  0 0 0 .55 -.18'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23n%29' opacity='0.55'/%3E%3C/svg%3E");--vel-mottle:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='900'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0067' numOctaves='3' seed='9' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .55  0 0 0 0 .38  0 0 0 0 .18  0 0 0 .9 -.32'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23n%29' opacity='0.6'/%3E%3C/svg%3E");
+  --bg:#EADBB8;--ink:#2B1D12;--muted:#6B5640;--line:#BFA77C;--surface:#F1E5C8;--accent:#8E1F18;--accent-ink:#F6EBCF;
+  --face-hi:#F3E7CA;--face-lo:#DCC69B;--panel-hi:#F4E9CE;--panel-lo:#E0CDA5;--panel-edge:#B89B6A;
+  --glass-hi:#7A2419;--glass-lo:#3E0F0A;--glass-ink:#F6E6BC;
+  --key-hi:#F6ECD3;--key-lo:#DFCBA2;--key-edge:#A88B5A;--key-base:#8F7348;--well:#E6D5AE;--engrave:rgba(255,248,228,.75)}
+html.medieval[data-theme="dark"]{--bg:#1C140C;--ink:#EEDDB4;--muted:#B9A27C;--line:#4A3923;--surface:#2A1F14;--accent:#D0503F;
+  --face-hi:#33261A;--face-lo:#150F09;--panel-hi:#3B2D1E;--panel-lo:#231A10;--panel-edge:#0E0A06;
+  --glass-hi:#5E1A12;--glass-lo:#260806;
+  --key-hi:#45362A;--key-lo:#271D13;--key-edge:#0E0A06;--key-base:#070503;--well:#1E160E;--engrave:rgba(0,0,0,.55)}
+html.medieval .field{background:var(--vel-mottle),var(--vel-grain),radial-gradient(120% 80% at 50% 0%,var(--face-hi),var(--face-lo));background-size:100% 100%,320px 320px,auto;background-repeat:no-repeat,repeat,no-repeat}
+html.medieval .field::before{box-shadow:inset 0 0 140px rgba(90,55,20,.28)}
+html.medieval[data-theme="dark"] .field::before{box-shadow:inset 0 0 180px rgba(0,0,0,.7)}
+html.medieval .card,html.medieval .drawer,html.medieval .cs{background:var(--vel-mottle),var(--vel-grain),linear-gradient(180deg,var(--panel-hi),var(--panel-lo));background-size:100% 100%,320px 320px,auto;background-repeat:no-repeat,repeat,no-repeat}
+html.medieval .card{box-shadow:inset 0 0 28px rgba(120,80,30,.22),0 1px 0 rgba(0,0,0,.06),0 26px 44px -20px rgba(40,20,0,.5),0 6px 12px -6px rgba(40,20,0,.25)}
+html.medieval .btn,html.medieval .email{background:var(--vel-grain),linear-gradient(180deg,var(--key-hi),var(--key-lo));background-size:320px 320px,auto}
+html.medieval .btn[aria-pressed="true"]{background:var(--vel-grain),linear-gradient(180deg,var(--key-lo),var(--key-hi));background-size:320px 320px,auto}
+html.medieval .btn.primary,html.medieval .card .card-link{color:#F6E6BC;border-color:#3E0F0A;background:var(--vel-grain),linear-gradient(180deg,#9A2A1E,#5C140D);background-size:320px 320px,auto;
+  box-shadow:inset 0 1px 0 rgba(255,220,180,.3),0 2px 0 #2E0805,0 6px 10px -4px rgba(40,10,0,.5)}
+html.medieval .card h3,html.medieval .drawer h4,html.medieval .cs-head{background:var(--vel-grain),linear-gradient(180deg,var(--glass-hi) 0%,#5A1A12 55%,var(--glass-lo) 100%);background-size:320px 320px,auto}
+html.medieval .card h3 .sub{color:rgba(246,230,188,.78)}html.medieval .card h3 .sub b{color:#F6E6BC}
+html.medieval .knob{background:radial-gradient(circle at 35% 28%,#FFF6DD 0,#E7D3A6 40%,#A9874E 100%);box-shadow:inset 0 -2px 3px rgba(60,30,0,.2),0 2px 0 #8F7348,0 6px 10px -3px rgba(40,20,0,.4)}
+html.medieval .knob::after{background:#2B1D12}
+html.medieval .gname{color:#2B1D12}
+html.medieval[data-theme="dark"] .gname{color:#EEDDB4}
+html.medieval .cs-fig img{border-color:var(--panel-edge)}
 </style>
 
 <div class="field" id="field">
@@ -533,6 +561,7 @@ const XP = {
     points:["Have organized community skate events with the Santa Cruz Rollers since 2022."],
     link:{href:"https://www.instagram.com/santacruzrollers/",text:"@santacruzrollers on Instagram"},
     obj:"an inline skate", why:"Drawn from a photo of Jared's own skates."},
+  dragon:{org:"Here be dragons", role:"Just for fun.", dates:"", place:"", fun:true, points:[], obj:"a dragon", why:""},
   disco:{org:"Disco ball", role:"Just for fun.", dates:"", place:"", fun:true, points:[], obj:"a disco ball", why:""}
 };
 const ORDER = ["rub","isr","census","garden","wwoof","tx","bees","media","hands"];
@@ -547,6 +576,37 @@ function circ(c,x,y,r){c.beginPath();c.arc(x,y,r,0,Math.PI*2);}
 function ell(c,x,y,rx,ry,rot){c.beginPath();c.ellipse(x,y,rx,ry,rot||0,0,Math.PI*2);}
 
 const DRAW = {
+  dragon(c){
+    // an original dragon in the spirit of a manuscript initial: blue scaled body, gold belly,
+    // green wing, everything outlined in red ink
+    const RED="#B8321C", BLUE="#2A4FB0", GOLD="#E0AE34", GREEN="#2E8A4C";
+    c.strokeStyle=RED;c.lineWidth=2.6;
+    // wing behind the body
+    poly(c,[[-2,-6],[-34,-46],[-25,-39],[-19,-47],[-11,-37],[-2,-44],[8,-14]]);fs(c,GREEN);
+    c.beginPath();[[-34,-46],[-19,-47],[-2,-44]].forEach(t=>{c.moveTo(2,-10);c.lineTo(t[0]*.9,t[1]*.9);});c.lineWidth=2.2;c.stroke();
+    // body: one S-curve from a curled tail up to the neck
+    const body=()=>{c.beginPath();c.moveTo(-46,30);c.bezierCurveTo(-52,47,-20,52,-14,37);c.bezierCurveTo(-8,22,-31,14,-21,-2);c.bezierCurveTo(-11,-18,14,-6,19,-21);c.bezierCurveTo(22,-30,26,-36,31,-38);};
+    c.lineCap="round";c.lineJoin="round";
+    body();c.strokeStyle=RED;c.lineWidth=26;c.stroke();
+    body();c.strokeStyle=BLUE;c.lineWidth=20;c.stroke();
+    c.save();c.translate(2.5,2.5);body();c.strokeStyle=GOLD;c.lineWidth=7;c.stroke();c.restore();
+    // tail spade
+    poly(c,[[-46,30],[-56,22],[-44,20],[-40,26]]);c.strokeStyle=RED;c.lineWidth=2.2;fs(c,GOLD);
+    // legs with gold claws
+    [[[12,-12],[26,-1]],[[-22,8],[-35,16]]].forEach(([a,b])=>{
+      c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.strokeStyle=RED;c.lineWidth=11;c.stroke();c.strokeStyle=BLUE;c.lineWidth=7;c.stroke();
+      c.strokeStyle=GOLD;c.lineWidth=3;c.beginPath();for(const d of [-.6,0,.6]){const ang=Math.atan2(b[1]-a[1],b[0]-a[0])+d;c.moveTo(b[0],b[1]);c.lineTo(b[0]+Math.cos(ang)*6,b[1]+Math.sin(ang)*6);}c.stroke();});
+    // horns
+    c.strokeStyle=GOLD;c.lineWidth=4;c.beginPath();c.moveTo(29,-45);c.lineTo(20,-55);c.moveTo(34,-46);c.lineTo(29,-57);c.stroke();
+    // head with open jaws and a forked tongue
+    c.strokeStyle=RED;c.lineWidth=2.2;
+    poly(c,[[22,-49],[44,-49],[57,-41],[38,-36],[24,-33]]);fs(c,BLUE);
+    poly(c,[[26,-33],[52,-31],[48,-24],[28,-25]]);fs(c,BLUE);
+    c.beginPath();c.moveTo(38,-34);c.lineTo(56,-30);c.moveTo(56,-30);c.lineTo(60,-33);c.moveTo(56,-30);c.lineTo(60,-27);c.strokeStyle="#D8342A";c.lineWidth=2.8;c.stroke();
+    circ(c,35,-42,2.8);c.fillStyle="#FFFFFF";c.fill();circ(c,35.8,-42,1.3);c.fillStyle="#161B22";c.fill();
+    // a few white dots along the body, as in the painted initials
+    c.fillStyle="rgba(255,255,255,.9)";for(const [x,y] of [[-15,30],[-22,16],[-17,0],[-4,-10],[10,-12],[20,-24]]){circ(c,x,y,2);c.fill();}
+  },
   brick(c,o){
     const w=o.studs*20, x0=-w/2;
     for(let i=0;i<o.studs;i++){rr(c,x0+4+i*20,-18.5,12,8,2);fs(c,o.color);}
@@ -750,7 +810,7 @@ const POLY = {
   house:[[-34,42],[34,42],[34,-4],[0,-40],[-34,-4]],
   megaphone:[[-38,-9],[30,-30],[30,30],[-38,9]]
 };
-const FIT = {brick:[84,40],minifig:[56,96],clipboard:[66,92],house:[84,88],pot:[64,92],star:[78,78],bee:[84,62],camera:[100,76],megaphone:[100,64],slug:[128,52],mpc:[96,74],benchy:[94,58],berry:[84,96],texas:[104,98],maize:[102,104],diamond:[100,84],sierra:[100,98],shovel:[72,108],phone:[66,104],bars:[100,90]};
+const FIT = {brick:[84,40],minifig:[56,96],clipboard:[66,92],house:[84,88],pot:[64,92],star:[78,78],bee:[84,62],camera:[100,76],megaphone:[100,64],slug:[128,52],mpc:[96,74],benchy:[94,58],berry:[84,96],texas:[104,98],maize:[102,104],diamond:[100,84],sierra:[100,98],shovel:[72,108],phone:[66,104],dragon:[128,116],bars:[100,90]};
 const FIT_OFF = {diamond:[0,4],bee:[3,-3],megaphone:[-6,0],slug:[0,-8],camera:[2,0]};
 
 function drawKind(c,kind,o){
@@ -880,9 +940,10 @@ const ITEMS=[
   {src:"buggy",xp:"buggy",w:225},
   {src:"slugfront",xp:"ucsc",w:208},
   {src:"skate",xp:"skate"},
-  {src:"disco",xp:"disco",darkOnly:true}
+  {src:"disco",xp:"disco",darkOnly:true},
+  {src:"dragon",xp:"dragon",medOnly:true,w:180}
 ];
-const APP={"rub":"ReUseBricks", "creator":"Creator", "isr":"ISR", "census":"Census", "garden":"Garden", "wwoof":"WWOOF", "tx":"Texas House", "bees":"TexPIRG", "media":"180/2020", "hands":"Hands", "ucsc":"UCSC", "buggy":"Buggy", "mpc":"Music", "benchy":"3D Print", "skate":"Skate", "disco":"Disco"};
+const APP={"rub":"ReUseBricks", "creator":"Creator", "isr":"ISR", "census":"Census", "garden":"Garden", "wwoof":"WWOOF", "tx":"Texas House", "bees":"TexPIRG", "media":"180/2020", "hands":"Hands", "ucsc":"UCSC", "buggy":"Buggy", "mpc":"Music", "benchy":"3D Print", "skate":"Skate", "disco":"Disco","dragon":"Dragon"};
 const sources={};
 // flip-book items: six frames named like bee1_f0..bee1_f5
 const frameNames=it=>[0,1,2,3,4,5].map(k=>it.frames+"_f"+k);
@@ -1017,10 +1078,105 @@ function forDark(dots,P,mode){
   if(mode==="soft") return cur.map(d=>(d.r*.2126+d.g*.7152+d.b*.0722)>200?{...d,r:d.r*.8,g:d.g*.78,b:d.b*.62}:d); // dim the glare along its back
   return cur.map(d=>pale(d)?{...d,r:d.r*.5+96*.5,g:d.g*.5+110*.5,b:d.b*.5+136*.5}:d);
 }
+// Medieval mode: the pixel art becomes stained glass. Colours are pushed toward jewel tones,
+// neighbouring cells of the same tone form one pane, big panes are cut by extra cames,
+// and dark lead lines run around every pane and the outline.
+// Medieval mode also sings: a small synthesized schola (no recording) chanting an original
+// mode-I (Dorian) melody in unison over a low drone, with formant filters for the vowels and a long stone-church reverb.
+const Chant={
+  start(){
+    const A=window.AudioContext||window.webkitAudioContext;if(!A||this.on) return;
+    const c=this.c||(this.c=new A());c.resume();this.on=true;const now=c.currentTime;
+    const out=c.createGain();out.gain.value=0;out.gain.setTargetAtTime(.2,now,1);out.connect(c.destination);
+    const len=Math.floor(c.sampleRate*4.5), ir=c.createBuffer(2,len,c.sampleRate);
+    for(let ch=0;ch<2;ch++){const d=ir.getChannelData(ch);for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.6);}
+    const rv=c.createConvolver();rv.buffer=ir;const wet=c.createGain();wet.gain.value=.8;const dry=c.createGain();dry.gain.value=.35;
+    rv.connect(wet);wet.connect(out);dry.connect(out);
+    const env=c.createGain();env.gain.value=0;
+    const forms=[1,.45,.18].map(g=>{const f=c.createBiquadFilter();f.type="bandpass";f.Q.value=7;const gg=c.createGain();gg.gain.value=g*3;env.connect(f);f.connect(gg);gg.connect(rv);gg.connect(dry);return f;});
+    const lfo=c.createOscillator();lfo.frequency.value=4.8;const lg=c.createGain();lg.gain.value=1.2;lfo.connect(lg);lfo.start();
+    const oscs=[-9,-4,3,8,0].map((dt,k)=>{const o=c.createOscillator();o.type="sawtooth";o.detune.value=dt;lg.connect(o.frequency);
+      const g=c.createGain();g.gain.value=k===4?.12:.22;o.connect(g);g.connect(env);o.start();return o;});
+    // a quiet drone a fifth below the final, as an ison
+    const dr=c.createOscillator();dr.type="sawtooth";dr.frequency.value=73.4;const dg=c.createGain();dg.gain.value=0;dg.gain.setTargetAtTime(.05,now,2);
+    const dl=c.createBiquadFilter();dl.type="lowpass";dl.frequency.value=500;dr.connect(dl);dl.connect(dg);dg.connect(rv);dg.connect(dry);dr.start();
+    this.parts={out,oscs,dr,lfo};this.env=env;this.forms=forms;
+    this.sing(now+.6);
+  },
+  sing(t){
+    if(!this.on) return;
+    const c=this.c, beat=.62, base=146.83;
+    const V={a:[730,1090,2440],o:[570,840,2410],e:[530,1840,2480],u:[440,1020,2240]}, vs="aoeuaeo";
+    const phrases=[[[0,1],[0,1],[3,1],[5,1],[7,2],[7,1],[5,1],[7,3]],
+                   [[7,1],[10,1],[9,1],[7,1],[5,1],[7,2],[5,1],[3,1],[2,1],[0,3]],
+                   [[0,1],[3,1],[2,1],[0,1],[-2,1],[0,1],[3,2],[5,1],[3,1],[2,1],[0,4]]];
+    let n=0;
+    for(const ph of phrases){
+      this.env.gain.setTargetAtTime(1,t,.12);
+      for(const [st,d] of ph){
+        const f=base*Math.pow(2,st/12), v=V[vs[n++%vs.length]];
+        this.parts.oscs.forEach((o,k)=>o.frequency.setTargetAtTime(k===4?f/2:f,t,.04));
+        this.forms.forEach((fl,k)=>fl.frequency.setTargetAtTime(v[k],t,.06));
+        t+=d*beat;
+      }
+      this.env.gain.setTargetAtTime(0,t-.2,.1);t+=1.1;
+    }
+    this.timer=setTimeout(()=>this.sing(t),Math.max(0,(t-c.currentTime-1.5)*1000));
+  },
+  stop(){
+    if(!this.on) return;this.on=false;clearTimeout(this.timer);
+    const p=this.parts, c=this.c;p.out.gain.setTargetAtTime(0,c.currentTime,.35);
+    setTimeout(()=>{[...p.oscs,p.dr,p.lfo].forEach(o=>{try{o.stop();}catch(e){}});p.out.disconnect();},2000);
+  }
+};
+function paintGlass(m,c){
+  const P=m.P, list=dark?m.darkDots:m.dots, grid=new Map(), key=(i,j)=>i+","+j;
+  const hsl=(r,g,b)=>{r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;let h=0,s=0;
+    if(d){s=d/(1-Math.abs(2*l-1));h=mx===r?((g-b)/d+6)%6:mx===g?(b-r)/d+2:(r-g)/d+4;h*=60;}return [h,s,l];};
+  for(const p of list){
+    const i=Math.round(p.x/P-.5), j=Math.round(p.y/P-.5);
+    let [h,sa,l]=hsl(p.r,p.g,p.b);
+    const grey=sa<.18;
+    // greys become pale "white glass" or dark smoky glass; colours become saturated jewel tones
+    const hq=grey?0:Math.round(h/30)%12, lq=Math.min(2,Math.floor(l*3));
+    const cls=grey?"g"+lq:hq+"_"+lq;
+    if(grey){sa=.12;l=[.22,.62,.86][lq];h=40;} else {sa=Math.min(1,sa*1.4+.2);l=[.3,.46,.62][lq];h=hq*30;}
+    grid.set(key(i,j),{cls,h,s:sa,l});
+  }
+  // large areas are cut into irregular panes: each cell joins the nearest of a jittered set of seed points
+  const G=6, rnd=(a,b,k)=>{let x=(a*73856093)^(b*19349663)^(k*83492791);x=(x^(x>>>13))*1274126177;return ((x^(x>>>16))>>>0)/4294967296;};
+  const region=(i,j)=>{const gi=Math.floor(i/G), gj=Math.floor(j/G);let best=1e9,id="";
+    for(let a=gi-1;a<=gi+1;a++)for(let b=gj-1;b<=gj+1;b++){const sx=(a+.15+.7*rnd(a,b,1))*G, sy=(b+.15+.7*rnd(a,b,2))*G, d=(sx-i)**2+(sy-j)**2;if(d<best){best=d;id=a+":"+b;}}
+    return id;};
+  const blk=region;
+  const hash=t=>{let x=0;for(const ch of t) x=(x*31+ch.charCodeAt(0))|0;return ((x>>>0)%1000)/1000;};
+  for(const [k,v] of grid){const [i,j]=k.split(",").map(Number);v.reg=region(i,j);}
+  for(const [k,v] of grid){
+    const jit=(hash(v.cls+v.reg)-.5)*.14, [i,j]=k.split(",").map(Number);
+    c.fillStyle=`hsl(${v.h},${(v.s*100).toFixed(0)}%,${((v.l+jit)*100).toFixed(1)}%)`;
+    c.fillRect(i*P,j*P,P+.5,P+.5);
+  }
+  // a soft light passing through the glass
+  c.save();c.globalCompositeOperation="source-atop";
+  const g=c.createLinearGradient(0,0,m.w,m.h);g.addColorStop(0,"rgba(255,255,240,.28)");g.addColorStop(.45,"rgba(255,255,240,0)");g.addColorStop(1,"rgba(0,0,0,.12)");
+  c.fillStyle=g;c.fillRect(0,0,m.w,m.h);c.restore();
+  // lead cames
+  c.strokeStyle=dark?"#0B0907":"#221B14";c.lineWidth=Math.max(1.4,P*.5);c.lineCap="square";c.beginPath();
+  const edge=(a,b)=>{const u=grid.get(a), w=grid.get(b);return !u||!w||u.cls!==w.cls||u.reg!==w.reg;};
+  for(const [k] of grid){
+    const [i,j]=k.split(",").map(Number);
+    if(edge(k,key(i+1,j))){c.moveTo((i+1)*P,j*P);c.lineTo((i+1)*P,(j+1)*P);}
+    if(edge(k,key(i,j+1))){c.moveTo(i*P,(j+1)*P);c.lineTo((i+1)*P,(j+1)*P);}
+    if(!grid.has(key(i-1,j))){c.moveTo(i*P,j*P);c.lineTo(i*P,(j+1)*P);}
+    if(!grid.has(key(i,j-1))){c.moveTo(i*P,j*P);c.lineTo((i+1)*P,j*P);}
+  }
+  c.stroke();
+}
 function paintSprite(m){
   const cv=m.canvas||document.createElement("canvas");
   cv.width=Math.ceil(m.w*dpr);cv.height=Math.ceil(m.h*dpr);
   const c=cv.getContext("2d");c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,m.w,m.h);
+  if(!m.noGlass&&document.documentElement.classList.contains("medieval")){paintGlass(m,c);m.canvas=cv;return;}
   for(const p of dark?m.darkDots:m.dots){
     const [r,g,b]=tone(Math.min(255,p.r),Math.min(255,p.g),Math.min(255,p.b));
     c.fillStyle=`rgb(${r|0},${g|0},${b|0})`;
@@ -1065,7 +1221,7 @@ function spawn(){
   const P=Math.max(2.6,Math.min(4,2.2*S+.8));
   const placed=[];
   bodies=ITEMS.map(it=>{
-    const m=buildDots(it,P);paintSprite(m);
+    const m=buildDots(it,P);m.noGlass=!!it.medOnly;paintSprite(m);
     // flip-books collide with the outline of every frame, so a raised arm or wing still bumps things
     if(it.frames){m.fms=frameNames(it).map(n=>{const f=buildDots({...it,src:n,_dw:widthFor(it)/S},P);paintSprite(f);m.mask=m.mask.concat(f.mask);return f;});m.frames=m.fms.map(f=>f.canvas);}
     const q=(m.hullPad||0)+2;const pts=[];m.mask.forEach(p=>{pts.push({x:p.x-q,y:p.y-q},{x:p.x+q,y:p.y-q},{x:p.x+q,y:p.y+q},{x:p.x-q,y:p.y+q});});
@@ -1081,10 +1237,24 @@ function spawn(){
     return b;
   });
   discoBody=bodies.find(b=>b.plugin.item.darkOnly);
-  bodies=bodies.filter(b=>!b.plugin.item.darkOnly||dark);
+  dragonBody=bodies.find(b=>b.plugin.item.medOnly);
+  bodies=bodies.filter(b=>(!b.plugin.item.darkOnly||dark)&&(!b.plugin.item.medOnly||document.documentElement.classList.contains("medieval")));
   Composite.add(engine.world,bodies);
 }
-let discoBody=null;
+let discoBody=null, dragonBody=null;
+// Medieval mode brings its own dragon, the way dark mode brings the disco ball
+function setDragon(on){
+  const b=dragonBody;if(!b) return;
+  const inWorld=bodies.includes(b);
+  if(on&&!inWorld){
+    Body.setPosition(b,{x:W*.7,y:Math.min(H*.35,180*S)});Body.setAngle(b,0);if(!reduced) drift(b);
+    bodies.push(b);Composite.add(engine.world,b);layoutTidy();
+  } else if(!on&&inWorld){
+    if(picked===b) closeCard();
+    bodies=bodies.filter(x=>x!==b);Composite.remove(engine.world,b);
+    b.isSensor=false;b.restitution=1;if(b.plugin.k&&b.plugin.k!==1){Body.scale(b,1/b.plugin.k,1/b.plugin.k);b.plugin.k=1;}b.plugin.kt=1;b.plugin.slot=null;b.plugin.ta=0;layoutTidy();
+  }
+}
 function setDisco(on){
   if(!discoBody) return;
   const inWorld=bodies.includes(discoBody);
@@ -1098,7 +1268,7 @@ function setDisco(on){
   }
 }
 function repaintAll(){
-  for(const b of bodies.concat(discoBody&&!bodies.includes(discoBody)?[discoBody]:[])){const m=b.plugin.sprite;paintSprite(m);(m.fms||[]).forEach(paintSprite);}
+  for(const b of bodies.concat([discoBody,dragonBody].filter(x=>x&&!bodies.includes(x)))){const m=b.plugin.sprite;paintSprite(m);(m.fms||[]).forEach(paintSprite);}
 }
 
 // Tidy: every object glides upright into a grid cell between the name and the controls, shrinking if the cell is small
@@ -1111,7 +1281,7 @@ function layoutTidy(){
   for(let c=1;c<=n;c++){const rows=Math.ceil(n/c), s=Math.min(AW/c,AH/rows);if(s>best){best=s;cols=c;}}
   const rows=Math.ceil(n/cols), cw=AW/cols, ch=AH/rows;
   // the disco ball leads (top left), then resume order: jobs newest first, education, hobbies
-  const rank=["disco",ORDER[0],"creator",...ORDER.slice(1),"ucsc",...HOBBIES], at=b=>{const r=rank.indexOf(b.plugin.item.xp);return r<0?rank.length:r;};
+  const rank=["disco","dragon",ORDER[0],"creator",...ORDER.slice(1),"ucsc",...HOBBIES], at=b=>{const r=rank.indexOf(b.plugin.item.xp);return r<0?rank.length:r;};
   const order=bodies.slice().sort((a,b)=>at(a)-at(b)||ITEMS.indexOf(a.plugin.item)-ITEMS.indexOf(b.plugin.item));
   order.forEach((b,i)=>{
     const row=Math.floor(i/cols), inRow=row===rows-1?n-row*cols:cols, col=i%cols;
@@ -1425,7 +1595,9 @@ function tile(b,m,o,sc,ta,gloss){
   if(!gloss){
     ctx.shadowColor=dark?"rgba(0,0,0,.55)":"rgba(20,24,32,.28)";ctx.shadowBlur=14/sc;ctx.shadowOffsetY=5/sc;
     const g=ctx.createLinearGradient(0,y,0,y+s);
-    if(dark){g.addColorStop(0,"#5A5F69");g.addColorStop(1,"#23262C");} else {g.addColorStop(0,"#FFFFFF");g.addColorStop(1,"#D3D7DE");}
+    const med=document.documentElement.classList.contains("medieval");
+    if(med&&dark){g.addColorStop(0,"#4A3826");g.addColorStop(1,"#21180F");} else if(med){g.addColorStop(0,"#F6ECD3");g.addColorStop(1,"#D9C397");}
+    else if(dark){g.addColorStop(0,"#5A5F69");g.addColorStop(1,"#23262C");} else {g.addColorStop(0,"#FFFFFF");g.addColorStop(1,"#D3D7DE");}
     ctx.fillStyle=g;squircle(ctx,x,y,s);ctx.fill();
     ctx.shadowColor="transparent";
     ctx.lineWidth=1.2/sc;ctx.strokeStyle=dark?"rgba(0,0,0,.6)":"rgba(30,34,42,.22)";ctx.stroke();
@@ -1561,6 +1733,7 @@ dragging=null;canvas.classList.remove("dragging");canvas.classList.add("released
   });
   const mb=document.getElementById("medBtn");
   mb.addEventListener("click",()=>{const on=mb.getAttribute("aria-pressed")!=="true";document.documentElement.classList.toggle("medieval",on);mb.setAttribute("aria-pressed",String(on));
+    repaintAll();setDragon(on);if(on) Chant.start(); else Chant.stop();
     // the controls row can change height with the new font, so re-fit the Tidy grid
     setTimeout(layoutTidy,60);});
   document.getElementById("phoneBtn").addEventListener("click",()=>{
@@ -1582,7 +1755,7 @@ dragging=null;canvas.classList.remove("dragging");canvas.classList.add("released
     else bodies.forEach(b=>{const x=Math.max(40,Math.min(W-40,b.position.x)),y=Math.max(40,Math.min(H-40,b.position.y));if(x!==b.position.x||y!==b.position.y)Body.setPosition(b,{x,y});});
     layoutTidy();
   },120);}).observe(field);
-  document.addEventListener("visibilitychange",()=>{runner.enabled=!document.hidden;});
+  document.addEventListener("visibilitychange",()=>{runner.enabled=!document.hidden;if(Chant.c&&Chant.on){if(document.hidden) Chant.c.suspend(); else Chant.c.resume();}});
   Runner.run(runner,engine);
   requestAnimationFrame(frame);
 });
