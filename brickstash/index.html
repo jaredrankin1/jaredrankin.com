@@ -1498,6 +1498,7 @@ function removeFig(id,quiet){
 const figFile=document.getElementById("figFile"), cam=document.getElementById("cam"), camVideo=document.getElementById("camVideo"), camTip=cam.querySelector(".tip"), CAM_TIP=camTip.textContent;
 const camFlash=document.getElementById("camFlash");
 let camStream=null, flashWanted=false, shooting=false;
+let camDirect=true;const coarse=()=>matchMedia("(pointer: coarse)").matches;
 const camTrack=()=>camStream&&camStream.getVideoTracks()[0];
 function canTorch(){const t=camTrack();try{return !!(t&&t.getCapabilities&&t.getCapabilities().torch);}catch(_){return false;}}
 async function setTorch(on){const t=camTrack();if(!t) return false;try{await t.applyConstraints({advanced:[{torch:on}]});return true;}catch(_){return false;}}
@@ -1505,15 +1506,17 @@ function showFlash(){camFlash.textContent=flashWanted?"Flash on":"Flash off";cam
 async function openCamera(){
   loadModel().catch(()=>{});
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){figFile.click();return;}
-  cam.hidden=false;camTip.textContent=CAM_TIP;const shoot=document.getElementById("camShoot");shoot.hidden=false;shoot.disabled=true;camFlash.hidden=true;
+  camDirect=true;  cam.hidden=false;camTip.textContent=CAM_TIP;const shoot=document.getElementById("camShoot");shoot.hidden=false;shoot.disabled=true;camFlash.hidden=true;
   try{
     camStream=await within(navigator.mediaDevices.getUserMedia({video:{facingMode:"environment",width:{ideal:1920},height:{ideal:1920}},audio:false}),15000);
     camVideo.srcObject=camStream;await camVideo.play();shoot.disabled=false;shoot.focus();
     camFlash.hidden=!canTorch();showFlash();
   }catch(_){
-    // no camera, or it isn't allowed here: say so, and offer a file instead
-    closeCamera();cam.hidden=false;
-    shoot.hidden=true;camTip.textContent="The camera isn't available here. Choose a photo of a minifig instead.";document.getElementById("camPick").focus();
+    // the page can't use the camera directly (some embedded previews block it): Take photo opens the phone's camera instead
+    closeCamera();cam.hidden=false;camDirect=false;shoot.disabled=false;
+    camTip.textContent=coarse()?"Tap Take photo to open your camera.":"The camera isn't available here. Choose a photo of a minifig instead.";
+    shoot.hidden=!coarse();(coarse()?shoot:document.getElementById("camPick")).focus();
+    if(coarse()) figFile.click();
   }
 }
 function closeCamera(){cam.hidden=true;if(camStream){setTorch(false);camStream.getTracks().forEach(t=>t.stop());camStream=null;}camVideo.srcObject=null;}
@@ -1531,6 +1534,7 @@ camFlash.addEventListener("click",()=>{flashWanted=!flashWanted;showFlash();});
 document.getElementById("camClose").addEventListener("click",closeCamera);
 document.getElementById("camPick").addEventListener("click",()=>{closeCamera();figFile.click();});
 document.getElementById("camShoot").addEventListener("click",async()=>{
+  if(!camDirect){figFile.click();return;}
   if(shooting) return;shooting=true;const shoot=document.getElementById("camShoot");shoot.disabled=true;
   try{
     const lit=flashWanted&&await setTorch(true);
@@ -1540,7 +1544,7 @@ document.getElementById("camShoot").addEventListener("click",async()=>{
 });
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!cam.hidden) closeCamera();});
 figFile.addEventListener("change",()=>{
-  const f=figFile.files[0];figFile.value="";if(!f) return;
+  const f=figFile.files[0];figFile.value="";if(!f) return;closeCamera();
   const u=URL.createObjectURL(f),im=new Image();
   im.onload=()=>{URL.revokeObjectURL(u);addFig(photoCanvas(im,1024));};
   im.onerror=()=>{URL.revokeObjectURL(u);say("That photo didn't open. Try a JPEG or PNG.");};
