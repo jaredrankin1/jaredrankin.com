@@ -332,9 +332,18 @@ html.medieval .knob::after{background:#2B1D12}
 html.medieval .gname{color:#2B1D12}
 html.medieval[data-theme="dark"] .gname{color:#EEDDB4}
 html.medieval .cs-fig img{border-color:var(--panel-edge)}
+
+/* Disco mode: slow coloured spotlights sweep the page behind the cards */
+.discolights{position:absolute;inset:-20%;pointer-events:none;z-index:0;opacity:0;transition:opacity .6s ease;mix-blend-mode:multiply;
+  background:radial-gradient(28% 22% at 25% 30%,rgba(255,60,160,.38),transparent 70%),radial-gradient(26% 24% at 72% 40%,rgba(60,170,255,.38),transparent 70%),
+    radial-gradient(30% 22% at 50% 78%,rgba(255,210,50,.34),transparent 70%),radial-gradient(22% 20% at 85% 82%,rgba(70,230,120,.3),transparent 70%)}
+:root[data-theme="dark"] .discolights{mix-blend-mode:screen}
+html.disco .discolights{opacity:1;animation:discospin 9s linear infinite}
+@keyframes discospin{from{transform:rotate(0) scale(1)}50%{transform:rotate(180deg) scale(1.08)}to{transform:rotate(360deg) scale(1)}}
+@media (prefers-reduced-motion: reduce){html.disco .discolights{animation:none}}
 </style>
 
-<div class="field" id="field">
+<div class="field" id="field"><div class="discolights" aria-hidden="true"></div>
   <canvas id="world" role="img" aria-label="A full-screen field of pixel-art objects drifting slowly and bumping into each other. Each one represents one of Jared's roles or interests. The same information is in the resume panel."></canvas>
 </div>
 <p class="fallback" id="fallback" hidden>The interactive view couldn't load. Open the resume to see everything.</p>
@@ -369,6 +378,7 @@ html.medieval .cs-fig img{border-color:var(--panel-edge)}
       <button class="btn" id="tidy" type="button" aria-pressed="false">Tidy</button>
       <button class="btn" id="phoneBtn" type="button" aria-pressed="false">Phone mode</button>
       <button class="btn" id="medBtn" type="button" aria-pressed="false">Medieval</button>
+      <button class="btn" id="discoBtn" type="button" aria-pressed="false">Disco</button>
     </div>
   </div>
 </div>
@@ -562,6 +572,7 @@ const XP = {
     link:{href:"https://www.instagram.com/santacruzrollers/",text:"@santacruzrollers on Instagram"},
     obj:"an inline skate", why:"Drawn from a photo of Jared's own skates."},
   dragon:{org:"Here be dragons", role:"Just for fun.", dates:"", place:"", fun:true, points:[], obj:"a dragon", why:""},
+  floor:{org:"Dance floor", role:"Just for fun.", dates:"", place:"", fun:true, points:[], obj:"a dance floor", why:""},
   disco:{org:"Disco ball", role:"Just for fun.", dates:"", place:"", fun:true, points:[], obj:"a disco ball", why:""}
 };
 const ORDER = ["rub","isr","census","garden","wwoof","tx","bees","media","hands"];
@@ -576,6 +587,11 @@ function circ(c,x,y,r){c.beginPath();c.arc(x,y,r,0,Math.PI*2);}
 function ell(c,x,y,rx,ry,rot){c.beginPath();c.ellipse(x,y,rx,ry,rot||0,0,Math.PI*2);}
 
 const DRAW = {
+  floor(c){
+    // a 3x3 light-up dance floor; the coloured tiles are lit live in the page
+    rr(c,-48,-48,96,96,4);fs(c,"#1B1C22");
+    for(let i=0;i<3;i++)for(let j=0;j<3;j++){rr(c,-44+i*30,-44+j*30,28,28,2);c.fillStyle=["#FF4FA0","#FFD23F","#3EE07A","#3FB4FF","#B45CFF","#FF7A3D"][(i+j*3)%6];c.fill();}
+  },
   dragon(c){
     // an original dragon in the spirit of a manuscript initial: blue scaled body, gold belly,
     // green wing, everything outlined in red ink
@@ -810,7 +826,7 @@ const POLY = {
   house:[[-34,42],[34,42],[34,-4],[0,-40],[-34,-4]],
   megaphone:[[-38,-9],[30,-30],[30,30],[-38,9]]
 };
-const FIT = {brick:[84,40],minifig:[56,96],clipboard:[66,92],house:[84,88],pot:[64,92],star:[78,78],bee:[84,62],camera:[100,76],megaphone:[100,64],slug:[128,52],mpc:[96,74],benchy:[94,58],berry:[84,96],texas:[104,98],maize:[102,104],diamond:[100,84],sierra:[100,98],shovel:[72,108],phone:[66,104],dragon:[128,116],bars:[100,90]};
+const FIT = {brick:[84,40],minifig:[56,96],clipboard:[66,92],house:[84,88],pot:[64,92],star:[78,78],bee:[84,62],camera:[100,76],megaphone:[100,64],slug:[128,52],mpc:[96,74],benchy:[94,58],berry:[84,96],texas:[104,98],maize:[102,104],diamond:[100,84],sierra:[100,98],shovel:[72,108],phone:[66,104],floor:[100,100],dragon:[128,116],bars:[100,90]};
 const FIT_OFF = {diamond:[0,4],bee:[3,-3],megaphone:[-6,0],slug:[0,-8],camera:[2,0]};
 
 function drawKind(c,kind,o){
@@ -941,9 +957,10 @@ const ITEMS=[
   {src:"slugfront",xp:"ucsc",w:208},
   {src:"skate",xp:"skate"},
   {src:"disco",xp:"disco",darkOnly:true},
-  {src:"dragon",xp:"dragon",medOnly:true,w:180}
+  {src:"dragon",xp:"dragon",medOnly:true,w:180},
+  {src:"floor",xp:"floor",discoOnly:true,w:120}
 ];
-const APP={"rub":"ReUseBricks", "creator":"Creator", "isr":"ISR", "census":"Census", "garden":"Garden", "wwoof":"WWOOF", "tx":"Texas House", "bees":"TexPIRG", "media":"180/2020", "hands":"Hands", "ucsc":"UCSC", "buggy":"Buggy", "mpc":"Music", "benchy":"3D Print", "skate":"Skate", "disco":"Disco","dragon":"Dragon"};
+const APP={"rub":"ReUseBricks", "creator":"Creator", "isr":"ISR", "census":"Census", "garden":"Garden", "wwoof":"WWOOF", "tx":"Texas House", "bees":"TexPIRG", "media":"180/2020", "hands":"Hands", "ucsc":"UCSC", "buggy":"Buggy", "mpc":"Music", "benchy":"3D Print", "skate":"Skate", "disco":"Disco","dragon":"Dragon","floor":"Dance floor"};
 const sources={};
 // flip-book items: six frames named like bee1_f0..bee1_f5
 const frameNames=it=>[0,1,2,3,4,5].map(k=>it.frames+"_f"+k);
@@ -1237,14 +1254,15 @@ function spawn(){
     return b;
   });
   discoBody=bodies.find(b=>b.plugin.item.darkOnly);
-  dragonBody=bodies.find(b=>b.plugin.item.medOnly);
-  bodies=bodies.filter(b=>(!b.plugin.item.darkOnly||dark)&&(!b.plugin.item.medOnly||document.documentElement.classList.contains("medieval")));
+  dragonBody=bodies.find(b=>b.plugin.item.medOnly);floorBody=bodies.find(b=>b.plugin.item.discoOnly);
+  bodies=bodies.filter(b=>(!b.plugin.item.darkOnly||dark||discoOn)&&(!b.plugin.item.discoOnly||discoOn)&&(!b.plugin.item.medOnly||document.documentElement.classList.contains("medieval")));
   Composite.add(engine.world,bodies);
 }
-let discoBody=null, dragonBody=null;
+let discoBody=null, dragonBody=null, floorBody=null, discoOn=false;
 // Medieval mode brings its own dragon, the way dark mode brings the disco ball
-function setDragon(on){
-  const b=dragonBody;if(!b) return;
+function setDragon(on){setExtra(dragonBody,on);}
+function setExtra(b,on){
+  if(!b) return;
   const inWorld=bodies.includes(b);
   if(on&&!inWorld){
     Body.setPosition(b,{x:W*.7,y:Math.min(H*.35,180*S)});Body.setAngle(b,0);if(!reduced) drift(b);
@@ -1268,7 +1286,7 @@ function setDisco(on){
   }
 }
 function repaintAll(){
-  for(const b of bodies.concat([discoBody,dragonBody].filter(x=>x&&!bodies.includes(x)))){const m=b.plugin.sprite;paintSprite(m);(m.fms||[]).forEach(paintSprite);}
+  for(const b of bodies.concat([discoBody,dragonBody,floorBody].filter(x=>x&&!bodies.includes(x)))){const m=b.plugin.sprite;paintSprite(m);(m.fms||[]).forEach(paintSprite);}
 }
 
 // Tidy: every object glides upright into a grid cell between the name and the controls, shrinking if the cell is small
@@ -1281,7 +1299,7 @@ function layoutTidy(){
   for(let c=1;c<=n;c++){const rows=Math.ceil(n/c), s=Math.min(AW/c,AH/rows);if(s>best){best=s;cols=c;}}
   const rows=Math.ceil(n/cols), cw=AW/cols, ch=AH/rows;
   // the disco ball leads (top left), then resume order: jobs newest first, education, hobbies
-  const rank=["disco","dragon",ORDER[0],"creator",...ORDER.slice(1),"ucsc",...HOBBIES], at=b=>{const r=rank.indexOf(b.plugin.item.xp);return r<0?rank.length:r;};
+  const rank=["disco","floor","dragon",ORDER[0],"creator",...ORDER.slice(1),"ucsc",...HOBBIES], at=b=>{const r=rank.indexOf(b.plugin.item.xp);return r<0?rank.length:r;};
   const order=bodies.slice().sort((a,b)=>at(a)-at(b)||ITEMS.indexOf(a.plugin.item)-ITEMS.indexOf(b.plugin.item));
   order.forEach((b,i)=>{
     const row=Math.floor(i/cols), inRow=row===rows-1?n-row*cols:cols, col=i%cols;
@@ -1360,7 +1378,7 @@ function readTheme(){
   const bg=T["--bg"].replace("#",""), n=parseInt(bg.length===3?bg.split("").map(x=>x+x).join(""):bg,16);
   const isDark=((n>>16&255)*.3+(n>>8&255)*.59+(n&255)*.11)<128;
   const changed=dark!==isDark;dark=isDark;
-  if(changed&&bodies.length){repaintAll();setDisco(dark);}
+  if(changed&&bodies.length){repaintAll();setDisco(dark||discoOn);}
 }
 
 // the MPC plays a little beat: pads light up on a 16-step pattern and fade out
@@ -1460,6 +1478,61 @@ function drawDisco(m,o,now){
   }
 }
 // light flecks swept around the screen by the turning ball
+// dance floor: each of the nine tiles flashes a new colour on every beat of the groove (120 bpm)
+const FLOOR_COLS=[[255,60,150],[255,210,50],[50,230,120],[60,180,255],[180,90,255],[255,120,50],[255,255,255]];
+function drawFloor(m,o,now){
+  const P=m.P, cols=Math.round(m.w/P), rows=Math.round(m.h/P), beat=Math.floor((Groove.on?Groove.beatAt():now/500));
+  const span=k=>{const a=Math.round((4+k*30)/100*cols), b=Math.round((32+k*30)/100*cols);return [a,b];};
+  for(let ti=0;ti<3;ti++)for(let tj=0;tj<3;tj++){
+    const h=tileHash(ti*3+tj+beat*9,11), on=reduced?1:(h>.25?1:.25), col=FLOOR_COLS[Math.floor(tileHash(ti*3+tj,beat%64+1)*FLOOR_COLS.length)];
+    const [x0,x1]=span(ti), [y0,y1]=[Math.round((4+tj*30)/100*rows),Math.round((32+tj*30)/100*rows)];
+    ctx.fillStyle=`rgba(${col[0]},${col[1]},${col[2]},${on})`;ctx.beginPath();
+    for(let j=y0;j<y1;j++)for(let i=x0;i<x1;i++){const x=(i+.5)*P-o.x, y=(j+.5)*P-o.y;ctx.rect(x-P*.42,y-P*.42,P*.84,P*.84);}
+    ctx.fill();
+  }
+}
+// Disco mode plays an original groove synthesized in the browser (no samples, nothing to license):
+// four-on-the-floor kick, offbeat open hats, claps on 2 and 4, an octave-jumping bass and offbeat chord stabs
+const Groove={
+  bpm:120,
+  beatAt(){return this.c?(this.c.currentTime-this.t0)*this.bpm/60:0;},
+  start(){
+    const A=window.AudioContext||window.webkitAudioContext;if(!A||this.on) return;
+    const c=this.c||(this.c=new A());c.resume();this.on=true;
+    const comp=c.createDynamicsCompressor();comp.threshold.value=-14;comp.ratio.value=4;
+    const out=c.createGain();out.gain.value=0;out.gain.setTargetAtTime(.32,c.currentTime,.3);comp.connect(out);out.connect(c.destination);
+    this.out=out;this.bus=comp;
+    const len=c.sampleRate, nb=c.createBuffer(1,len,c.sampleRate), d=nb.getChannelData(0);for(let i=0;i<len;i++) d[i]=Math.random()*2-1;this.noise=nb;
+    this.t0=c.currentTime+.08;this.step=0;this.next=this.t0;
+    this.timer=setInterval(()=>this.tick(),25);
+  },
+  tick(){
+    const c=this.c, sp=60/this.bpm/4;
+    while(this.next<c.currentTime+.12){this.play(this.step,this.next);this.next+=sp;this.step=(this.step+1)%64;}
+  },
+  hit(t,type,f,q,dur,g){const c=this.c,s=c.createBufferSource();s.buffer=this.noise;const fl=c.createBiquadFilter();fl.type=type;fl.frequency.value=f;fl.Q.value=q;
+    const e=c.createGain();e.gain.setValueAtTime(g,t);e.gain.exponentialRampToValueAtTime(.001,t+dur);s.connect(fl);fl.connect(e);e.connect(this.bus);s.start(t);s.stop(t+dur+.02);},
+  tone(t,type,f,dur,g,cut){const c=this.c,o=c.createOscillator();o.type=type;o.frequency.value=f;const fl=c.createBiquadFilter();fl.type="lowpass";fl.frequency.setValueAtTime(cut,t);fl.frequency.exponentialRampToValueAtTime(Math.max(200,cut/4),t+dur);
+    const e=c.createGain();e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(g,t+.005);e.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(fl);fl.connect(e);e.connect(this.bus);o.start(t);o.stop(t+dur+.02);},
+  play(st,t){
+    const c=this.c, s16=st%16, bar=Math.floor(st/16);
+    // kick on every beat
+    if(s16%4===0){const o=c.createOscillator(),e=c.createGain();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(45,t+.12);
+      e.gain.setValueAtTime(.9,t);e.gain.exponentialRampToValueAtTime(.001,t+.3);o.connect(e);e.connect(this.bus);o.start(t);o.stop(t+.32);}
+    if(s16%4===2) this.hit(t,"highpass",7000,.7,.18,.28);           // open hat on the offbeat
+    else this.hit(t,"highpass",9000,.7,.03,.08);                     // closed hat on the rest
+    if(s16===4||s16===12) this.hit(t,"bandpass",1500,1.2,.16,.55);  // clap
+    // Am7 / Dm7 / Fmaj7 / E7, one bar each
+    const roots=[110,146.83,87.31,82.41][bar%4];
+    if(s16%2===0) this.tone(t,"sawtooth",roots*(s16%4===2?2:1),.16,.32,1400); // octave bass
+    const chords=[[220,261.6,329.6,392],[293.7,349.2,440,523.3],[349.2,440,523.3,659.3],[329.6,415.3,493.9,587.3]][bar%4];
+    if(s16===2||s16===6||s16===10||s16===13) chords.forEach(f=>this.tone(t,"square",f,.14,.05,3200));
+  },
+  stop(){
+    if(!this.on) return;this.on=false;clearInterval(this.timer);this.out.gain.setTargetAtTime(0,this.c.currentTime,.15);
+    const o=this.out;setTimeout(()=>o.disconnect(),800);
+  }
+};
 function drawFlecks(b,now){
   const t=reduced?0:now/1000, N=40, cx=b.position.x, cy=b.position.y, far=Math.hypot(W,H);
   for(let n=0;n<N;n++){
@@ -1637,6 +1710,7 @@ function frame(){
       if(b.plugin.item.src==="slugfront") drawStalks(m,o,now);
       if(b.plugin.item.src==="buggy") drawBuggy(m,o,now);
       if(b===discoBody) drawDisco(m,o,now);
+      if(b===floorBody) drawFloor(m,o,now);
       if(ta>.01) tile(b,m,o,sc,ta,true);
       ctx.restore();
       if(ta>.01&&b.plugin.lab) appLabel(b,m,o,sc,ta);
@@ -1731,8 +1805,16 @@ dragging=null;canvas.classList.remove("dragging");canvas.classList.add("released
     if(!tidyOn&&gravityOn) gb.click();
     setTidy(!(tidyOn&&!phoneOn));
   });
-  const mb=document.getElementById("medBtn");
-  mb.addEventListener("click",()=>{const on=mb.getAttribute("aria-pressed")!=="true";document.documentElement.classList.toggle("medieval",on);mb.setAttribute("aria-pressed",String(on));
+  const mb=document.getElementById("medBtn"), xb=document.getElementById("discoBtn");
+  xb.addEventListener("click",()=>{
+    const on=!discoOn;
+    // Disco and Medieval each bring their own music, so turning one on turns the other off
+    if(on&&mb.getAttribute("aria-pressed")==="true") mb.click();
+    discoOn=on;xb.setAttribute("aria-pressed",String(on));document.documentElement.classList.toggle("disco",on);
+    setExtra(floorBody,on);setDisco(dark||on);
+    if(on) Groove.start(); else Groove.stop();
+  });
+  mb.addEventListener("click",()=>{const on=mb.getAttribute("aria-pressed")!=="true";if(on&&discoOn) xb.click();document.documentElement.classList.toggle("medieval",on);mb.setAttribute("aria-pressed",String(on));
     repaintAll();setDragon(on);if(on) Chant.start(); else Chant.stop();
     // the controls row can change height with the new font, so re-fit the Tidy grid
     setTimeout(layoutTidy,60);});
@@ -1755,7 +1837,7 @@ dragging=null;canvas.classList.remove("dragging");canvas.classList.add("released
     else bodies.forEach(b=>{const x=Math.max(40,Math.min(W-40,b.position.x)),y=Math.max(40,Math.min(H-40,b.position.y));if(x!==b.position.x||y!==b.position.y)Body.setPosition(b,{x,y});});
     layoutTidy();
   },120);}).observe(field);
-  document.addEventListener("visibilitychange",()=>{runner.enabled=!document.hidden;if(Chant.c&&Chant.on){if(document.hidden) Chant.c.suspend(); else Chant.c.resume();}});
+  document.addEventListener("visibilitychange",()=>{runner.enabled=!document.hidden;for(const a of [Chant,Groove]) if(a.c&&a.on){if(document.hidden) a.c.suspend(); else a.c.resume();}});
   Runner.run(runner,engine);
   requestAnimationFrame(frame);
 });
