@@ -468,6 +468,7 @@ const XP = {
     lens:["Short-form video","Social","Community"],
     points:[],
     link:{href:"https://www.tiktok.com/@reusebricks",text:"@reusebricks on TikTok"},
+    links:[{href:"https://www.instagram.com/reusebricks/",text:"@reusebricks on Instagram"}],
     obj:"a phone playing a video", why:"For the short-form video work."},
   isr:{blurb:"Collected interview and biometric data, including walk speed, lung capacity and hearing, for the Health and Retirement Study, the largest study of aging in the U.S. Became a top performer within a year, joined the travel team, then led a regional team of 12 interviewers.", org:"University of Michigan, Institute for Social Research", role:"Field Interviewer, Team Leader", dates:"Feb 2022 – Mar 2025", place:"Survey Research Center · Remote",
     lens:["Human-subjects research","Biometrics","Team leadership"],
@@ -788,7 +789,7 @@ function showCard(id){
   if(x.lens) card.append(lensRow(x.lens));
   if(x.link||x.cs){const pl=el("p","keys");
     if(x.cs){const c=el("a","btn primary",x.cs.text);c.href="#"+x.cs.id;c.addEventListener("click",e=>{e.preventDefault();openCase();});pl.append(c);}
-    if(x.link){const a=el("a","card-link",x.link.text);a.href=x.link.href;a.target="_blank";a.rel="noopener";pl.append(a);}
+    for(const l of [x.link,...(x.links||[])].filter(Boolean)){const a=el("a","card-link",l.text);a.href=l.href;a.target="_blank";a.rel="noopener";pl.append(a);}
     card.append(pl);}
   card.hidden=false;
 }
@@ -803,7 +804,7 @@ function renderList(target,ids){
     if(x.points.length){const ul=el("ul");x.points.forEach(p=>ul.append(el("li",null,p)));li.append(ul);}
     if(x.study) li.append(caseStudy(x));
     if(x.cs){const c=el("a","btn primary cs-open",x.cs.text);c.href="#"+x.cs.id;c.addEventListener("click",e=>{e.preventDefault();openCase();});const pl=el("p");pl.append(c);li.append(pl);}
-    if(x.link){const a=el("a","card-link",x.link.text);a.href=x.link.href;a.target="_blank";a.rel="noopener";const pl=el("p");pl.append(a);li.append(pl);}
+    for(const l of [x.link,...(x.links||[])].filter(Boolean)){const a=el("a","card-link",l.text);a.href=l.href;a.target="_blank";a.rel="noopener";const pl=el("p");pl.append(a);li.append(pl);}
     const b=el("button","find","Find "+x.obj);b.type="button";
     b.addEventListener("click",()=>{setDrawer(false);picked=bodies.find(x=>x.plugin.item.xp===id)||null;showCard(id);if(world) world.bump(id);});
     li.append(b);target.append(li);
