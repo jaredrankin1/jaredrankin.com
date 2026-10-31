@@ -118,6 +118,8 @@ a.btn{text-decoration:none}
 .card ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
 .study{display:flex;flex-direction:column;gap:6px;padding-top:10px;border-top:1.5px dashed var(--line)}
 .study b{font-weight:700}
+.card .keys{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.cs-open{margin-top:12px}
 .lens{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
 .lens span{font:600 10.5px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:5px 7px}
 .card .why{color:var(--muted);font-size:14px}
@@ -242,8 +244,56 @@ body{font-size:16px}
   box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 1px 0 var(--engrave),0 0 0 1px rgba(0,0,0,.5)}
 .job{border-top:1px solid rgba(0,0,0,.12);box-shadow:inset 0 1px 0 var(--engrave)}
 .job:first-child{border-top:0;box-shadow:none}
+/* case study: a full-screen panel that reads like a long card */
+.cs{position:fixed;inset:0;z-index:12;overflow:auto;background:linear-gradient(180deg,var(--panel-hi),var(--panel-lo));color:var(--ink);
+  padding:calc(env(safe-area-inset-top,0px) + 16px) max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 48px) max(16px,env(safe-area-inset-left,0px));
+  opacity:1;transition:opacity .22s ease}
+.cs[hidden]{display:block!important;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s ease,visibility 0s .22s}
+.cs-bar{position:sticky;top:calc(-1*(env(safe-area-inset-top,0px) + 16px));z-index:1;display:flex;justify-content:space-between;align-items:center;gap:12px;
+  margin:calc(-1*(env(safe-area-inset-top,0px) + 16px)) calc(-1*max(16px,env(safe-area-inset-right,0px))) 8px calc(-1*max(16px,env(safe-area-inset-left,0px)));
+  padding:calc(env(safe-area-inset-top,0px) + 14px) max(16px,calc(50% - 410px)) 12px;
+  background:color-mix(in srgb,var(--panel-hi) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 1px 0 var(--line)}
+.cs-kicker{font:600 11px/1.2 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.cs-body{max-width:820px;margin:0 auto;font:400 17px/1.6 var(--body)}
+.cs-head{border-radius:18px;padding:26px 24px 22px;color:var(--glass-ink);
+  background:linear-gradient(180deg,var(--glass-hi) 0%,#16171A 55%,var(--glass-lo) 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 1px 0 var(--engrave),0 0 0 1px rgba(0,0,0,.55),0 24px 40px -24px rgba(0,0,0,.6)}
+.cs-head h2{font:700 clamp(26px,4.4vw,40px)/1.08 var(--head);letter-spacing:-.035em;margin:0 0 14px;text-wrap:balance}
+.cs-lede{color:#C9CBD0;margin:0 0 18px;max-width:64ch}
+.cs-meta{display:flex;flex-wrap:wrap;gap:8px 28px;margin:0 0 20px;font-size:14px}
+.cs-meta dt{font:600 10.5px/1.4 var(--body);letter-spacing:.1em;text-transform:uppercase;color:#8E9198}
+.cs-meta dd{margin:0}
+.cs-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.cs-stats div{border-radius:12px;padding:14px 14px 12px;background:rgba(255,255,255,.06);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.cs-stats b{display:block;font:700 clamp(22px,3.4vw,32px)/1.05 var(--head);letter-spacing:-.03em;color:#fff;margin-bottom:6px;white-space:nowrap}
+.cs-stats span{font-size:13px;line-height:1.35;color:#B7BAC0}
+.cs-body h3{margin:40px 0 10px;font:700 12px/1.3 var(--head);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.cs-body p{margin:0 0 14px;max-width:68ch}
+.cs-list{margin:0 0 14px;padding-left:20px;display:flex;flex-direction:column;gap:8px;max-width:68ch}
+.cs-fig{margin:24px 0}
+.cs-fig img{display:block;width:100%;height:auto;border-radius:12px;background:#fff;border:1px solid var(--panel-edge);box-shadow:0 18px 30px -22px rgba(0,0,0,.5)}
+.cs-fig figcaption{margin-top:8px;font-size:13px;line-height:1.45;color:var(--muted)}
+.cs-phones{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:620px;margin:24px auto}
+.cs-phones .cs-fig{margin:0}
+.cs-table{margin:18px 0 22px;border:1px solid var(--panel-edge);border-radius:12px;overflow:hidden;font-size:15px;line-height:1.4;background:var(--surface)}
+.cs-table [role=row]{display:grid;grid-template-columns:1fr 1fr 1.6fr;gap:12px;padding:10px 14px;border-top:1px solid var(--line)}
+.cs-two [role=row]{grid-template-columns:1fr 1.6fr}
+.cs-table .cs-th{border-top:0;font:600 11px/1.3 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:rgba(0,0,0,.03)}
+.cs-table [role=row]>span:first-child{font-weight:600}
+.cs-end{display:flex;flex-wrap:wrap;gap:10px;margin-top:32px}
+@media (max-width:640px){
+  .cs-head{padding:22px 18px 18px}
+  .cs-stats{grid-template-columns:1fr}
+  .cs-stats div{display:flex;align-items:baseline;gap:12px}
+  .cs-stats b{margin:0;min-width:7.2em}
+  .cs-body{font-size:16px}
+  .cs-table [role=row]{grid-template-columns:1fr;gap:2px}
+  .cs-table .cs-th{display:none}
+  .cs-table [role=row]>span:nth-child(2){color:var(--accent);font-weight:600}
+  .cs-phones{gap:10px}
+}
 @media (prefers-reduced-motion: reduce){
-  .btn,.drawer,.drawer[hidden],.about,.caret{transition:none}
+  .btn,.drawer,.drawer[hidden],.about,.caret,.cs,.cs[hidden]{transition:none}
 }
 </style>
 
@@ -262,6 +312,7 @@ body{font-size:16px}
           <span class="email" id="email">Jaredrankin1@gmail.com</span>
           <button class="btn" id="copyEmail" type="button">Copy</button>
           <a class="btn" id="linkedin" href="https://www.linkedin.com/in/rankinjared/" target="_blank" rel="me noopener">LinkedIn</a>
+          <a class="btn" href="#brickstash" id="openCase">Case study</a>
           <button class="btn primary" id="openResume" type="button" aria-controls="drawer" aria-expanded="false">Resume</button>
         </div>
       </div>
@@ -297,6 +348,105 @@ body{font-size:16px}
   <h4>Interests</h4>
   <ol class="jobs" id="hobbies"></ol>
 </section>
+<section class="cs" id="brickstash" role="dialog" aria-modal="true" aria-labelledby="csTitle" hidden>
+  <div class="cs-bar">
+    <span class="cs-kicker">Case study · ReUseBricks</span>
+    <button class="btn" id="closeCase" type="button">Close</button>
+  </div>
+  <article class="cs-body">
+    <header class="cs-head">
+      <h2 id="csTitle">BrickStash: building trust into LEGO resale, from intake to shipping</h2>
+      <p class="cs-lede">A highly rated seller sold us expensive convention-exclusive minifigures that turned out to be fake. Good reviews couldn't guarantee authenticity, so the shop needed its own checks, and so did its own listings. I designed and built a grading, inventory and listing tool that adds quality control at every step, from the moment a fig arrives to the moment it ships.</p>
+      <dl class="cs-meta">
+        <div><dt>Role</dt><dd>Product design, research and build</dd></div>
+        <div><dt>Company</dt><dd>ReUseBricks</dd></div>
+        <div><dt>Focus</dt><dd>Service design, process improvement, human factors</dd></div>
+      </dl>
+      <div class="cs-stats">
+        <div><b>14 → 4 min</b><span>Average pick-and-pack time, a 71% cut</span></div>
+        <div><b>−59%</b><span>Shipping cost per minifig order</span></div>
+        <div><b>+757%</b><span>Shopify sessions, Jan–Oct 2026 vs 2025</span></div>
+      </div>
+    </header>
+
+    <figure class="cs-fig">
+      <img src="cs/brickstash/pro-per-part.webp" width="1600" height="1111" alt="BrickCheck Pro: a minifigure diagram with about 30 numbered parts, each graded on its own, with a severity scale from microscopic to major." loading="lazy">
+      <figcaption>BrickCheck Pro grades each of about 30 parts, front and back, then rolls them into one composite score.</figcaption>
+    </figure>
+
+    <h3>The problem</h3>
+    <p>The shop sold only on BrickLink, and nothing about a fig's identity or condition was standardised. The counterfeit purchase made the gap obvious: reviews measured the seller, not the item. That became the design question. <strong>How do you make every single fig verifiable, both coming in and going out?</strong></p>
+    <ul class="cs-list">
+      <li><b>Misidentified figs.</b> Figs were often misidentified at intake, and picking an order for one could take hours or fail.</li>
+      <li><b>Undisclosed wear.</b> Listings defaulted to new, and condition issues surfaced at packing or as refunds.</li>
+      <li><b>Split listings.</b> BrickLink allows one remark per lot, so a fig stored in two places appeared as two listings.</li>
+      <li><b>Slow picking.</b> Without reliable locations, finding a single fig could take hours.</li>
+      <li><b>Manual sync.</b> Once Shopify was added, the same fig could sell on both channels in one day, and reconciling stock by hand took hours.</li>
+      <li><b>Flat-rate shipping.</b> Every order paid the same high rate, regardless of size.</li>
+    </ul>
+
+    <h3>Approach</h3>
+    <p>I applied the Toyota Production System, 5S and Lean to a small resale floor. The rule: catch defects at intake, where fixing them is cheap, rather than at packing or after a refund.</p>
+    <ol class="cs-list">
+      <li><b>One grading standard.</b> Every fig is checked part by part and gets a grade, and disclosed cracks cap it.</li>
+      <li><b>One record per physical copy.</b> Each copy has its own serial, condition, location and cost, so the system mirrors the shelf.</li>
+      <li><b>One source of truth for stock.</b> Sales channels read from BrickStash instead of each keeping their own count.</li>
+      <li><b>Visual, walkable locations.</b> Pick lists say where to walk, building on the 5S warehouse layout.</li>
+    </ol>
+    <p>It builds on the floor work around it: time-on-task tracking, visual SOPs for product photography, and NIOSH-informed ergonomic changes at the packing station.</p>
+
+    <h3>What I designed and built</h3>
+    <div class="cs-table" role="table" aria-label="Problems and the features that address them">
+      <div role="row" class="cs-th"><span role="columnheader">Problem</span><span role="columnheader">Feature</span><span role="columnheader">What it changes</span></div>
+      <div role="row"><span role="cell">Misidentified figs</span><span role="cell">Scan to identify</span><span role="cell">A photo names the fig and a person confirms it</span></div>
+      <div role="row"><span role="cell">Undisclosed wear</span><span role="cell">BrickCheck grading</span><span role="cell">Part-by-part grade, wear marked on the photo, certificate number in the SKU</span></div>
+      <div role="row"><span role="cell">Everything listed as new</span><span role="cell">Market pricing by grade</span><span role="cell">Price follows condition, so honest grading doesn't lose money</span></div>
+      <div role="row"><span role="cell">Split listings</span><span role="cell">A record for every copy</span><span role="cell">One fig, many copies, one listing</span></div>
+      <div role="row"><span role="cell">Slow picking</span><span role="cell">Locations and pick lists</span><span role="cell">The pick list says which shelf</span></div>
+      <div role="row"><span role="cell">Manual sync</span><span role="cell">List everywhere at once</span><span role="cell">One stock count; a sale on any channel takes it down everywhere</span></div>
+      <div role="row"><span role="cell">No cost visibility</span><span role="cell">Lot costs</span><span role="cell">One receipt split across the items it bought</span></div>
+    </div>
+    <div class="cs-phones">
+      <figure class="cs-fig"><img src="cs/brickstash/scan-guide.webp" width="600" height="1298" alt="Scan guidance on a phone: three steps for a good photo." loading="lazy"><figcaption>Before the photo: plain background, light from one side so cracks cast a shadow, a hand's length away.</figcaption></figure>
+      <figure class="cs-fig"><img src="cs/brickstash/scan-result.webp" width="600" height="1426" alt="Scan result: wear marks boxed on the photo, a suggested grade of 9.69 Near Mint, and a list of marks to keep or dismiss." loading="lazy"><figcaption>After: each mark is boxed on the photo, and unsure ones are flagged for a closer look. Sample result from the demo.</figcaption></figure>
+    </div>
+    <p>Alongside the software, I fixed the physical side: switching figs from flat-rate boxes to bubble mailers cut shipping cost for most minifig orders by about 59%.</p>
+
+    <h3>Design decisions</h3>
+    <p><b>A grading scale, designed twice.</b> Version one borrowed the diamond 4 Cs, a model collectors already trust, and adapted it into five Cs: Compression, Color, Cracking, Clarity and Chafing. It was memorable but harder to read at a glance, so I rewrote it in plain words. The shipped scale scores four criteria from 1 to 10, and cracks moved out of the score into a separate disclosure.</p>
+    <div class="cs-table cs-two" role="table" aria-label="Grading scale, version 1 and version 2">
+      <div role="row" class="cs-th"><span role="columnheader">Version 1 (five Cs)</span><span role="columnheader">Version 2 (shipped)</span></div>
+      <div role="row"><span role="cell">Chafing</span><span role="cell">Surface</span></div>
+      <div role="row"><span role="cell">Compression</span><span role="cell">Form</span></div>
+      <div role="row"><span role="cell">Clarity</span><span role="cell">Print clarity</span></div>
+      <div role="row"><span role="cell">Color</span><span role="cell">Color</span></div>
+      <div role="row"><span role="cell">Cracking</span><span role="cell">Crack disclosures (hairline, moderate, stress) on a damage map, which cap the grade</span></div>
+    </div>
+    <p>A grade only builds trust if graders and buyers read it the same way. Plain labels made it faster to learn and harder to misread, and separating cracks keeps the most serious defect from being averaged away.</p>
+    <figure class="cs-fig">
+      <img src="cs/brickstash/grading.webp" width="1200" height="1851" alt="BrickCheck grading screen: four criteria scored 1 to 10, a cracking score, and crack disclosure checkboxes beside a front and back damage map." loading="lazy">
+      <figcaption>The shipped scale: four plain criteria, with cracks disclosed separately on a damage map. Sample item; price hidden.</figcaption>
+    </figure>
+    <p><b>AI suggests, an expert decides.</b> An AI vision model proposes the fig's identity and flags wear, and I review every photograph before a grade is issued. This follows ASA guidance that AI can support the research and analysis behind an appraisal, while the final opinion must come from a human appraiser. The model handles speed and recall; a person stays accountable for the call. That matters because each grade carries a certificate number. I'm a member of the American Society of Appraisers and a candidate for accreditation, with coursework in USPAP and the ASA personal property series, and I perform appraisals for insurance, estates, sales and divorce, so a grade has to hold up to scrutiny.</p>
+    <p><b>Designing for uncertainty.</b> The scan flags marks it isn't sure about ("Check this one, it may be glare or a mould line"), and the seller keeps or dismisses each one while the grade updates live. Better capture guidance up front means fewer false marks to dismiss.</p>
+    <p><b>From grade to price.</b> The suggested price is the market index price times a grade multiplier, and a perfect grade is floored at the six-month sold average for new. Honest grading never prices below what the market supports.</p>
+    <figure class="cs-fig">
+      <img src="cs/brickstash/list-everywhere.webp" width="1600" height="1046" alt="Review queue: new figs with condition, bin and price, and checkboxes to list on BrickLink, Shopify, BrickOwl and eBay at once." loading="lazy">
+      <figcaption>Review, then list to BrickLink, Shopify, BrickOwl and eBay in one step. Sample data; prices hidden.</figcaption>
+    </figure>
+
+    <h3>Outcomes</h3>
+    <ul class="cs-list">
+      <li><b>Pick-and-pack time fell from 14 minutes to 4 on average, a 71% cut.</b> This reflects the software and the floor changes together.</li>
+      <li><b>Shipping cost per minifig order fell about 59%</b> after moving from flat-rate boxes to bubble mailers.</li>
+      <li><b>A second sales channel became workable.</b> With one synced stock count, Shopify sessions reached 32,804 from January 1 to October 30, 2026, up 757% on the same period in 2025. The rebrand and social media growth contributed too.</li>
+    </ul>
+    <div class="cs-end">
+      <button class="btn" id="closeCase2" type="button">Back to the site</button>
+      <a class="btn primary" href="https://reusebricks.com" target="_blank" rel="noopener">reusebricks.com</a>
+    </div>
+  </article>
+</section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
 <script>window.Matter || document.write('<script src="https://cdn.jsdelivr.net/npm/matter-js@0.19.0/build/matter.min.js"><\/script>')</script>
@@ -311,6 +461,7 @@ const XP = {
       ["Process","Tracked time-on-task for photography, listing and fulfillment, then applied Lean and TPS: visual SOPs for product photography and a 5S warehouse redesign so material moves predictably from unsorted bricks to packaged sets."],
       ["Ergonomics","Logged strain from stooping at the sorting table and frequent overhead lifting, then applied NIOSH lifting guidance: standing-height packing tables and weight limits for inventory bins."],
       ["BrickCheck","Built the five-category grading rubric and valuation method behind the company's appraisal service, with a Kanban board to keep client work consistent and impartial. The grades support USPAP-compliant appraisals and pricing across 1,400+ listings."]],
+    cs:{id:"brickstash",text:"Case study"},
     link:{href:"https://reusebricks.com",text:"reusebricks.com"},
     obj:"a brick", why:"LEGO resale and appraisal is the core of the business."},
   isr:{blurb:"Collected interview and biometric data, including walk speed, lung capacity and hearing, for the Health and Retirement Study, the largest study of aging in the U.S. Became a top performer within a year, joined the travel team, then led a regional team of 12 interviewers.", org:"University of Michigan, Institute for Social Research", role:"Field Interviewer, Team Leader", dates:"Feb 2022 – Mar 2025", place:"Survey Research Center · Remote",
@@ -615,7 +766,10 @@ function showCard(id){
   h.append(sub);card.append(h);
   if(x.blurb) card.append(el("p","prose",x.blurb));
   if(x.lens) card.append(lensRow(x.lens));
-  if(x.link){const a=el("a","card-link",x.link.text);a.href=x.link.href;a.target="_blank";a.rel="noopener";const pl=el("p");pl.append(a);card.append(pl);}
+  if(x.link||x.cs){const pl=el("p","keys");
+    if(x.cs){const c=el("a","btn primary",x.cs.text);c.href="#"+x.cs.id;c.addEventListener("click",e=>{e.preventDefault();openCase();});pl.append(c);}
+    if(x.link){const a=el("a","card-link",x.link.text);a.href=x.link.href;a.target="_blank";a.rel="noopener";pl.append(a);}
+    card.append(pl);}
   card.hidden=false;
 }
 function renderList(target,ids){
@@ -628,6 +782,7 @@ function renderList(target,ids){
     if(x.lens) li.append(lensRow(x.lens));
     if(x.points.length){const ul=el("ul");x.points.forEach(p=>ul.append(el("li",null,p)));li.append(ul);}
     if(x.study) li.append(caseStudy(x));
+    if(x.cs){const c=el("a","btn primary cs-open",x.cs.text);c.href="#"+x.cs.id;c.addEventListener("click",e=>{e.preventDefault();openCase();});const pl=el("p");pl.append(c);li.append(pl);}
     if(x.link){const a=el("a","card-link",x.link.text);a.href=x.link.href;a.target="_blank";a.rel="noopener";const pl=el("p");pl.append(a);li.append(pl);}
     const b=el("button","find","Find "+x.obj);b.type="button";
     b.addEventListener("click",()=>{setDrawer(false);picked=bodies.find(x=>x.plugin.item.xp===id)||null;showCard(id);if(world) world.bump(id);});
@@ -649,8 +804,22 @@ function setDrawer(open){
   if(open){closeCard();document.getElementById("closeResume").focus();} else openBtn.focus({preventScroll:true});
 }
 openBtn.addEventListener("click",()=>setDrawer(true));
+const cs=document.getElementById("brickstash");
+// the case study lives at #brickstash so it can be linked to directly
+function setCase(open){
+  if(open===!cs.hidden) return;
+  cs.hidden=!open;
+  if(open){closeCard();if(!drawer.hidden)setDrawer(false);cs.scrollTop=0;document.getElementById("closeCase").focus({preventScroll:true});if(location.hash!=="#brickstash")history.pushState(null,"","#brickstash");}
+  else if(location.hash==="#brickstash") history.replaceState(null,"",location.pathname+location.search);
+}
+const openCase=()=>setCase(true);
+addEventListener("hashchange",()=>setCase(location.hash==="#brickstash"));
+document.getElementById("openCase").addEventListener("click",e=>{e.preventDefault();openCase();});
+["closeCase","closeCase2"].forEach(id=>document.getElementById(id).addEventListener("click",()=>setCase(false)));
+if(location.hash==="#brickstash") setCase(true);
+
 document.getElementById("closeResume").addEventListener("click",()=>setDrawer(false));
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(!drawer.hidden)setDrawer(false);else closeCard();}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(!cs.hidden)setCase(false);else if(!drawer.hidden)setDrawer(false);else closeCard();}});
 document.getElementById("copyEmail").addEventListener("click",e=>{
   const btn=e.currentTarget, node=document.getElementById("email");
   const done=t=>{btn.textContent=t;setTimeout(()=>btn.textContent="Copy",1600);};
