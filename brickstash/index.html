@@ -2276,6 +2276,7 @@ function hit(p){
 loadSources().then(()=>{
   size();spawn();readTheme();bodies.forEach(fitPhone);
   {const p=bodies.find(b=>b.plugin.item.alwaysTile);if(p){Body.setPosition(p,{x:W/2,y:H/2});Body.setAngle(p,0);}}
+  setTidy(true);
   const mouse=Mouse.create(canvas);
   ["mousewheel","DOMMouseScroll","wheel"].forEach(ev=>canvas.removeEventListener(ev,mouse.mousewheel));
   const mc=MouseConstraint.create(engine,{mouse,constraint:{stiffness:.15,damping:.1,render:{visible:false}}});
