@@ -1395,6 +1395,35 @@ function holeIn(photo,cut){
   // the cut edge reads as a thin pale line of paper
   return h;
 }
+/* while the cutout runs, the photo is already on screen, starting as big square pixels (like the site's objects)
+   and sharpening step by step; it never quite reaches sharp until the fig is ready, then the collage picks up */
+function developing(photo){
+  const vw=innerWidth,vh=innerHeight,dp=Math.min(devicePixelRatio||1,2);
+  stage.width=vw*dp;stage.height=vh*dp;stage.style.display="block";
+  const k=Math.min(vw*.78/photo.width,vh*.62/photo.height),pw=photo.width*k,ph=photo.height*k,px=(vw-pw)/2,py=(vh-ph)/2;
+  const b=Math.max(6,Math.min(14,pw*.03)),T0=performance.now();
+  const big=document.createElement("canvas");big.width=photo.width;big.height=photo.height;const bx=big.getContext("2d");
+  let last=0,live=true;
+  const tick=now=>{
+    if(!live) return;
+    const el=now-T0,cells=Math.round(Math.max(8,Math.min(90,8+82*(1-Math.exp(-el/2600)))));  // across the photo: 8 big squares, sharpening to 90
+    if(cells!==last){last=cells;
+      const w=cells,h=Math.max(1,Math.round(cells*photo.height/photo.width)),t=document.createElement("canvas");t.width=w;t.height=h;
+      const tx=t.getContext("2d");tx.imageSmoothingQuality="high";tx.drawImage(photo,0,0,w,h);
+      bx.imageSmoothingEnabled=false;bx.clearRect(0,0,big.width,big.height);bx.drawImage(t,0,0,w,h,0,0,big.width,big.height);
+      // thin gaps between the squares, like the square-pixel objects
+      const cw=big.width/w,ch=big.height/h,gp=Math.max(1,Math.min(cw,ch)*.08);bx.fillStyle="rgba(0,0,0,.18)";
+      for(let i=1;i<w;i++) bx.fillRect(i*cw-gp/2,0,gp,big.height);for(let j=1;j<h;j++) bx.fillRect(0,j*ch-gp/2,big.width,gp);
+    }
+    const tIn=reduced?1:easeOut(Math.min(1,el/360));
+    sx.setTransform(dp,0,0,dp,0,0);sx.clearRect(0,0,vw,vh);sx.save();sx.globalAlpha=tIn;
+    const sc=.92+.08*tIn;sx.translate(vw/2,vh/2);sx.scale(sc,sc);sx.translate(-vw/2,-vh/2);
+    photoFrame(sx,big,px,py,pw,ph,b);sx.restore();
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+  return ok=>{live=false;if(!ok){sx.setTransform(1,0,0,1,0,0);sx.clearRect(0,0,stage.width,stage.height);stage.style.display="none";}};
+}
 function collage(photo,res,target){
   return new Promise(done=>{
     const vw=innerWidth,vh=innerHeight,dp=Math.min(devicePixelRatio||1,2);
@@ -1414,7 +1443,7 @@ function collage(photo,res,target){
     const tick=now=>{
       const t=Math.min(1,(now-T0)/DUR);
       sx.setTransform(dp,0,0,dp,0,0);sx.clearRect(0,0,vw,vh);
-      const tIn=easeOut(seg(t,0,.1)),tCut=seg(t,.12,.55),tFall=seg(t,.58,.8),tLift=seg(t,.56,.66),tFly=ease(seg(t,.78,1));
+      const tIn=target.skipIn?1:easeOut(seg(t,0,.1)),tCut=seg(t,.12,.55),tFall=seg(t,.58,.8),tLift=seg(t,.56,.66),tFly=ease(seg(t,.78,1));
       // 1. the photo drops onto the page
       if(tFall<1){
         sx.save();
@@ -1465,8 +1494,10 @@ async function addFig(photo){
   // naming runs alongside the cutout and the animation
   const idP=identifyFig(photo);
   try{
-    await nextFrame();
-    const res=await cutoutFig(photo);
+    const stopDev=developing(photo);
+    await nextFrame();await nextFrame();
+    let res;try{res=await cutoutFig(photo);}catch(e){stopDev(false);throw e;}
+    stopDev(true);
     figCount++;
     const f={id:"fig"+Date.now().toString(36),n:figCount,name:"Minifig "+figCount,t:Date.now(),src:res.fig.toDataURL("image/png")};
     figs.push(f);
@@ -1481,7 +1512,7 @@ async function addFig(photo){
     Body.setPosition(b,pos);
     const r=canvas.getBoundingClientRect();
     say("Snip, snip…",0);
-    await collage(photo,res,{x:r.left+pos.x-o.x,y:r.top+pos.y-o.y,w:m.w,h:m.h});
+    await collage(photo,res,{x:r.left+pos.x-o.x,y:r.top+pos.y-o.y,w:m.w,h:m.h,skipIn:true});
     Body.setPosition(b,pos);Body.setVelocity(b,{x:0,y:0});Body.setAngle(b,0);
     b.plugin.born=performance.now();
     bodies.push(b);Composite.add(engine.world,b);fitPhone(b);
