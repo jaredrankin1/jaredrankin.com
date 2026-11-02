@@ -381,6 +381,11 @@ html.space .card h3{background:linear-gradient(180deg,#2A1606,#120801);color:#FF
   color:#FF9A2E;text-shadow:0 0 6px rgba(255,140,30,.85),0 0 14px rgba(255,110,10,.45);will-change:transform}
 .tk-text .up{color:#7CFF7A;text-shadow:0 0 6px rgba(80,255,90,.7)}.tk-text .dn{color:#FF5A4E;text-shadow:0 0 6px rgba(255,70,60,.7)}
 @media (prefers-reduced-motion: reduce){html.space .field::after,.tk-lights i{animation:none}}
+
+/* edit mode on the Phone-mode home screen: a Done key in the top corner, as on a phone */
+.done-btn{position:fixed;z-index:6;top:max(16px, env(safe-area-inset-top, 0px));right:max(16px, env(safe-area-inset-right, 0px))}
+html.jiggle .field canvas{-webkit-touch-callout:none;user-select:none}
+.field canvas{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 </style>
 
 <div class="field" id="field"><div class="discolights" aria-hidden="true"></div>
@@ -428,6 +433,7 @@ html.space .card h3{background:linear-gradient(180deg,#2A1606,#120801);color:#FF
   </div>
 </div>
 
+<button class="btn primary done-btn" id="doneBtn" type="button" hidden>Done</button>
 <aside class="card" id="card" aria-live="polite" hidden></aside>
 
 <section class="drawer" id="drawer" aria-labelledby="drawerTitle" hidden>
@@ -1361,6 +1367,8 @@ function drift(b){
   Body.setVelocity(b,{x:Math.cos(a)*v,y:Math.sin(a)*v});
   Body.setAngularVelocity(b,(Math.random()-.5)*.004);
 }
+let allBodies=[];
+function wanted(b){const it=b.plugin.item;return (!it.darkOnly||dark||discoOn)&&(!it.discoOnly||discoOn)&&(!it.medOnly||document.documentElement.classList.contains("medieval"));}
 function spawn(){
   if(bodies.length) Composite.remove(engine.world,bodies);
   S=Math.max(.7,Math.min(1.7,Math.sqrt(W*H)/720));
@@ -1384,7 +1392,8 @@ function spawn(){
   });
   discoBody=bodies.find(b=>b.plugin.item.darkOnly);
   dragonBody=bodies.find(b=>b.plugin.item.medOnly);floorBody=bodies.find(b=>b.plugin.item.discoOnly);
-  bodies=bodies.filter(b=>(!b.plugin.item.darkOnly||dark||discoOn)&&(!b.plugin.item.discoOnly||discoOn)&&(!b.plugin.item.medOnly||document.documentElement.classList.contains("medieval")));
+  allBodies=bodies.slice();
+  bodies=bodies.filter(b=>wanted(b)&&!removedIds.has(b.plugin.item.xp));
   Composite.add(engine.world,bodies);
 }
 let discoBody=null, dragonBody=null, floorBody=null, discoOn=false;
@@ -1419,6 +1428,7 @@ function repaintAll(){
 }
 
 // Tidy: every object glides upright into a grid cell between the name and the controls, shrinking if the cell is small
+let lastOrder=null;
 function layoutTidy(){
   if(!tidyOn) return;
   const r=canvas.getBoundingClientRect(), nm=document.getElementById("nameBtn").getBoundingClientRect(), ct=document.querySelector(".controls").getBoundingClientRect();
@@ -1429,11 +1439,15 @@ function layoutTidy(){
   const rows=Math.ceil(n/cols), cw=AW/cols, ch=AH/rows;
   // the disco ball leads (top left), then resume order: jobs newest first, education, hobbies
   const rank=["disco","floor","dragon",ORDER[0],"creator",...ORDER.slice(1),"ucsc",...HOBBIES], at=b=>{const r=rank.indexOf(b.plugin.item.xp);return r<0?rank.length:r;};
-  const order=bodies.slice().sort((a,b)=>at(a)-at(b)||ITEMS.indexOf(a.plugin.item)-ITEMS.indexOf(b.plugin.item));
+  let order=bodies.slice().sort((a,b)=>at(a)-at(b)||ITEMS.indexOf(a.plugin.item)-ITEMS.indexOf(b.plugin.item));
+  // in Phone mode the home screen keeps whatever order you arranged; newcomers go on the end
+  if(phoneOn&&homeOrder){const hi=b=>{const i=homeOrder.indexOf(b.plugin.item.xp);return i<0?1e3+order.indexOf(b):i;};order=order.slice().sort((a,b)=>hi(a)-hi(b));}
+  lastOrder=order;cells=[];cells.w=cw;
   order.forEach((b,i)=>{
     const row=Math.floor(i/cols), inRow=row===rows-1?n-row*cols:cols, col=i%cols;
     const m=b.plugin.sprite;
     const cx=pad+(AW-inRow*cw)/2+(col+.5)*cw, cy=top+(row+.5)*ch;
+    cells.push({x:cx,y:cy-(phoneOn&&ch>70?8:0)});
     if(phoneOn){
       // phone mode: each object sits inside a glossy app tile with its name underneath, like a home screen
       const lab=ch>70?16:0, T=Math.min(cw*.74,(ch-lab)*.82,128), kt=Math.min(1,.66*T/m.w,.66*T/m.h), o=b.plugin.off;
@@ -1449,7 +1463,7 @@ function layoutTidy(){
   order.forEach(setShape);
 }
 function setTidy(on){
-  tidyOn=on;
+  tidyOn=on;if(!on) setJiggle(false);
   document.getElementById("tidy").setAttribute("aria-pressed",String(on));
   if(on) layoutTidy();
   else bodies.forEach(b=>{b.isSensor=false;b.restitution=gravityOn?.35:1;b.plugin.slot=null;fitPhone(b);if(!gravityOn&&!reduced) drift(b);});
@@ -1483,12 +1497,61 @@ function setShape(b){
   pl.off=noff;pl.shape=want;
 }
 function setPhone(on){
-  phoneOn=on;
+  phoneOn=on;if(!on){setJiggle(false);restoreIcons();}
   document.getElementById("phoneBtn").setAttribute("aria-pressed",String(on));
   if(tidyOn) layoutTidy(); else bodies.forEach(fitPhone);
   if(tidyOn) bodies.forEach(setShape);
 }
 let dragging=null, anchor=null;
+// iPhone-style edit mode (Phone mode with Tidy on): hold an icon and they all jiggle; drag one to move its home,
+// tap its x to take it off the screen. Removed icons come back when Phone mode is turned off or the page reloads.
+let jiggle=false, homeOrder=null, cells=[];
+const removedIds=new Set();
+function jiggleOK(){return phoneOn&&tidyOn;}
+function setJiggle(on){
+  jiggle=on&&jiggleOK();
+  document.getElementById("doneBtn").hidden=!jiggle;
+  document.documentElement.classList.toggle("jiggle",jiggle);
+  if(jiggle){closeCard();if(!homeOrder) homeOrder=(lastOrder||[]).map(b=>b.plugin.item.xp);}
+}
+// while an icon is dragged, the others make room for it: it takes the home it is hovering over
+function reorderWhileDragging(){
+  if(!jiggle||!dragging||!homeOrder||!cells.length) return;
+  const id=dragging.plugin.item.xp, p=dragging.position;
+  let best=-1,bd=1e9;cells.forEach((c,i)=>{const d=Math.hypot(c.x-p.x,c.y-p.y);if(d<bd){bd=d;best=i;}});
+  if(best<0||bd>cells.w*.5) return;
+  const live=homeOrder.filter(x=>bodies.some(b=>b.plugin.item.xp===x)), cur=live.indexOf(id);
+  if(cur<0||cur===best) return;
+  live.splice(cur,1);live.splice(best,0,id);
+  homeOrder=live.concat(homeOrder.filter(x=>!live.includes(x)));
+  layoutTidy();
+}
+// the x badge sits on the tile's top-left corner
+function badgeAt(b){const T=b.plugin.tile||80;return {x:b.position.x-T/2+5,y:b.position.y-T/2+5,r:Math.max(10,T*.12)};}
+function hitBadge(p){for(const b of bodies.slice().reverse()){const g=badgeAt(b);if(Math.hypot(p.x-g.x,p.y-g.y)<=g.r+6) return b;}return null;}
+function removeIcon(b){
+  removedIds.add(b.plugin.item.xp);
+  if(picked===b) closeCard();
+  bodies=bodies.filter(x=>x!==b);Composite.remove(engine.world,b);
+  layoutTidy();
+  if(!bodies.length) setJiggle(false);
+}
+function restoreIcons(){
+  if(!removedIds.size) return;
+  for(const b of allBodies) if(removedIds.has(b.plugin.item.xp)&&wanted(b)&&!bodies.includes(b)){
+    Body.setPosition(b,{x:W/2,y:H/2});bodies.push(b);Composite.add(engine.world,b);fitPhone(b);
+  }
+  removedIds.clear();layoutTidy();
+}
+function drawBadge(b,now){
+  const g=badgeAt(b);
+  ctx.save();ctx.shadowColor="rgba(0,0,0,.4)";ctx.shadowBlur=4;ctx.shadowOffsetY=1.5;
+  const gr=ctx.createLinearGradient(0,g.y-g.r,0,g.y+g.r);gr.addColorStop(0,"#55585E");gr.addColorStop(1,"#121316");
+  ctx.fillStyle=gr;ctx.beginPath();ctx.arc(g.x,g.y,g.r,0,Math.PI*2);ctx.fill();ctx.shadowColor="transparent";
+  ctx.lineWidth=2;ctx.strokeStyle="#FFFFFF";ctx.stroke();
+  const k=g.r*.42;ctx.lineCap="round";ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(g.x-k,g.y-k);ctx.lineTo(g.x+k,g.y+k);ctx.moveTo(g.x+k,g.y-k);ctx.lineTo(g.x-k,g.y+k);ctx.stroke();
+  ctx.restore();
+}
 Events.on(engine,"afterUpdate",()=>{
   for(const b of bodies){
     // ease each object's size toward its target (smaller in a tight Tidy grid, full size otherwise)
@@ -1496,6 +1559,8 @@ Events.on(engine,"afterUpdate",()=>{
     if(Math.abs(kt-k)>.002){const nk=reduced?kt:k+(kt-k)*.15;Body.scale(b,nk/k,nk/k);b.plugin.k=nk;}
     const p=b.position;
     if(p.x<-60||p.x>W+60||p.y<-60||p.y>H+60){Body.setPosition(b,{x:W/2,y:H/2});Body.setVelocity(b,{x:0,y:0});}
+    // an icon picked up in edit mode stays upright in your hand, as on a phone
+    if(jiggle&&b===dragging){Body.setAngle(b,b.angle*.7);Body.setAngularVelocity(b,0);}
     if(b===openBody()&&b===dragging) anchor=null;
     if(b===openBody()&&b!==dragging){
       const a=((b.angle+Math.PI)%(Math.PI*2)+Math.PI*2)%(Math.PI*2)-Math.PI;
@@ -1860,7 +1925,10 @@ function frame(){
     const px=b.position.x, py=b.position.y, ang=b.angle, sc=b.plugin.k||1;
     const xs=[0], ys=[0];
     for(const dx of xs)for(const dy of ys){
-      ctx.save();ctx.translate(px+dx,py+dy);ctx.rotate(ang);if(sc!==1) ctx.scale(sc,sc);
+      ctx.save();ctx.translate(px+dx,py+dy);ctx.rotate(ang);
+      // edit mode: every icon but the one in your hand wobbles, each slightly out of step
+      if(jiggle&&b!==dragging&&!reduced) ctx.rotate(Math.sin(now/1000*Math.PI*2*6.5+b.id*1.7)*.032);
+      if(sc!==1) ctx.scale(sc,sc);
       // the object you're holding, or whose card is open, pulses gently
       if(!reduced&&(b===dragging||(b===picked&&!card.hidden))){const k=1+.075*(.5-.5*Math.cos(now/1000*Math.PI*2/.9));ctx.scale(k,k);}
       const it=b.plugin.item, cv=it.frames&&!reduced?m.frames[Math.floor(now*it.fps/1000)%m.frames.length]:m.canvas;
@@ -1880,7 +1948,9 @@ function frame(){
       if(ta>.01&&b.plugin.lab) appLabel(b,m,o,sc,ta);
     }
   }
-  if(hover&&bodies.includes(hover)&&hover!==openBody()) label(hover);
+  if(jiggle) for(const b of bodies) if(b!==dragging) drawBadge(b,now);
+  reorderWhileDragging();
+  if(hover&&!jiggle&&bodies.includes(hover)&&hover!==openBody()) label(hover);
   pinCard();
   requestAnimationFrame(frame);
 }
@@ -1940,15 +2010,32 @@ loadSources().then(()=>{
   ["mousewheel","DOMMouseScroll","wheel"].forEach(ev=>canvas.removeEventListener(ev,mouse.mousewheel));
   const mc=MouseConstraint.create(engine,{mouse,constraint:{stiffness:.15,damping:.1,render:{visible:false}}});
   Composite.add(engine.world,mc);
-  Events.on(mc,"startdrag",e=>{dragging=e.body;canvas.classList.add("dragging");});
+  // a tap on an x shouldn't pick up the icon that slides into its place
+  let noGrab=false;window.addEventListener("pointerup",()=>{noGrab=false;},true);window.addEventListener("pointercancel",()=>{noGrab=false;},true);
+  Events.on(mc,"startdrag",e=>{if(noGrab){mc.constraint.bodyB=null;mc.constraint.pointB=null;mc.body=null;return;}dragging=e.body;canvas.classList.add("dragging");});
   let relT;Events.on(mc,"enddrag",e=>{
 dragging=null;canvas.classList.remove("dragging");canvas.classList.add("released");clearTimeout(relT);relT=setTimeout(()=>canvas.classList.remove("released"),700);});
   window.addEventListener("mouseup",e=>{if(e.target!==canvas) mouse.mouseup(e);});
-  canvas.addEventListener("pointerdown",e=>{down={...local(e),t:performance.now()};});
+  let holdT=null;
+  canvas.addEventListener("pointerdown",e=>{
+    const p=local(e);down={...p,t:performance.now()};
+    if(jiggle){const x=hitBadge(p);if(x){down.x0=true;noGrab=true;removeIcon(x);return;}}
+    // hold an icon for half a second (Phone mode with Tidy on) to start editing the home screen
+    clearTimeout(holdT);
+    if(jiggleOK()&&!jiggle&&hit(p)) holdT=setTimeout(()=>{if(down&&!down.moved){down.held=true;setJiggle(true);}},500);
+  });
+  canvas.addEventListener("pointermove",e=>{if(down&&!down.moved){const p=local(e);if(Math.hypot(p.x-down.x,p.y-down.y)>10){down.moved=true;clearTimeout(holdT);}}});
+  canvas.addEventListener("contextmenu",e=>{if(jiggleOK()) e.preventDefault();});
   canvas.addEventListener("pointerup",e=>{
-    if(!down) return;const p=local(e), moved=Math.hypot(p.x-down.x,p.y-down.y), dt=performance.now()-down.t;down=null;
+    clearTimeout(holdT);
+    if(!down) return;const p=local(e), moved=Math.hypot(p.x-down.x,p.y-down.y), dt=performance.now()-down.t, d=down;down=null;
+    if(d.held||d.x0) return;
+    // while editing, a tap on empty space finishes, like on a phone; taps on icons don't open cards
+    if(jiggle){if(moved<8&&!hit(p)) setJiggle(false);return;}
     if(moved<8&&dt<450){const b=hit(p);if(b&&b!==openBody()){picked=b;showCard(b.plugin.item.xp);} else closeCard();}
   });
+  document.getElementById("doneBtn").addEventListener("click",()=>setJiggle(false));
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&jiggle) setJiggle(false);});
   canvas.addEventListener("pointermove",e=>{if(e.pointerType==="mouse"){hover=hit(local(e));canvas.classList.toggle("can-grab",!!hover);}});
   canvas.addEventListener("pointerleave",()=>{hover=null;});
 
