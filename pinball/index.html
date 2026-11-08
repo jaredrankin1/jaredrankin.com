@@ -43,7 +43,7 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-user-select
 (()=>{
 'use strict';
 /* ---------- constants ---------- */
-const W=1024,H=1536,R=17,G=1900,HSTEP=1/960,VMAX=6200;
+const W=1024,H=1536,R=19,RV=22,G=1350,HSTEP=1/960,VMAX=4800;
 const DEBUG=/debug/.test(location.search);
 const $=s=>document.querySelector(s);
 const pf=$('#pf'),ctx=pf.getContext('2d'),dmd=$('#dmd'),dctx=dmd.getContext('2d');
@@ -62,13 +62,13 @@ function C(x,y,r,o){o=o||{};const c={x,y,r,e:o.e??0.7,kind:o.kind||'post',id:o.i
 function SN(x0,y0,x1,y1,id){sensors.push({x0,y0,x1,y1,id})}
 
 // outer arch: ellipse through (48,300) and (1006,300)
-const ACX=527,ACY=300,AA=479,AB=272,arch=[];
+const ACX=530,ACY=300,AA=482,AB=272,arch=[];
 for(let k=0;k<=44;k++){const th=Math.PI+Math.PI*k/44;arch.push(ACX+AA*Math.cos(th),ACY+AB*Math.sin(th))}
 PL(arch,{e:.25});
 S(48,300,48,1218,{e:.3});             // left wall
-S(1006,300,1006,1500,{e:.2});         // shooter outer wall
+S(1012,300,1012,1500,{e:.2});         // shooter outer wall
 S(962,330,962,1500,{e:.3});           // right wall / shooter divider
-S(962,330,1006,300,{one:true,e:.2});  // one-way gate at top of shooter lane
+S(962,330,1012,300,{one:true,e:.2});  // one-way gate at top of shooter lane
 // orbit rails
 function rail(a,b,xEnd,left){const p=[],tEnd=Math.acos((xEnd-ACX)/a);// angle in [0,pi] for cos
   const thS=left?Math.PI:2*Math.PI,thE=left?2*Math.PI-tEnd:2*Math.PI-tEnd;
@@ -101,17 +101,17 @@ function sling(p,id){S(p[0],p[1],p[4],p[5],{r:6,e:.5,kind:'sling',id});S(p[0],p[
   C(p[0],p[1],10);C(p[2],p[3],10);C(p[4],p[5],10)}
 sling(SLL,0);sling(SLR,1);
 // inlane guides and apron
-S(48,1218,248,1336,{r:4});S(962,1218,776,1336,{r:4});
+S(48,1218,234,1328,{r:4});S(962,1218,790,1328,{r:4});
 S(230,1405,400,1536,{r:4});S(794,1405,624,1536,{r:4});
 // plunger (moves)
 const plg={y:1472,pull:0,charging:false,t0:0,snap:0};
-const plSeg=S(962,1472,1006,1472,{r:2,e:.05,kind:'plunger',one:true});
+const plSeg=S(962,1472,1012,1472,{r:2,e:.05,kind:'plunger',one:true});
 // sensors
 SN(48,330,100,400,'consp');SN(910,330,962,400,'sorc');
 SN(200,392,262,440,'scoop');SN(50,1040,98,1090,'retL');SN(912,1040,960,1090,'retR');
 
 /* ---------- flippers ---------- */
-const FL=200,FR0=33,FR1=23,UP=27,DN=18;
+const FL=200,FR0=33,FR1=23,UP=22,DN=16;
 function mkF(px,py,rest,up,dir){return{px,py,rest,up,ang:rest,w:0,dir,on:false}}
 const fL=mkF(236,1370,0.576,-0.384,-1),fR=mkF(788,1370,Math.PI-0.576,Math.PI+0.384,1);
 const flips=[fL,fR];
@@ -135,7 +135,7 @@ function bounce(b,nx,ny,e,obj,sx,sy){
   if(vn>=0)return 0;
   const imp=-vn,ee=imp<45?0:e;
   let tx=rvx-vn*nx,ty=rvy-vn*ny;
-  const nvx=-ee*vn*nx+tx*.985,nvy=-ee*vn*ny+ty*.985;
+  const fr=1-Math.min(.12,imp*.00005),nvx=-ee*vn*nx+tx*fr,nvy=-ee*vn*ny+ty*fr;
   b.vx=nvx+sx;b.vy=nvy+sy;return imp}
 function colSeg(b,s){
   let t=((b.x-s.ax)*s.dx+(b.y-s.ay)*s.dy)/s.L2;t=t<0?0:t>1?1:t;
@@ -207,8 +207,8 @@ function hit(o,b,imp,nx,ny){
     case 'wall':if(imp>110)sfx.metal(Math.min(1,imp/2600));break;
     case 'post':if(imp>90)sfx.rubber(Math.min(1,imp/2200));break;
     case 'plunger':break;
-    case 'sling':if(imp>130&&now-o.t>.12){o.t=now;b.vx+=nx*950;b.vy+=ny*950;add(110);sfx.sling()}else if(imp>90)sfx.rubber(.4);break;
-    case 'bumper':{if(now-o.t>.05){o.t=now;const vo=b.vx*nx+b.vy*ny;if(vo<1150){b.vx+=nx*(1150-vo);b.vy+=ny*(1150-vo)}add(1000);sfx.bumper(o.id)}break}
+    case 'sling':if(imp>130&&now-o.t>.12){o.t=now;b.vx+=nx*780;b.vy+=ny*780;add(110);sfx.sling()}else if(imp>90)sfx.rubber(.4);break;
+    case 'bumper':{if(now-o.t>.05){o.t=now;const vo=b.vx*nx+b.vy*ny;if(vo<900){b.vx+=nx*(900-vo);b.vy+=ny*(900-vo)}add(1000);sfx.bumper(o.id)}break}
     case 'relic':if(imp>60&&now-o.t>.3){o.t=now;hitRelic(o.id)}break;
     case 'alien':if(imp>60&&now-o.t>.3){o.t=now;hitAlien(o.id)}break;
     case 'citadel':if(imp>70&&now-o.t>.4){o.t=now;citadel()}else if(imp>60)sfx.metal(.3);break;
@@ -225,7 +225,7 @@ function sense(b){
   }
 }
 function inShooter(b){return b.st==='play'&&b.x>962&&b.y>1300}
-function serve(auto){const b=mkBall(984,1450);g.skill=!auto;if(auto)setTimeout(()=>{if(balls.includes(b)&&inShooter(b)){b.vy=-3300;sfx.launch(.8)}},700);return b}
+function serve(auto){const b=mkBall(987,1450);g.skill=!auto;if(auto)setTimeout(()=>{if(balls.includes(b)&&inShooter(b)){b.vy=-2700;sfx.launch(.8)}},700);return b}
 function addBall(auto){serve(auto)}
 function startGame(){Object.assign(g,{state:'play',score:0,ball:1,mult:1,relics:0,open:false,consp:0,sorc:0,aliens:[0,0],relicT:[0,0,0],saveUntil:0,jack:0,newHi:false});
   balls.length=0;serve(false);msg('BALL 1','PULL THE PLUNGER',2);sfx.start()}
@@ -247,7 +247,7 @@ function step(h){
   if(plg.charging){plg.pull=Math.min(1,(performance.now()-plg.t0)/900)}
   const py=1472+plg.pull*55;plSeg.ay=plSeg.by=py;
   for(let i=balls.length-1;i>=0;i--){const b=balls[i];
-    if(b.st==='scoop'){if(now>b.hold){b.st='play';b.x=232;b.y=440;b.vx=60+Math.random()*80;b.vy=950;sfx.kick()}continue}
+    if(b.st==='scoop'){if(now>b.hold){b.st='play';b.x=232;b.y=440;b.vx=60+Math.random()*80;b.vy=750;sfx.kick()}continue}
     b.vy+=G*h;
     const sp=Math.hypot(b.vx,b.vy);if(sp>VMAX){b.vx*=VMAX/sp;b.vy*=VMAX/sp}
     b.vx*=1-.12*h;b.vy*=1-.12*h;
@@ -278,7 +278,7 @@ function release(side){
   if(side==='R'&&plg.charging){plg.charging=false;launch()}
 }
 function launch(){const p=plg.pull;plg.pull=0;plg.snap=1;const b=shooterBall();
-  if(b){b.vy=-(2500+p*1500);sfx.launch(.5+p*.5);if(!b.launched){b.launched=1;g.saveUntil=Math.max(g.saveUntil,now+8)}}}
+  if(b){b.vy=-(2150+p*1150);sfx.launch(.5+p*.5);if(!b.launched){b.launched=1;g.saveUntil=Math.max(g.saveUntil,now+8)}}}
 function sideOf(x){return x<innerWidth/2?'L':'R'}
 function anySide(s){for(const v of ptrs.values())if(v===s)return true;return false}
 addEventListener('pointerdown',e=>{if(e.target.closest('[data-ui]'))return;e.preventDefault();const s=sideOf(e.clientX);ptrs.set(e.pointerId,s);press(s)},{passive:false});
@@ -449,7 +449,7 @@ function drawTargets(){
 }
 function drawPlunger(){
   const y=plSeg.ay;plg.snap*=.85;
-  const x=984;
+  const x=987;
   ctx.save();
   // spring
   ctx.strokeStyle='#9aa3ad';ctx.lineWidth=3;ctx.beginPath();const n=9,top=y+14,bot=1530;
@@ -460,8 +460,8 @@ function drawPlunger(){
   ctx.restore();
 }
 function drawBall(b){
-  const x=b.x,y=b.y;let r=R;
-  if(b.st==='scoop'){const k=Math.min(1,(b.hold-now)/1.3);r=R*(.75+.25*Math.abs(Math.sin(k*3)))}
+  const x=b.x,y=b.y;let r=RV;
+  if(b.st==='scoop'){const k=Math.min(1,(b.hold-now)/1.3);r=RV*(.75+.25*Math.abs(Math.sin(k*3)))}
   ctx.save();ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.clip();
   // chrome: bright sky on top, darker horizon, the playfield reflected underneath
   let lg=ctx.createLinearGradient(x,y-r,x,y+r);
@@ -490,8 +490,8 @@ function drawBall(b){
   ctx.strokeStyle='rgba(0,0,0,.5)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(x,y,r-.5,0,7);ctx.stroke();
 }
 function drawShadow(b){const sp=Math.hypot(b.vx,b.vy);
-  ctx.fillStyle='rgba(0,0,0,.42)';ctx.beginPath();ctx.ellipse(b.x+6,b.y+9,R*1.05,R*.92,0,0,7);ctx.fill();
-  if(sp>2200&&b.st==='play'){const k=Math.min(.22,(sp-2200)/9000);for(let i=1;i<=3;i++){ctx.globalAlpha=k/i;ctx.fillStyle='#e8ecf2';ctx.beginPath();ctx.arc(b.x-b.vx*i*.006,b.y-b.vy*i*.006,R*.92,0,7);ctx.fill()}ctx.globalAlpha=1}}
+  ctx.fillStyle='rgba(0,0,0,.42)';ctx.beginPath();ctx.ellipse(b.x+7,b.y+10,RV*1.05,RV*.92,0,0,7);ctx.fill();
+  if(sp>2000&&b.st==='play'){const k=Math.min(.2,(sp-2000)/8000);for(let i=1;i<=3;i++){ctx.globalAlpha=k/i;ctx.fillStyle='#e8ecf2';ctx.beginPath();ctx.arc(b.x-b.vx*i*.006,b.y-b.vy*i*.006,RV*.92,0,7);ctx.fill()}ctx.globalAlpha=1}}
 function drawFlashes(){
   for(const c of bumpers){const k=1-(now-c.t)/.16;if(k>0){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=k*.75;ctx.drawImage(GW,c.x-c.r*1.9,c.y-c.r*1.9,c.r*3.8,c.r*3.8);
       ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.strokeStyle=`rgba(255,250,200,${k})`;ctx.lineWidth=5;ctx.beginPath();ctx.arc(c.x,c.y,c.r+4+(1-k)*14,0,7);ctx.stroke()}}
