@@ -278,7 +278,7 @@ function release(side){
   if(side==='R'&&plg.charging){plg.charging=false;launch()}
 }
 function launch(){const p=plg.pull;plg.pull=0;plg.snap=1;const b=shooterBall();
-  if(b){b.vy=-(2500+p*1500);sfx.launch(.5+p*.5)}}
+  if(b){b.vy=-(2500+p*1500);sfx.launch(.5+p*.5);if(!b.launched){b.launched=1;g.saveUntil=Math.max(g.saveUntil,now+8)}}}
 function sideOf(x){return x<innerWidth/2?'L':'R'}
 function anySide(s){for(const v of ptrs.values())if(v===s)return true;return false}
 addEventListener('pointerdown',e=>{if(e.target.closest('[data-ui]'))return;e.preventDefault();const s=sideOf(e.clientX);ptrs.set(e.pointerId,s);press(s)},{passive:false});
