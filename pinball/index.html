@@ -5,18 +5,17 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0b0710">
-<title>Weird Planet Pinball</title>
-<meta name="description" content="Weird Planet, a playable pinball table by Jared Rankin. Collect five relics to unlock the Citadel.">
-<link rel="preload" href="field.webp" as="image">
+<meta name="theme-color" content="#0e1014">
+<title>Upper Deck Pinball</title>
+<meta name="description" content="A playable pinball table with a ramp to an upper deck, by Jared Rankin.">
 <link rel="preload" href="vt323.woff2" as="font" type="font/woff2" crossorigin>
 <style>
 @font-face{font-family:"VT323";src:url(vt323.woff2) format("woff2");font-display:block}
-:root{--bg:#0b0710;--fg:#f3e6cf;--dim:#9b8aa8;--amber:#ff8a1c;color-scheme:dark}
+:root{--bg:#0e1014;--fg:#eef0f3;--dim:#8e95a0;--amber:#ff8a1c;color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);overflow:hidden;overscroll-behavior:none}
 body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;touch-action:none;
-  background:radial-gradient(120% 80% at 50% 0%,#24123a 0%,var(--bg) 60%)}
+  background:radial-gradient(120% 80% at 50% 0%,#1d222b 0%,var(--bg) 60%)}
 #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
   padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
 #cab{display:flex;flex-direction:column;gap:6px}
@@ -36,7 +35,7 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-user-select
       <button id="mute" type="button" data-ui aria-label="Sound on">Sound on</button>
     </div>
     <canvas id="dmd" aria-label="Score display"></canvas>
-    <canvas id="pf" aria-label="Weird Planet pinball table. Tap the left or right half of the screen to flip; hold the right half to pull the plunger."></canvas>
+    <canvas id="pf" aria-label="Pinball table with an upper deck. Tap the left or right half of the screen to flip; hold the right half to pull the plunger."></canvas>
   </div>
 </div>
 <script>
@@ -47,81 +46,90 @@ const W=1024,H=1536,R=19,RV=22,G=1350,HSTEP=1/960,VMAX=4800;
 const DEBUG=/debug/.test(location.search);
 const $=s=>document.querySelector(s);
 const pf=$('#pf'),ctx=pf.getContext('2d'),dmd=$('#dmd'),dctx=dmd.getContext('2d');
-const field=new Image(),spr=new Image();
-field.src='field.webp';spr.src='sprites.webp';
-const SP={logo:[0,0,525,282],flipL:[527,0,235,143],flipR:[764,0,240,143],target:[0,284,82,174],roll:[84,284,114,148]};
 let now=0;
 
-/* ---------- geometry (playfield image pixels) ---------- */
-const segs=[],circs=[],sensors=[];
+/* ---------- geometry: level 0 is the main playfield, level 1 is the ramp and the upper deck ---------- */
+const segs=[],circs=[],sensors=[];let LV=0;
 function S(ax,ay,bx,by,o){o=o||{};const dx=bx-ax,dy=by-ay,L=Math.hypot(dx,dy);if(L<.5)return null;
-  const s={ax,ay,bx,by,dx,dy,L2:dx*dx+dy*dy,nx:dy/L,ny:-dx/L,r:o.r??3,e:o.e??0.3,kind:o.kind||'wall',id:o.id,one:!!o.one,t:-9};
+  const s={ax,ay,bx,by,dx,dy,L2:dx*dx+dy*dy,nx:dy/L,ny:-dx/L,r:o.r??3,e:o.e??0.3,kind:o.kind||'wall',id:o.id,one:!!o.one,t:-9,lv:o.lv??LV,hid:!!o.hid};
   segs.push(s);return s}
 function PL(p,o){for(let i=0;i<p.length-2;i+=2)S(p[i],p[i+1],p[i+2],p[i+3],o)}
-function C(x,y,r,o){o=o||{};const c={x,y,r,e:o.e??0.7,kind:o.kind||'post',id:o.id,t:-9};circs.push(c);return c}
-function SN(x0,y0,x1,y1,id){sensors.push({x0,y0,x1,y1,id})}
+function C(x,y,r,o){o=o||{};const c={x,y,r,e:o.e??0.7,kind:o.kind||'post',id:o.id,t:-9,lv:o.lv??LV};circs.push(c);return c}
+function SN(x0,y0,x1,y1,id){sensors.push({x0,y0,x1,y1,id,lv:LV})}
+function face(ax,ay,bx,by,ts,half,kind){
+  let prev=0;
+  ts.forEach((t,i)=>{const t0=t-half,t1=t+half;
+    S(ax+(bx-ax)*prev,ay+(by-ay)*prev,ax+(bx-ax)*t0,ay+(by-ay)*t0,{r:4});
+    S(ax+(bx-ax)*t0,ay+(by-ay)*t0,ax+(bx-ax)*t1,ay+(by-ay)*t1,{r:5,e:.45,kind,id:i});prev=t1});
+  S(ax+(bx-ax)*prev,ay+(by-ay)*prev,bx,by,{r:4});
+}
 
-// outer arch: ellipse through (48,300) and (1006,300)
+/* level 0 */
+LV=0;
 const ACX=530,ACY=300,AA=482,AB=272,arch=[];
 for(let k=0;k<=44;k++){const th=Math.PI+Math.PI*k/44;arch.push(ACX+AA*Math.cos(th),ACY+AB*Math.sin(th))}
 PL(arch,{e:.25});
 S(48,300,48,1218,{e:.3});             // left wall
 S(1012,300,1012,1500,{e:.2});         // shooter outer wall
 S(962,330,962,1500,{e:.3});           // right wall / shooter divider
-S(962,330,1012,300,{one:true,e:.2});  // one-way gate at top of shooter lane
-// orbit rails
-function rail(a,b,xEnd,left){const p=[],tEnd=Math.acos((xEnd-ACX)/a);// angle in [0,pi] for cos
-  const thS=left?Math.PI:2*Math.PI,thE=left?2*Math.PI-tEnd:2*Math.PI-tEnd;
+S(962,330,1012,300,{one:true,e:.2});  // one-way gate at the top of the shooter lane
+function rail(a,b,xEnd,left){const p=[],tEnd=Math.acos((xEnd-ACX)/a);
+  const thS=left?Math.PI:2*Math.PI,thE=2*Math.PI-tEnd;
   for(let k=0;k<=16;k++){const th=thS+(thE-thS)*k/16;p.push(ACX+a*Math.cos(th),ACY+b*Math.sin(th))}return p}
-PL([100,420,100,300].concat(rail(427,220,270,true)),{r:4,e:.3});
-PL([910,430,910,300].concat(rail(383,220,755,false)),{r:4,e:.3});
-// RELICS island (left) with three stand-up targets on its face
-function face(ax,ay,bx,by,ts,half,kind,base){
-  let prev=0;const pts=[];
-  ts.forEach((t,i)=>{const t0=t-half,t1=t+half;
-    S(ax+(bx-ax)*prev,ay+(by-ay)*prev,ax+(bx-ax)*t0,ay+(by-ay)*t0,{r:4,e:.3});
-    S(ax+(bx-ax)*t0,ay+(by-ay)*t0,ax+(bx-ax)*t1,ay+(by-ay)*t1,{r:5,e:.45,kind,id:base+i});prev=t1});
-  S(ax+(bx-ax)*prev,ay+(by-ay)*prev,bx,by,{r:4,e:.3});
-}
-PL([48,480,124,500],{r:4});face(124,500,162,695,[.21,.47,.735],.09,'relic',0);PL([162,695,64,772,48,772],{r:4});
-// ALIENS island (right) with two targets
-PL([962,500,888,556],{r:4});face(888,556,852,708,[.45,.78],.1,'alien',0);PL([852,708,950,775,962,775],{r:4});
-// relic scoop (left inner lane)
-S(196,385,205,575,{r:4,e:.25});S(262,398,290,568,{r:4,e:.25});S(196,385,262,398,{r:4,e:.1});
-C(205,575,9,{e:.6});C(290,568,9,{e:.6});
-// citadel block: only its bottom face is live
-PL([420,250,420,200,325,252],{r:4,e:.3});PL([420,200,512,150,610,200],{r:4,e:.3});PL([610,250,610,200,700,250],{r:4,e:.3});
-S(420,250,610,250,{r:4,e:.35,kind:'citadel'});
-// bumpers and posts
-const bumpers=[C(373,292,50,{kind:'bumper',id:0,e:.5}),C(650,288,50,{kind:'bumper',id:1,e:.5}),C(510,396,50,{kind:'bumper',id:2,e:.5})];
-C(512,290,10);C(377,421,11);C(642,421,11);
+const L1=[100,420,100,300].concat(rail(427,195,270,true)),R1=[910,430,910,300].concat(rail(383,195,755,false));
+PL(L1,{r:4});PL(R1,{r:4});
+// the space under the upper deck is closed off on the main level; the orbits run around it
+PL([270,135,512,100,755,143],{r:4,hid:true});S(196,180,196,562,{r:4,hid:true});S(775,177,775,562,{r:4});
+S(196,562,690,562,{r:4,hid:true});
+// left target island (3) and right target island (2)
+PL([48,480,124,500],{r:4});face(124,500,162,695,[.21,.47,.735],.09,'ltgt');PL([162,695,64,772,48,772],{r:4});
+PL([962,500,888,556],{r:4});face(888,556,852,708,[.45,.78],.1,'rtgt');PL([852,708,950,775,962,775],{r:4});
+// ramp lane on the main level (a ball that is too slow rolls back out)
+S(690,562,690,760,{r:4});S(775,562,775,760,{r:4});S(690,562,775,562,{r:4,hid:true});
+C(690,764,8,{e:.6});C(775,764,8,{e:.6});
+// pop bumpers
+const bumpers=[C(330,690,44,{kind:'bumper',id:0,e:.5}),C(470,650,44,{kind:'bumper',id:1,e:.5}),C(395,810,44,{kind:'bumper',id:2,e:.5})];
+// centre bank
+face(500,910,660,910,[.2,.5,.8],.11,'bank');PL([500,910,580,868,660,910],{r:4});
 // slingshots
 const SLL=[110,993,100,1180,200,1245],SLR=[912,1000,907,1180,822,1244];
 function sling(p,id){S(p[0],p[1],p[4],p[5],{r:6,e:.5,kind:'sling',id});S(p[0],p[1],p[2],p[3],{r:5});S(p[2],p[3],p[4],p[5],{r:5});
   C(p[0],p[1],10);C(p[2],p[3],10);C(p[4],p[5],10)}
 sling(SLL,0);sling(SLR,1);
-// inlane guides and apron
 S(48,1218,234,1328,{r:4});S(962,1218,790,1328,{r:4});
 S(230,1405,400,1536,{r:4});S(794,1405,624,1536,{r:4});
-// plunger (moves)
 const plg={y:1472,pull:0,charging:false,t0:0,snap:0};
-const plSeg=S(962,1472,1012,1472,{r:2,e:.05,kind:'plunger',one:true});
-// sensors
-SN(48,330,100,400,'consp');SN(910,330,962,400,'sorc');
-SN(200,392,262,440,'scoop');SN(50,1040,98,1090,'retL');SN(912,1040,960,1090,'retR');
+const plSeg=S(962,1472,1012,1472,{r:2,e:.05,kind:'plunger',one:true,hid:true});
+SN(48,330,100,400,'orbitL');SN(910,330,962,400,'orbitR');
+SN(50,1040,98,1090,'retL');SN(912,1040,960,1090,'retR');
+
+/* level 1: ramp and upper deck */
+LV=1;
+const DX=492,DY=200,DA=283,DB=110,darc=[];
+for(let k=0;k<=36;k++){const th=Math.PI+Math.PI*k/36;darc.push(DX+DA*Math.cos(th),DY+DB*Math.sin(th))}
+PL(darc,{e:.25});
+S(210,200,210,395,{r:4});S(210,395,375,447,{r:4});          // deck left wall and left inlane
+S(690,785,690,395,{r:4});S(690,420,609,447,{r:4});          // ramp left wall, deck rail and right inlane
+S(775,785,775,200,{r:4});                                   // ramp right wall and deck right wall
+C(690,395,7,{e:.5});
+PL([410,95,430,145],{r:4});face(430,145,555,145,[.2,.5,.8],.11,'dtgt');PL([555,145,575,95],{r:4});
+const dbump=[C(310,290,30,{kind:'bumper',id:3,e:.5}),C(560,300,30,{kind:'bumper',id:4,e:.5})];
+SN(695,400,770,440,'rampTop');
+LV=0;
+const RAMP={x0:690,x1:775,top:540,mouth:760};
 
 /* ---------- flippers ---------- */
-const FL=200,FR0=33,FR1=23,UP=22,DN=16;
-function mkF(px,py,rest,up,dir){return{px,py,rest,up,ang:rest,w:0,dir,on:false}}
-const fL=mkF(236,1370,0.576,-0.384,-1),fR=mkF(788,1370,Math.PI-0.576,Math.PI+0.384,1);
-const flips=[fL,fR];
+const UP=22,DN=16;
+function mkF(px,py,rest,up,L,r0,r1,lv){return{px,py,rest,up,ang:rest,w:0,on:false,L,r0,r1,lv}}
+const fL=mkF(236,1370,0.576,-0.384,200,33,23,0),fR=mkF(788,1370,Math.PI-0.576,Math.PI+0.384,200,33,23,0);
+const dL=mkF(375,470,0.52,-0.42,92,18,12,1),dR=mkF(609,470,Math.PI-0.52,Math.PI+0.42,92,18,12,1);
+const flips=[fL,fR,dL,dR];
 function stepFlip(f,h){const tg=f.on?f.up:f.rest,sp=f.on?UP:DN,d=tg-f.ang,st=sp*h;
   if(Math.abs(d)<=st){f.ang=tg;f.w=0}else{f.ang+=Math.sign(d)*st;f.w=Math.sign(d)*sp}}
 
 /* ---------- balls ---------- */
 const balls=[];
-function mkBall(x,y){const b={x,y,vx:0,vy:0,M:[1,0,0,0,1,0,0,0,1],st:'play',hold:0,sens:{},still:0,trail:[]};
-  // random initial orientation so scuffs differ
+function mkBall(x,y,lv){const b={x,y,vx:0,vy:0,lv:lv||0,M:[1,0,0,0,1,0,0,0,1],st:'play',hold:0,sens:{},still:0};
   rot(b,Math.random()*6,Math.random()*6,Math.random()*6,1);balls.push(b);return b}
 function rot(b,wx,wy,wz,dt){const w=Math.hypot(wx,wy,wz);if(w<1e-6)return;const a=w*dt,x=wx/w,y=wy/w,z=wz/w,c=Math.cos(a),s=Math.sin(a),t=1-c;
   const r=[t*x*x+c,t*x*y-s*z,t*x*z+s*y,t*x*y+s*z,t*y*y+c,t*y*z-s*x,t*x*z-s*y,t*y*z+s*x,t*z*z+c],m=b.M,o=new Array(9);
@@ -129,14 +137,12 @@ function rot(b,wx,wy,wz,dt){const w=Math.hypot(wx,wy,wz);if(w<1e-6)return;const 
 const MARKS=[];{for(let i=0;i<14;i++){const u=Math.random()*2-1,a=Math.random()*Math.PI*2,s=Math.sqrt(1-u*u);MARKS.push([s*Math.cos(a),s*Math.sin(a),u,.12+Math.random()*.16])}}
 
 /* ---------- collisions ---------- */
-function bounce(b,nx,ny,e,obj,sx,sy){
-  // sx,sy = surface velocity
+function bounce(b,nx,ny,e,sx,sy){
   const rvx=b.vx-sx,rvy=b.vy-sy,vn=rvx*nx+rvy*ny;
   if(vn>=0)return 0;
-  const imp=-vn,ee=imp<45?0:e;
-  let tx=rvx-vn*nx,ty=rvy-vn*ny;
-  const fr=1-Math.min(.12,imp*.00005),nvx=-ee*vn*nx+tx*fr,nvy=-ee*vn*ny+ty*fr;
-  b.vx=nvx+sx;b.vy=nvy+sy;return imp}
+  const imp=-vn,ee=imp<45?0:e,tx=rvx-vn*nx,ty=rvy-vn*ny;
+  const fr=1-Math.min(.12,imp*.00005);
+  b.vx=-ee*vn*nx+tx*fr+sx;b.vy=-ee*vn*ny+ty*fr+sy;return imp}
 function colSeg(b,s){
   let t=((b.x-s.ax)*s.dx+(b.y-s.ay)*s.dy)/s.L2;t=t<0?0:t>1?1:t;
   const qx=s.ax+s.dx*t,qy=s.ay+s.dy*t,dx=b.x-qx,dy=b.y-qy,d2=dx*dx+dy*dy,rr=R+s.r;
@@ -144,23 +150,23 @@ function colSeg(b,s){
   if(s.one&&((b.x-s.ax)*s.nx+(b.y-s.ay)*s.ny)<0)return;
   const d=Math.sqrt(d2)||1e-6,nx=dx/d,ny=dy/d;
   b.x+=nx*(rr-d);b.y+=ny*(rr-d);
-  const imp=bounce(b,nx,ny,s.e,s,0,0);
+  const imp=bounce(b,nx,ny,s.e,0,0);
   if(imp)hit(s,b,imp,nx,ny);
 }
 function colCirc(b,c){
   const dx=b.x-c.x,dy=b.y-c.y,d2=dx*dx+dy*dy,rr=R+c.r;if(d2>=rr*rr)return;
   const d=Math.sqrt(d2)||1e-6,nx=dx/d,ny=dy/d;b.x+=nx*(rr-d);b.y+=ny*(rr-d);
-  const imp=bounce(b,nx,ny,c.e,c,0,0);
+  const imp=bounce(b,nx,ny,c.e,0,0);
   if(c.kind==='bumper')hit(c,b,Math.max(imp,1),nx,ny);else if(imp)hit(c,b,imp,nx,ny);
 }
 function colFlip(b,f){
-  const tx=f.px+Math.cos(f.ang)*FL,ty=f.py+Math.sin(f.ang)*FL,dx0=tx-f.px,dy0=ty-f.py;
-  let t=((b.x-f.px)*dx0+(b.y-f.py)*dy0)/(FL*FL);t=t<0?0:t>1?1:t;
-  const qx=f.px+dx0*t,qy=f.py+dy0*t,rr=R+FR0+(FR1-FR0)*t,dx=b.x-qx,dy=b.y-qy,d2=dx*dx+dy*dy;
+  const dx0=Math.cos(f.ang)*f.L,dy0=Math.sin(f.ang)*f.L;
+  let t=((b.x-f.px)*dx0+(b.y-f.py)*dy0)/(f.L*f.L);t=t<0?0:t>1?1:t;
+  const qx=f.px+dx0*t,qy=f.py+dy0*t,rr=R+f.r0+(f.r1-f.r0)*t,dx=b.x-qx,dy=b.y-qy,d2=dx*dx+dy*dy;
   if(d2>=rr*rr)return;
   const d=Math.sqrt(d2)||1e-6,nx=dx/d,ny=dy/d;b.x+=nx*(rr-d);b.y+=ny*(rr-d);
   const cx=b.x-nx*R,cy=b.y-ny*R,sx=-f.w*(cy-f.py),sy=f.w*(cx-f.px);
-  const imp=bounce(b,nx,ny,.42,f,sx,sy);
+  const imp=bounce(b,nx,ny,.42,sx,sy);
   if(imp>260)sfx.rubber(Math.min(1,imp/2500));
 }
 function colBalls(a,b){const dx=b.x-a.x,dy=b.y-a.y,d2=dx*dx+dy*dy;if(d2>=4*R*R||d2<1e-6)return;
@@ -168,74 +174,68 @@ function colBalls(a,b){const dx=b.x-a.x,dy=b.y-a.y,d2=dx*dx+dy*dy;if(d2>=4*R*R||
   const vn=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny;if(vn>=0)return;const j=-(1.9)*vn/2;
   a.vx-=j*nx;a.vy-=j*ny;b.vx+=j*nx;b.vy+=j*ny;if(-vn>150)sfx.clack(Math.min(1,-vn/2000))}
 
-/* ---------- game state ---------- */
-const g={state:'attract',score:0,ball:1,mult:1,relics:0,open:false,consp:0,sorc:0,aliens:[0,0],relicT:[0,0,0],
-  saveUntil:0,last:0,hi:0,newHi:false,overAt:0,skill:false,jack:0,flash:{}};
-try{g.hi=+localStorage.getItem('wp-pinball-hi')||0}catch(e){}
+/* ---------- game state and rules ---------- */
+const NEW=()=>({state:'play',score:0,ball:1,mult:1,ramps:0,ltgt:[0,0,0],rtgt:[0,0],bank:[0,0,0],dtgt:[0,0,0],jackV:100000,saveUntil:0,jack:0,newHi:false});
+const g=Object.assign(NEW(),{state:'attract',hi:0,overAt:0,skill:false,flash:{}});
+try{g.hi=+localStorage.getItem('pb-deck-hi')||0}catch(e){}
 const fmt=n=>n.toLocaleString('en-US');
 function add(p){if(g.state==='play')g.score+=p*g.mult}
 function flash(k,d){g.flash[k]=now+(d||.6)}
 let msgQ=null;
 function msg(a,b,d,big){msgQ={a,b,until:now+(d||2),big:!!big};dmdDirty=true}
-let big=null;function bigText(t,c){big={t,c:c||'#fff3c4',t0:now}}
+let big=null;function bigText(t,c){big={t,c:c||'#ffe7a8',t0:now}}
 
-function relic(){
-  if(g.open){add(5000);return}
-  g.relics=Math.min(5,g.relics+1);flash('cit'+(g.relics-1),1.2);
-  if(g.relics>=5){g.open=true;sfx.unlock();msg('CITADEL UNLOCKED','SHOOT THE CITADEL',3);bigText('CITADEL OPEN','#c8ff3c')}
-  else{msg('RELIC '+g.relics+' OF 5',(5-g.relics)+' MORE TO UNLOCK',1.8)}
-}
 function multUp(){if(g.mult<5){g.mult++;flash('mult',1.2);msg(g.mult+'X MULTIPLIER','ALL SCORES '+g.mult+'X',1.8);sfx.mult()}}
-function laneConsp(){g.consp++;add(5000);flash('consp');
-  if(g.consp>=3){g.consp=0;add(25000);sfx.complete();bigText('CONSPIRACY','#c8ff3c');msg('CONSPIRACY','UNCOVERED  +25,000',2);relic();multUp()}else{sfx.lane();msg('CONSPIRACY',g.consp+' OF 3',1.2)}}
-function laneSorc(){g.sorc++;add(5000);flash('sorc');
-  if(g.sorc>=2){g.sorc=0;add(25000);sfx.complete();bigText('SORCERY','#d8a6ff');msg('SORCERY','MASTERED  +25,000',2);relic();multUp()}else{sfx.lane();msg('SORCERY','1 OF 2',1.2)}}
-function hitAlien(i){if(!g.aliens[i]){g.aliens[i]=1;add(2500);sfx.target()}else{add(500);sfx.target()}
-  if(g.aliens[0]&&g.aliens[1]){g.aliens=[0,0];add(25000);sfx.complete();bigText('ALIENS','#c8ff3c');msg('ALIENS','CONTACT MADE  +25,000',2);relic();multUp();flash('aliens',1)}}
-function hitRelic(i){sfx.target();add(2500);if(!g.relicT[i]){g.relicT[i]=1;relic()}else add(500);
-  if(g.relicT.every(Boolean)){setTimeout(()=>{g.relicT=[0,0,0]},700);flash('relicsAll',.8);add(10000)}}
-function citadel(){
-  if(g.open){const j=250000*g.mult;g.score+=j;g.open=false;g.relics=0;g.jack++;
-    sfx.jackpot();bigText('JACKPOT','#ffd23c');msg('JACKPOT',fmt(j),3,false);flash('jack',2);
-    addBall(true);g.saveUntil=now+12}
-  else{add(1000);sfx.locked();msg('CITADEL LOCKED','RELICS '+g.relics+' OF 5',1.4)}
-}
-function scoop(b){b.st='scoop';b.hold=now+1.3;b.x=229;b.y=418;b.vx=b.vy=0;add(10000);sfx.scoopIn();flash('scoop',1.3);relic()}
+function orbit(side){add(5000);flash('orbit'+side,.8);sfx.lane();msg(side==='L'?'LEFT ORBIT':'RIGHT ORBIT','+5,000',1.2)}
+function rampMade(){g.ramps++;add(10000);g.jackV+=25000;flash('ramp',1);
+  if(g.ramps%3===0){sfx.complete();bigText('RAMP x3');msg('3 RAMPS','MULTIPLIER UP',1.8);multUp()}
+  else{sfx.lane();msg('RAMP','UPPER DECK  '+(g.ramps%3)+' OF 3',1.4)}}
+const SETS={ltgt:['LEFT TARGETS',()=>{add(25000)}],rtgt:['RIGHT TARGETS',()=>{add(25000)}],bank:['CENTER BANK',()=>{add(15000);multUp()}],dtgt:['DECK TARGETS',deckJackpot]};
+function target(kind,i){const a=g[kind];sfx.target();if(a[i]){add(500);return}a[i]=1;add(2500);
+  if(a.every(Boolean)){const [name,fn]=SETS[kind];flash(kind,1);setTimeout(()=>{a.fill(0)},800);
+    if(kind!=='dtgt'){sfx.complete();msg(name,'COMPLETE',1.6)}fn()}}
+function deckJackpot(){const j=g.jackV*g.mult;g.score+=j;g.jack++;g.jackV=100000;
+  sfx.jackpot();bigText('JACKPOT');msg('DECK JACKPOT',fmt(j),3);flash('jack',2);serve(true);g.saveUntil=now+12}
+function scoop(b){b.st='scoop';b.hold=now+1.3;b.x=229;b.y=418;b.vx=b.vy=0;add(10000);g.jackV+=25000;
+  sfx.scoopIn();flash('scoop',1.3);msg('JACKPOT VALUE',fmt(g.jackV),1.6)}
 
 function hit(o,b,imp,nx,ny){
   switch(o.kind){
     case 'wall':if(imp>110)sfx.metal(Math.min(1,imp/2600));break;
     case 'post':if(imp>90)sfx.rubber(Math.min(1,imp/2200));break;
-    case 'plunger':break;
     case 'sling':if(imp>130&&now-o.t>.12){o.t=now;b.vx+=nx*780;b.vy+=ny*780;add(110);sfx.sling()}else if(imp>90)sfx.rubber(.4);break;
-    case 'bumper':{if(now-o.t>.05){o.t=now;const vo=b.vx*nx+b.vy*ny;if(vo<900){b.vx+=nx*(900-vo);b.vy+=ny*(900-vo)}add(1000);sfx.bumper(o.id)}break}
-    case 'relic':if(imp>60&&now-o.t>.3){o.t=now;hitRelic(o.id)}break;
-    case 'alien':if(imp>60&&now-o.t>.3){o.t=now;hitAlien(o.id)}break;
-    case 'citadel':if(imp>70&&now-o.t>.4){o.t=now;citadel()}else if(imp>60)sfx.metal(.3);break;
+    case 'bumper':{if(now-o.t>.05){o.t=now;const k=o.lv?700:900,vo=b.vx*nx+b.vy*ny;if(vo<k){b.vx+=nx*(k-vo);b.vy+=ny*(k-vo)}add(o.lv?500:1000);sfx.bumper(o.id%3)}break}
+    case 'ltgt':case 'rtgt':case 'bank':case 'dtgt':if(imp>60&&now-o.t>.3){o.t=now;target(o.kind,o.id)}break;
   }
 }
 function sense(b){
-  for(const s of sensors){const inside=b.x>s.x0&&b.x<s.x1&&b.y>s.y0&&b.y<s.y1;
+  for(const s of sensors){if(s.lv!==b.lv)continue;const inside=b.x>s.x0&&b.x<s.x1&&b.y>s.y0&&b.y<s.y1;
     if(inside&&!b.sens[s.id]){b.sens[s.id]=1;
-      if(s.id==='consp'){if(Math.abs(b.vy)>250){if(g.skill&&b.vy>0){g.skill=false;add(20000);msg('SKILL SHOT','+20,000',1.6);sfx.lane()}laneConsp()}}
-      else if(s.id==='sorc'){if(Math.abs(b.vy)>250)laneSorc()}
+      if(s.id==='orbitL'){if(Math.abs(b.vy)>250){if(g.skill&&b.vy>0){g.skill=false;add(20000);msg('SKILL SHOT','+20,000',1.6)}orbit('L')}}
+      else if(s.id==='orbitR'){if(Math.abs(b.vy)>250)orbit('R')}
       else if(s.id==='scoop'){if(b.vy<120)scoop(b)}
+      else if(s.id==='rampTop'){if(b.vy<0)rampMade()}
       else {add(1000);sfx.rollover();flash(s.id,.5)}
     } else if(!inside&&b.sens[s.id])b.sens[s.id]=0;
   }
 }
+// moving between levels
+function levels(b){
+  const inRamp=b.x>RAMP.x0&&b.x<RAMP.x1;
+  if(b.lv===0&&inRamp&&b.y<RAMP.mouth&&b.y>RAMP.mouth-70&&b.vy<-400){b.lv=1;sfx.ramp()}
+  else if(b.lv===1&&inRamp&&b.y>RAMP.mouth-60&&b.vy>0){b.lv=0}
+  else if(b.lv===1&&b.y>592&&b.x>200&&b.x<RAMP.x0-2){b.lv=0;b.vy=Math.max(b.vy,120);flash('drop',.6);sfx.drop()}
+}
 function inShooter(b){return b.st==='play'&&b.x>962&&b.y>1300}
-function serve(auto){const b=mkBall(987,1450);g.skill=!auto;if(auto)setTimeout(()=>{if(balls.includes(b)&&inShooter(b)){b.vy=-2700;sfx.launch(.8)}},700);return b}
-function addBall(auto){serve(auto)}
-function startGame(){Object.assign(g,{state:'play',score:0,ball:1,mult:1,relics:0,open:false,consp:0,sorc:0,aliens:[0,0],relicT:[0,0,0],saveUntil:0,jack:0,newHi:false});
-  balls.length=0;serve(false);msg('BALL 1','PULL THE PLUNGER',2);sfx.start()}
+function serve(auto){const b=mkBall(987,1450,0);g.skill=!auto;if(auto)setTimeout(()=>{if(balls.includes(b)&&inShooter(b)){b.vy=-2700;b.launched=1;sfx.launch(.8)}},700);return b}
+function startGame(){Object.assign(g,NEW());balls.length=0;serve(false);msg('BALL 1','PULL THE PLUNGER',2);sfx.start()}
 function drained(b){balls.splice(balls.indexOf(b),1);
   if(g.state!=='play')return;
   if(now<g.saveUntil){msg('BALL SAVED','',1.6);sfx.saved();serve(true);return}
   if(balls.length)return;
-  sfx.drain();g.mult=1;g.open=g.open; // relics carry over between balls
+  sfx.drain();g.mult=1;
   if(g.ball<3){g.ball++;msg('BALL '+g.ball,'',2);setTimeout(()=>{if(g.state==='play')serve(false)},1100)}
-  else{g.state='over';g.overAt=now;if(g.score>g.hi){g.hi=g.score;g.newHi=true;try{localStorage.setItem('wp-pinball-hi',g.hi)}catch(e){}}
+  else{g.state='over';g.overAt=now;if(g.score>g.hi){g.hi=g.score;g.newHi=true;try{localStorage.setItem('pb-deck-hi',g.hi)}catch(e){}}
     msg('GAME OVER',fmt(g.score),4)}
 }
 
@@ -243,27 +243,28 @@ function drained(b){balls.splice(balls.indexOf(b),1);
 function step(h){
   now+=h;
   for(const f of flips)stepFlip(f,h);
-  // plunger
   if(plg.charging){plg.pull=Math.min(1,(performance.now()-plg.t0)/900)}
   const py=1472+plg.pull*55;plSeg.ay=plSeg.by=py;
   for(let i=balls.length-1;i>=0;i--){const b=balls[i];
     if(b.st==='scoop'){if(now>b.hold){b.st='play';b.x=232;b.y=440;b.vx=60+Math.random()*80;b.vy=750;sfx.kick()}continue}
     b.vy+=G*h;
+    // the ramp climbs, so a ball on it slows down more
+    if(b.lv===1&&b.x>RAMP.x0&&b.x<RAMP.x1&&b.y>RAMP.top)b.vy+=900*h;
     const sp=Math.hypot(b.vx,b.vy);if(sp>VMAX){b.vx*=VMAX/sp;b.vy*=VMAX/sp}
     b.vx*=1-.12*h;b.vy*=1-.12*h;
     b.x+=b.vx*h;b.y+=b.vy*h;
-    for(const s of segs)colSeg(b,s);
-    for(const c of circs)colCirc(b,c);
-    colFlip(b,fL);colFlip(b,fR);
-    for(let j=0;j<i;j++)if(balls[j].st==='play')colBalls(balls[j],b);
-    sense(b);
+    for(const s of segs)if(s.lv===b.lv)colSeg(b,s);
+    for(const c of circs)if(c.lv===b.lv)colCirc(b,c);
+    for(const f of flips)if(f.lv===b.lv)colFlip(b,f);
+    for(let j=0;j<i;j++)if(balls[j].st==='play'&&balls[j].lv===b.lv)colBalls(balls[j],b);
+    sense(b);levels(b);
     if(b.y>H+40||b.x<0||b.x>W){drained(b)}
   }
 }
 
 /* ---------- input ---------- */
 const ptrs=new Map();
-function setFlip(side,on){const f=side==='L'?fL:fR;if(f.on===on)return;f.on=on;
+function setFlip(side,on){const f=side==='L'?fL:fR;if(f.on===on)return;f.on=on;(side==='L'?dL:dR).on=on;
   if(g.state!=='play')return;on?sfx.flipUp(side):sfx.flipDown(side);if(on&&navigator.vibrate)try{navigator.vibrate(8)}catch(e){}}
 function shooterBall(){return balls.find(b=>inShooter(b)&&b.y>1380)}
 function press(side){
@@ -302,7 +303,7 @@ addEventListener('blur',()=>{ptrs.clear();setFlip('L',false);setFlip('R',false);
 
 /* ---------- audio (Web Audio synth) ---------- */
 const AC=window.AudioContext||window.webkitAudioContext;let ac=null,out=null,nb=null,bb=null,rollG=null,rollF=null,rollG2=null,muted=false;
-try{muted=localStorage.getItem('wp-pinball-mute')==='1'}catch(e){}
+try{muted=localStorage.getItem('pb-mute')==='1'}catch(e){}
 function audio(){
   if(!AC)return;
   if(ac){if(ac.state!=='running')ac.resume();return}
@@ -352,6 +353,8 @@ const sfx={
   launch(v){noise(.15,.55*v,'lowpass',900);tone('sine',95,38,.25,.6*v);tone('triangle',420,180,.08,.2*v)},
   drain(){tone('sawtooth',392,98,.9,.15);tone('sine',196,49,1,.3)},
   saved(){notes([880,1175],'triangle',.12,.2,.1)},
+  ramp(){tone('sawtooth',180,520,.35,.08);noise(.3,.12,'bandpass',1400,2)},
+  drop(){tone('sine',260,90,.18,.4);noise(.06,.3,'lowpass',700)},
   start(){notes([262,330,392,523,392,523,659,784],'square',.1,.11,.07)},
 };
 function updRoll(){if(!ac||!rollG)return;let v=0;for(const b of balls)if(b.st==='play'&&!inShooter(b))v=Math.max(v,Math.hypot(b.vx,b.vy));
@@ -359,7 +362,7 @@ function updRoll(){if(!ac||!rollG)return;let v=0;for(const b of balls)if(b.st===
   rollG.gain.setTargetAtTime(muted||g.state==='attract'?0:.42*Math.pow(k,1.1),t,.04);
   rollF.frequency.setTargetAtTime(110+k*900,t,.05);
   rollG2.gain.setTargetAtTime(muted||g.state==='attract'?0:.035*k*k,t,.05)}
-$('#mute').addEventListener('click',()=>{muted=!muted;try{localStorage.setItem('wp-pinball-mute',muted?'1':'0')}catch(e){}
+$('#mute').addEventListener('click',()=>{muted=!muted;try{localStorage.setItem('pb-mute',muted?'1':'0')}catch(e){}
   $('#mute').textContent=muted?'Sound off':'Sound on';$('#mute').setAttribute('aria-label',muted?'Sound off':'Sound on');
   audio();if(out)out.gain.value=muted?0:.9});
 $('#mute').textContent=muted?'Sound off':'Sound on';
@@ -371,10 +374,10 @@ document.fonts&&document.fonts.load('16px VT323').then(()=>{fontReady=true;dmdDi
 function dmdLines(){
   if(msgQ&&now<msgQ.until)return msgQ;
   msgQ=null;
-  if(g.state==='play')return{a:fmt(g.score),b:'BALL '+g.ball+'  RELICS '+g.relics+'/5  '+g.mult+'X'};
+  if(g.state==='play')return{a:fmt(g.score),b:'BALL '+g.ball+'   RAMPS '+g.ramps+'   '+g.mult+'X'};
   if(g.state==='over'){const c=Math.floor(now/2.5)%2;return c?{a:g.newHi?'NEW HIGH SCORE':'GAME OVER',b:fmt(g.score)}:{a:'TAP TO PLAY AGAIN',b:'HIGH '+fmt(g.hi)}}
   const c=Math.floor(now/2.6)%4;
-  return [{a:'WEIRD PLANET',b:'TAP TO PLAY'},{a:'COLLECT 5 RELICS',b:'TO UNLOCK THE CITADEL'},{a:'HIGH SCORE',b:fmt(g.hi)},{a:'LEFT / RIGHT TO FLIP',b:'HOLD RIGHT TO LAUNCH'}][c];
+  return [{a:'PINBALL',b:'TAP TO PLAY'},{a:'SHOOT THE RAMP',b:'TO REACH THE UPPER DECK'},{a:'HIGH SCORE',b:fmt(g.hi)},{a:'LEFT / RIGHT TO FLIP',b:'HOLD RIGHT TO LAUNCH'}][c];
 }
 let dmdScale=1;
 function drawDMD(){
@@ -394,97 +397,153 @@ function drawDMD(){
 }
 function fitText(t,x,y,size){let s=size;while(s>8&&dx2.measureText(t).width>DW-4){s--;dx2.font=s+'px VT323, monospace'}dx2.fillText(t,x,y)}
 
-/* ---------- lamps ---------- */
-const LP={consp:[[208,267],[225,215],[254,163]],sorc:[[850,271],[838,221]],relics:[[122,541],[124,592],[134,644]],
-  aliens:[[875,625],[867,675]],scoop:[[259,516],[240,472]],mult:[[385,1268],[465,1239],[543,1239],[625,1268]],
-  cit:[440,479,517,556,594],star:[510,554],ret:{retL:[56,1072],retR:[934,1080]}};
+/* ---------- palette (blank table: plain line art, ready for a theme later) ---------- */
+const PAL={field:'#1d2027',field2:'#23272f',line:'#7f8691',lineHi:'#c9ced6',insert:'#2a2f38',insertRim:'#4b525d',label:'#5f6672',
+  deck:'rgba(48,53,63,.93)',deckRim:'#aab1bb',rubber:'#121316',lit:'#ffd68a',flip:'#f1eee7'};
+const FONT='"Helvetica Neue",Helvetica,Arial,sans-serif';
 function mkGlow(r,g2,b){const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d'),gr=x.createRadialGradient(64,64,0,64,64,64);
-  gr.addColorStop(0,`rgba(255,255,255,1)`);gr.addColorStop(.18,`rgba(${r},${g2},${b},.95)`);gr.addColorStop(.5,`rgba(${r},${g2},${b},.35)`);gr.addColorStop(1,`rgba(${r},${g2},${b},0)`);
+  gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(.2,`rgba(${r},${g2},${b},.95)`);gr.addColorStop(.5,`rgba(${r},${g2},${b},.32)`);gr.addColorStop(1,`rgba(${r},${g2},${b},0)`);
   x.fillStyle=gr;x.fillRect(0,0,128,128);return c}
-const GY=mkGlow(255,200,40),GR=mkGlow(255,60,30),GG=mkGlow(190,255,60),GW=mkGlow(255,240,220),GP=mkGlow(200,120,255);
-const blink=(hz)=>Math.floor(now*hz*2)%2===0;
-function lamp(x,y,r,state,glow){
-  if(state){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=state===2?.55:.9;ctx.drawImage(glow||GY,x-r*2.1,y-r*2.1,r*4.2,r*4.2);ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over'}
-  else{ctx.fillStyle='rgba(12,0,24,.62)';ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill()}
-}
-function attractChase(i,n){return Math.floor(now*8+i)%n===0}
-function drawLamps(){
-  const A=g.state!=='play';
-  LP.consp.forEach((p,i)=>lamp(p[0],p[1],19,A?attractChase(i,3):(i<g.consp?1:(i===g.consp&&blink(2)?2:0))+(fl('consp')&&blink(6)?1:0)));
-  LP.sorc.forEach((p,i)=>lamp(p[0],p[1],19,A?attractChase(i+1,3):(i<g.sorc?1:(i===g.sorc&&blink(2)?2:0))+(fl('sorc')&&blink(6)?1:0)));
-  LP.relics.forEach((p,i)=>lamp(p[0],p[1],21,A?attractChase(i+2,3):(g.relicT[i]?1:0)+(fl('relicsAll')&&blink(6)?1:0)));
-  LP.aliens.forEach((p,i)=>lamp(p[0],p[1],20,A?attractChase(i,2):(g.aliens[i]?1:0)+(fl('aliens')&&blink(6)?1:0),GG));
-  LP.scoop.forEach((p,i)=>lamp(p[0],p[1],15,A?attractChase(i,2):((fl('scoop')?blink(6):Math.floor(now*3)%2===i)?1:0),GR));
-  LP.mult.forEach((p,i)=>{const on=A?attractChase(i,4):(g.mult>=i+2?1:(g.mult===i+1&&blink(1.5)?2:0));lamp(p[0],p[1],31,on+(fl('mult')&&blink(6)&&g.mult===i+2?1:0))});
-  // citadel slots
-  LP.cit.forEach((x,i)=>{const on=A?attractChase(i,5):(g.open?blink(4)||fl('jack'):i<g.relics)||(fl('cit'+i)&&blink(8));
-    if(on){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.85;ctx.drawImage(GR,x-30,190,60,60);ctx.drawImage(GR,x-26,170,52,48);ctx.drawImage(GR,x-26,222,52,48);ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over'}
-    else{ctx.fillStyle='rgba(12,0,24,.6)';rr(x-13,192,26,57,12);ctx.fill()}});
-  // collect-relics star pulses brighter as relics are found
-  const k=A?.25+.25*Math.sin(now*3):(g.open?.6+.4*Math.sin(now*12):.12+g.relics*.08+.1*Math.sin(now*4));
-  ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.max(0,k);ctx.drawImage(GG,LP.star[0]-120,LP.star[1]-120,240,240);ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
-  for(const id in LP.ret)if(fl(id)){const p=LP.ret[id];lamp(p[0],p[1],30,1,GR)}
-  if(fl('jack')){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.35*(blink(5)?1:.3);ctx.drawImage(GY,0,0,W,H);ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over'}
-}
+const GY=mkGlow(255,206,120),GW=mkGlow(255,244,226);
+const blink=hz=>Math.floor(now*hz*2)%2===0;
 const fl=k=>g.flash[k]&&now<g.flash[k];
-function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
 
-/* ---------- drawing ---------- */
-let sil=null;
-function silhouettes(){sil=document.createElement('canvas');sil.width=spr.width;sil.height=spr.height;const x=sil.getContext('2d');x.drawImage(spr,0,0);x.globalCompositeOperation='source-in';x.fillStyle='#000';x.fillRect(0,0,sil.width,sil.height)}
-const FS={L:{s:SP.flipL,px:46.1,py:33.7,a:0.4027,len:156.2},R:{s:SP.flipR,px:195.1,py:25.8,a:2.7586,len:166.7}};
-function drawFlip(f,side,shadow){const m=FS[side],s=m.s,k=FL/m.len;
-  ctx.save();ctx.translate(f.px+(shadow?7:0),f.py+(shadow?11:0));ctx.rotate(f.ang-m.a);ctx.scale(k,k);
-  if(shadow){ctx.globalAlpha=.45;ctx.drawImage(sil,s[0],s[1],s[2],s[3],-m.px,-m.py,s[2],s[3])}
-  else ctx.drawImage(spr,s[0],s[1],s[2],s[3],-m.px,-m.py,s[2],s[3]);
-  ctx.restore()}
-function drawTargets(){
-  // stand-up targets drawn from the sprite sheet, lying along each island face
-  const tg=SP.target;
-  for(const s of segs){if(s.kind!=='relic'&&s.kind!=='alien')continue;
-    const cx=(s.ax+s.bx)/2,cy=(s.ay+s.by)/2,ang=Math.atan2(s.dy,s.dx),hitk=Math.max(0,1-(now-s.t)/.18);
-    const sg=((512-cx)*s.nx+(800-cy)*s.ny)>0?1:-1;
-    ctx.save();ctx.translate(cx-s.nx*sg*(3+hitk*4),cy-s.ny*sg*(3+hitk*4));ctx.rotate(ang+Math.PI/2);
-    const w=17,h=Math.sqrt(s.L2)+8;ctx.drawImage(spr,tg[0],tg[1],tg[2],tg[3],-w/2,-h/2,w,h);ctx.restore()}
+/* lamp inserts: [x,y,r,label] */
+const LP={
+  ltgt:[[100,545,16],[110,596,16],[120,647,16]],rtgt:[[906,624,16],[894,675,16]],
+  bank:[[532,946,15],[580,946,15],[628,946,15]],dtgt:[[455,184,12],[492,184,12],[530,184,12]],
+  orbitL:[[74,452,15]],orbitR:[[936,456,15]],
+  ramp:[[732,712,14],[732,660,14],[732,608,14]],
+  mult:[[385,1268,30,'2X'],[465,1239,30,'3X'],[543,1239,30,'4X'],[625,1268,30,'5X']],
+  save:[[512,1452,17,'AGAIN']],jack:[[492,392,26,'JP']]};
+const LV1LAMPS=['dtgt','jack'];
+
+/* ---------- static art, drawn once ---------- */
+function drawWalls(c,lv,hi){
+  c.lineCap='round';c.lineJoin='round';
+  for(const s of segs){if(s.lv!==lv||s.hid||s.kind==='plunger')continue;
+    const live=s.kind!=='wall';if(live&&s.kind!=='sling')continue;
+    c.strokeStyle=hi?'#8e96a2':PAL.line;c.lineWidth=s.r*2+2;c.beginPath();c.moveTo(s.ax,s.ay);c.lineTo(s.bx,s.by);c.stroke();
+    c.strokeStyle=PAL.lineHi;c.lineWidth=2;c.beginPath();c.moveTo(s.ax,s.ay);c.lineTo(s.bx,s.by);c.stroke()}
+  for(const p of circs){if(p.lv!==lv||p.kind!=='post')continue;
+    c.fillStyle=PAL.rubber;c.beginPath();c.arc(p.x,p.y,p.r+3,0,7);c.fill();c.fillStyle='#d9dde3';c.beginPath();c.arc(p.x,p.y,p.r*.45,0,7);c.fill()}
 }
+function insert(c,x,y,r,label){c.fillStyle=PAL.insert;c.beginPath();c.arc(x,y,r,0,7);c.fill();c.strokeStyle=PAL.insertRim;c.lineWidth=2;c.stroke();
+  if(label){c.fillStyle=PAL.label;c.font=`700 ${Math.round(r*.62)}px ${FONT}`;c.textAlign='center';c.textBaseline='middle';c.fillText(label,x,y+1)}}
+function label(c,t,x,y,rot,size){c.save();c.translate(x,y);c.rotate(rot||0);c.fillStyle=PAL.label;c.font=`700 ${size||18}px ${FONT}`;c.textAlign='center';c.textBaseline='middle';
+  if('letterSpacing' in c)c.letterSpacing='3px';c.fillText(t,0,0);c.restore()}
+let fieldC=null,deckC=null;
+function buildArt(){
+  fieldC=document.createElement('canvas');fieldC.width=W;fieldC.height=H;const c=fieldC.getContext('2d');
+  // playfield board with a soft centre light
+  c.fillStyle=PAL.field;c.fillRect(0,0,W,H);
+  const gr=c.createRadialGradient(512,900,80,512,800,900);gr.addColorStop(0,'rgba(255,255,255,.045)');gr.addColorStop(1,'rgba(0,0,0,.25)');c.fillStyle=gr;c.fillRect(0,0,W,H);
+  // faint layout grid, like a whitewood
+  c.strokeStyle='rgba(255,255,255,.025)';c.lineWidth=1;for(let x=0;x<W;x+=64){c.beginPath();c.moveTo(x,0);c.lineTo(x,H);c.stroke()}for(let y=0;y<H;y+=64){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke()}
+  // shooter lane and apron
+  c.fillStyle='#16181d';c.fillRect(962,300,50,1236);
+  c.fillStyle='#14161a';c.beginPath();c.moveTo(0,1290);c.lineTo(230,1405);c.lineTo(400,1536);c.lineTo(0,1536);c.fill();
+  c.beginPath();c.moveTo(1024,1290);c.lineTo(794,1405);c.lineTo(624,1536);c.lineTo(1024,1536);c.fill();
+  // sling bodies
+  for(const p of [SLL,SLR]){c.fillStyle='#2b3039';c.beginPath();c.moveTo(p[0],p[1]);c.lineTo(p[2],p[3]);c.lineTo(p[4],p[5]);c.closePath();c.fill()}
+  // islands
+  c.fillStyle='#262a32';
+  for(const poly of [[48,480,124,500,162,695,64,772,48,772],[962,500,888,556,852,708,950,775,962,775],[500,910,580,868,660,910]]){c.beginPath();c.moveTo(poly[0],poly[1]);for(let i=2;i<poly.length;i+=2)c.lineTo(poly[i],poly[i+1]);c.closePath();c.fill()}
+  for(const k in LP){if(LV1LAMPS.includes(k))continue;for(const l of LP[k])insert(c,l[0],l[1],l[2],l[3])}
+  // ramp entrance arrow
+  c.fillStyle='#2b3038';c.beginPath();c.moveTo(732,830);c.lineTo(700,880);c.lineTo(764,880);c.closePath();c.fill();
+  drawWalls(c,0);
+  label(c,'ORBIT',74,560,-Math.PI/2,16);label(c,'ORBIT',936,560,-Math.PI/2,16);
+label(c,'RAMP',732,905,0,18);label(c,'BANK',580,980,0,15);
+  label(c,'SHOOT AGAIN',512,1490,0,14);label(c,'MULTIPLIER',505,1300,0,14);
+  // deck plate and ramp, on their own layer so balls on the main level pass underneath
+  deckC=document.createElement('canvas');deckC.width=W;deckC.height=H;const d=deckC.getContext('2d');
+  const plate=()=>{d.beginPath();d.moveTo(196,556);d.lineTo(196,200);d.ellipse(DX,DY,DA+10,DB+10,0,Math.PI,2*Math.PI);d.lineTo(785,556);d.closePath()};
+  d.save();d.shadowColor='rgba(0,0,0,.6)';d.shadowBlur=28;d.shadowOffsetX=10;d.shadowOffsetY=16;plate();d.fillStyle=PAL.deck;d.fill();d.restore();
+  plate();d.strokeStyle=PAL.deckRim;d.lineWidth=3;d.stroke();
+  // ramp: clear plastic over the main level
+  d.save();d.shadowColor='rgba(0,0,0,.45)';d.shadowBlur=16;d.shadowOffsetX=8;d.shadowOffsetY=10;
+  d.fillStyle='rgba(170,190,215,.16)';d.fillRect(684,554,97,236);d.restore();
+  d.strokeStyle='rgba(200,215,235,.25)';d.lineWidth=2;for(let y=570;y<780;y+=26){d.beginPath();d.moveTo(694,y+10);d.lineTo(732,y);d.lineTo(770,y+10);d.stroke()}
+  for(const k of LV1LAMPS)for(const l of LP[k])insert(d,l[0],l[1],l[2],l[3]);
+  drawWalls(d,1,true);
+  
+  d.save();d.globalAlpha=.9;label(d,'UPPER DECK',492,250,0,20);d.restore();
+}
+
+/* ---------- live parts ---------- */
+function lamp(x,y,r,state){if(!state)return;
+  ctx.globalCompositeOperation='lighter';ctx.globalAlpha=state===2?.45:.85;ctx.drawImage(GY,x-r*2.2,y-r*2.2,r*4.4,r*4.4);
+  ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.fillStyle=state===2?'rgba(255,214,138,.5)':PAL.lit;ctx.beginPath();ctx.arc(x,y,r*.8,0,7);ctx.fill()}
+const chase=(i,n)=>Math.floor(now*8+i)%n===0;
+function drawLamps(lv){
+  const A=g.state!=='play';
+  const set=(k,arr)=>LP[k].forEach((p,i)=>lamp(p[0],p[1],p[2],A?chase(i,arr.length):(arr[i]?1:0)+(fl(k)&&blink(6)?1:0)));
+  if(lv===0){
+    set('ltgt',g.ltgt);set('rtgt',g.rtgt);set('bank',g.bank);
+    LP.ramp.forEach((p,i)=>lamp(p[0],p[1],p[2],A?chase(i,3):(i<g.ramps%3?1:(i===g.ramps%3&&blink(2)?2:0))+(fl('ramp')&&blink(6)?1:0)));
+    lamp(...LP.orbitL[0].slice(0,3),A?blink(1):(fl('orbitL')?blink(6)?1:0:0));lamp(...LP.orbitR[0].slice(0,3),A?!blink(1):(fl('orbitR')?blink(6)?1:0:0));
+    LP.mult.forEach((p,i)=>lamp(p[0],p[1],p[2],A?chase(i,4):(g.mult>=i+2?1:(g.mult===i+1&&blink(1.5)?2:0))));
+    lamp(...LP.save[0].slice(0,3),A?0:(now<g.saveUntil?(g.saveUntil-now<2?(blink(4)?1:0):1):0));
+  }else{
+    set('dtgt',g.dtgt);
+    lamp(...LP.jack[0].slice(0,3),A?blink(1):(fl('jack')?(blink(8)?1:0):(g.dtgt.filter(Boolean).length===2&&blink(3)?1:2)));
+  }
+}
+function drawBumper(c){const k=Math.max(0,1-(now-c.t)/.16),r=c.r;
+  ctx.fillStyle='rgba(0,0,0,.4)';ctx.beginPath();ctx.arc(c.x+5,c.y+8,r+4,0,7);ctx.fill();
+  ctx.fillStyle='#3a404a';ctx.beginPath();ctx.arc(c.x,c.y,r+4,0,7);ctx.fill();
+  const gr=ctx.createRadialGradient(c.x-r*.3,c.y-r*.35,r*.1,c.x,c.y,r);gr.addColorStop(0,'#ffffff');gr.addColorStop(1,'#c4c9d1');
+  ctx.fillStyle=gr;ctx.beginPath();ctx.arc(c.x,c.y,r*(1-.06*k),0,7);ctx.fill();
+  ctx.strokeStyle='#8a919c';ctx.lineWidth=2;ctx.beginPath();ctx.arc(c.x,c.y,r*.62,0,7);ctx.stroke();
+  if(k>0){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=k*.8;ctx.drawImage(GW,c.x-r*2,c.y-r*2,r*4,r*4);ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over'}}
+function drawTargets(lv){
+  for(const s of segs){if(s.lv!==lv||!['ltgt','rtgt','bank','dtgt'].includes(s.kind))continue;
+    const on=g[s.kind][s.id],hk=Math.max(0,1-(now-s.t)/.18),cx=(s.ax+s.bx)/2,cy=(s.ay+s.by)/2,ang=Math.atan2(s.dy,s.dx);
+    const sg=((512-cx)*s.nx+(1000-cy)*s.ny)>0?1:-1,L=Math.sqrt(s.L2);
+    ctx.save();ctx.translate(cx-s.nx*sg*hk*5,cy-s.ny*sg*hk*5);ctx.rotate(ang);
+    ctx.fillStyle=on?PAL.lit:'#e9ebee';rr(ctx,-L/2,-6,L,12,4);ctx.fill();ctx.strokeStyle=PAL.rubber;ctx.lineWidth=2;ctx.stroke();ctx.restore()}
+}
+function slingFlash(){
+  for(const s of segs){if(s.kind!=='sling')continue;const k=1-(now-s.t)/.14;
+    const mx=(s.ax+s.bx)/2,my=(s.ay+s.by)/2,sg=((512-mx)*s.nx+(800-my)*s.ny)>0?1:-1,bow=k>0?16*k:0;
+    ctx.strokeStyle=k>0?`rgba(255,240,210,${.6+.4*k})`:PAL.rubber;ctx.lineWidth=k>0?8:7;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(s.ax,s.ay);ctx.quadraticCurveTo(mx+s.nx*sg*bow,my+s.ny*sg*bow,s.bx,s.by);ctx.stroke()}}
+function flipPath(f,ox,oy){const a=f.ang,tx=f.px+Math.cos(a)*f.L+ox,ty=f.py+Math.sin(a)*f.L+oy;
+  ctx.beginPath();ctx.arc(f.px+ox,f.py+oy,f.r0,a+Math.PI/2,a-Math.PI/2);ctx.arc(tx,ty,f.r1,a-Math.PI/2,a+Math.PI/2);ctx.closePath()}
+function drawFlip(f){
+  flipPath(f,6,9);ctx.fillStyle='rgba(0,0,0,.4)';ctx.fill();
+  flipPath(f,0,0);ctx.fillStyle=PAL.flip;ctx.fill();ctx.strokeStyle=PAL.rubber;ctx.lineWidth=f.L>150?6:4;ctx.stroke();
+  ctx.fillStyle='#9aa1ab';ctx.beginPath();ctx.arc(f.px,f.py,f.r0*.28,0,7);ctx.fill()}
 function drawPlunger(){
-  const y=plSeg.ay;plg.snap*=.85;
-  const x=987;
-  ctx.save();
-  // spring
-  ctx.strokeStyle='#9aa3ad';ctx.lineWidth=3;ctx.beginPath();const n=9,top=y+14,bot=1530;
+  const y=plSeg.ay,x=987;
+  ctx.save();ctx.strokeStyle='#8a929c';ctx.lineWidth=3;ctx.beginPath();const n=9,top=y+14,bot=1530;
   for(let i=0;i<=n*2;i++){const yy=top+(bot-top)*i/(n*2);ctx.lineTo(x+(i%2?-12:12),yy)}ctx.stroke();
   const gr=ctx.createLinearGradient(x-6,0,x+6,0);gr.addColorStop(0,'#5d646d');gr.addColorStop(.5,'#eef2f6');gr.addColorStop(1,'#4b5158');
   ctx.fillStyle=gr;ctx.fillRect(x-5,y+6,10,1536-y);
-  ctx.fillStyle='#b5161d';rr(x-19,y-2,38,12,5);ctx.fill();ctx.fillStyle='rgba(255,255,255,.35)';ctx.fillRect(x-15,y,30,3);
-  ctx.restore();
-}
+  ctx.fillStyle=PAL.rubber;rr(ctx,x-19,y-2,38,12,5);ctx.fill();ctx.restore()}
 function drawBall(b){
   const x=b.x,y=b.y;let r=RV;
   if(b.st==='scoop'){const k=Math.min(1,(b.hold-now)/1.3);r=RV*(.75+.25*Math.abs(Math.sin(k*3)))}
   ctx.save();ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.clip();
-  // chrome: bright sky on top, darker horizon, the playfield reflected underneath
-  let lg=ctx.createLinearGradient(x,y-r,x,y+r);
+  const lg=ctx.createLinearGradient(x,y-r,x,y+r);
   lg.addColorStop(0,'#fbfcfd');lg.addColorStop(.42,'#d3d7dd');lg.addColorStop(.5,'#5d626b');lg.addColorStop(.6,'#9aa0a8');lg.addColorStop(1,'#c9ced5');
   ctx.fillStyle=lg;ctx.fillRect(x-r,y-r,2*r,2*r);
   ctx.save();ctx.globalAlpha=.42;ctx.beginPath();ctx.rect(x-r,y+r*.05,2*r,r);ctx.clip();
-  ctx.translate(x,y);ctx.scale(1,-1);ctx.drawImage(field,x-R*6,y-R*6,R*12,R*12,-r,-r,2*r,2*r);ctx.restore();
-  let gr=ctx.createRadialGradient(x-r*.25,y-r*.3,r*.2,x,y,r*1.02);
+  ctx.translate(x,y);ctx.scale(1,-1);ctx.drawImage(fieldC,x-R*6,y-R*6,R*12,R*12,-r,-r,2*r,2*r);ctx.restore();
+  const gr=ctx.createRadialGradient(x-r*.25,y-r*.3,r*.2,x,y,r*1.02);
   gr.addColorStop(0,'rgba(255,255,255,0)');gr.addColorStop(.65,'rgba(30,32,40,.12)');gr.addColorStop(1,'rgba(10,10,18,.7)');
   ctx.fillStyle=gr;ctx.fillRect(x-r,y-r,2*r,2*r);
-  // scuffs that roll with the ball
   const M=b.M;
   for(const m of MARKS){const wx=M[0]*m[0]+M[1]*m[1]+M[2]*m[2],wy=M[3]*m[0]+M[4]*m[1]+M[5]*m[2],wz=M[6]*m[0]+M[7]*m[1]+M[8]*m[2];
     if(wz>-.05)continue;const vis=-wz;ctx.globalAlpha=m[3]*1.2*Math.min(1,vis*1.6);ctx.fillStyle='#2a2d35';
     ctx.beginPath();ctx.ellipse(x+wx*r,y+wy*r,r*.2,r*.2*vis+.3,Math.atan2(wy,wx),0,7);ctx.fill()}
   ctx.globalAlpha=1;
-  // seam line, a faint band around the equator of the body frame
   ctx.strokeStyle='rgba(30,32,40,.22)';ctx.lineWidth=1.2;ctx.beginPath();let first=true;
   for(let i=0;i<=24;i++){const a=i/24*Math.PI*2,bx=Math.cos(a),by=Math.sin(a);const wx=M[0]*bx+M[1]*by,wy=M[3]*bx+M[4]*by,wz=M[6]*bx+M[7]*by;
     if(wz<0){first?ctx.moveTo(x+wx*r,y+wy*r):ctx.lineTo(x+wx*r,y+wy*r);first=false}else first=true}
-  ctx.stroke();
-  ctx.restore();
-  // speculars stay put (they belong to the lights, not the ball)
+  ctx.stroke();ctx.restore();
   ctx.fillStyle='rgba(255,255,255,.95)';ctx.beginPath();ctx.ellipse(x-r*.38,y-r*.42,r*.26,r*.17,-.6,0,7);ctx.fill();
   ctx.fillStyle='rgba(255,255,255,.35)';ctx.beginPath();ctx.ellipse(x+r*.42,y+r*.48,r*.18,r*.08,-.6,0,7);ctx.fill();
   ctx.strokeStyle='rgba(0,0,0,.5)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(x,y,r-.5,0,7);ctx.stroke();
@@ -492,42 +551,33 @@ function drawBall(b){
 function drawShadow(b){const sp=Math.hypot(b.vx,b.vy);
   ctx.fillStyle='rgba(0,0,0,.42)';ctx.beginPath();ctx.ellipse(b.x+7,b.y+10,RV*1.05,RV*.92,0,0,7);ctx.fill();
   if(sp>2000&&b.st==='play'){const k=Math.min(.2,(sp-2000)/8000);for(let i=1;i<=3;i++){ctx.globalAlpha=k/i;ctx.fillStyle='#e8ecf2';ctx.beginPath();ctx.arc(b.x-b.vx*i*.006,b.y-b.vy*i*.006,RV*.92,0,7);ctx.fill()}ctx.globalAlpha=1}}
-function drawFlashes(){
-  for(const c of bumpers){const k=1-(now-c.t)/.16;if(k>0){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=k*.75;ctx.drawImage(GW,c.x-c.r*1.9,c.y-c.r*1.9,c.r*3.8,c.r*3.8);
-      ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.strokeStyle=`rgba(255,250,200,${k})`;ctx.lineWidth=5;ctx.beginPath();ctx.arc(c.x,c.y,c.r+4+(1-k)*14,0,7);ctx.stroke()}}
-  for(const s of segs){if(s.kind!=='sling')continue;const k=1-(now-s.t)/.14;if(k>0){ctx.strokeStyle=`rgba(255,245,210,${k})`;ctx.lineWidth=7;ctx.lineCap='round';
-      const mx=(s.ax+s.bx)/2,my=(s.ay+s.by)/2,sg=((512-mx)*s.nx+(800-my)*s.ny)>0?1:-1;
-      ctx.beginPath();ctx.moveTo(s.ax,s.ay);ctx.quadraticCurveTo(mx+s.nx*sg*16*k,my+s.ny*sg*16*k,s.bx,s.by);ctx.stroke()}}
-}
 function drawBig(){if(!big)return;const t=now-big.t0;if(t>1.6){big=null;return}
   const k=t<.15?t/.15:t>1.2?1-(t-1.2)/.4:1,s=.85+.15*Math.min(1,t/.15);
-  ctx.save();ctx.translate(W/2,820);ctx.scale(s,s);ctx.globalAlpha=k;ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.font='900 92px "Helvetica Neue",Helvetica,Arial,sans-serif';ctx.lineJoin='round';ctx.lineWidth=16;ctx.strokeStyle='#1a0726';ctx.strokeText(big.t,0,0);
+  ctx.save();ctx.translate(W/2,1080);ctx.scale(s,s);ctx.globalAlpha=k;ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.font=`900 92px ${FONT}`;ctx.lineJoin='round';ctx.lineWidth=16;ctx.strokeStyle='#0d0f13';ctx.strokeText(big.t,0,0);
   ctx.fillStyle=big.c;ctx.fillText(big.t,0,0);ctx.restore()}
+const touchUI=matchMedia('(pointer:coarse)').matches;
 function drawOverlay(){
   if(g.state==='play')return;
-  ctx.fillStyle='rgba(8,3,14,.66)';ctx.fillRect(0,0,W,H);
-  // spotlight the painted logo instead of stacking a second one on top
-  ctx.save();ctx.beginPath();ctx.ellipse(526,724,300,128,0,0,7);ctx.clip();ctx.drawImage(field,0,0,W,H);ctx.restore();
-  ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#f3e6cf';
-  if(g.state==='over'){ctx.font='800 64px "Helvetica Neue",Helvetica,Arial,sans-serif';ctx.fillText('GAME OVER',W/2,330);
-    ctx.font='700 52px "Helvetica Neue",Helvetica,Arial,sans-serif';ctx.fillStyle='#ffd23c';ctx.fillText(fmt(g.score),W/2,405);
-    ctx.fillStyle='#c9b8d6';ctx.font='600 30px "Helvetica Neue",Helvetica,Arial,sans-serif';ctx.fillText(g.newHi?'New high score':'High score '+fmt(g.hi),W/2,462)}
-  ctx.font='600 34px "Helvetica Neue",Helvetica,Arial,sans-serif';ctx.fillStyle='#e6d8f0';ctx.fillText('Collect 5 relics to unlock the Citadel',W/2,920);
-  if(g.state==='attract'||now-g.overAt>1.2){ctx.globalAlpha=.55+.45*Math.sin(now*5);ctx.font='800 58px "Helvetica Neue",Helvetica,Arial,sans-serif';ctx.fillStyle='#c8ff3c';
+  ctx.fillStyle='rgba(10,11,14,.66)';ctx.fillRect(0,0,W,H);
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='#f1eee7';ctx.font=`900 132px ${FONT}`;ctx.fillText('PINBALL',W/2,690);
+  ctx.fillStyle='#aab1bb';ctx.font=`600 34px ${FONT}`;ctx.fillText('Shoot the ramp to reach the upper deck',W/2,780);
+  if(g.state==='over'){ctx.fillStyle='#f1eee7';ctx.font=`800 60px ${FONT}`;ctx.fillText('GAME OVER',W/2,420);
+    ctx.font=`700 52px ${FONT}`;ctx.fillStyle=PAL.lit;ctx.fillText(fmt(g.score),W/2,495);
+    ctx.fillStyle='#aab1bb';ctx.font=`600 30px ${FONT}`;ctx.fillText(g.newHi?'New high score':'High score '+fmt(g.hi),W/2,552)}
+  if(g.state==='attract'||now-g.overAt>1.2){ctx.globalAlpha=.55+.45*Math.sin(now*5);ctx.font=`800 58px ${FONT}`;ctx.fillStyle=PAL.lit;
     ctx.fillText(touchUI?'TAP TO PLAY':'CLICK OR PRESS SPACE',W/2,1010);ctx.globalAlpha=1}
-  ctx.font='500 30px "Helvetica Neue",Helvetica,Arial,sans-serif';ctx.fillStyle='#d6c6e2';
+  ctx.font=`500 30px ${FONT}`;ctx.fillStyle='#c9ced6';
   if(touchUI){ctx.fillText('Tap the left or right half to flip',W/2,1110);ctx.fillText('Hold the right half to pull the plunger',W/2,1156)}
   else{ctx.fillText('Flippers: Z and / (or the arrow keys, or click each half)',W/2,1110);ctx.fillText('Plunger: hold Space and let go',W/2,1156)}
 }
-const touchUI=matchMedia('(pointer:coarse)').matches;
 function drawHint(){if(g.state!=='play')return;const b=shooterBall();if(!b)return;
-  ctx.save();ctx.globalAlpha=.6+.4*Math.sin(now*6);ctx.fillStyle='#c8ff3c';ctx.font='800 30px "Helvetica Neue",Helvetica,Arial,sans-serif';ctx.textAlign='right';
+  ctx.save();ctx.globalAlpha=.6+.4*Math.sin(now*6);ctx.fillStyle=PAL.lit;ctx.font=`800 30px ${FONT}`;ctx.textAlign='right';
   ctx.fillText(plg.charging?'LET GO TO LAUNCH':(touchUI?'HOLD RIGHT SIDE ▸':'HOLD SPACE ▸'),945,1500);ctx.restore()}
 function drawDebug(){ctx.save();ctx.lineWidth=2;
-  for(const s of segs){ctx.strokeStyle=s.kind==='wall'?'#0ff':s.one?'#f0f':'#ff0';ctx.beginPath();ctx.moveTo(s.ax,s.ay);ctx.lineTo(s.bx,s.by);ctx.stroke()}
-  for(const c of circs){ctx.strokeStyle=c.kind==='bumper'?'#f0f':'#0f0';ctx.beginPath();ctx.arc(c.x,c.y,c.r,0,7);ctx.stroke()}
-  for(const f of flips){ctx.strokeStyle='#fff';const tx=f.px+Math.cos(f.ang)*FL,ty=f.py+Math.sin(f.ang)*FL;ctx.beginPath();ctx.arc(f.px,f.py,FR0,0,7);ctx.moveTo(tx+FR1,ty);ctx.arc(tx,ty,FR1,0,7);ctx.stroke()}
+  for(const s of segs){ctx.strokeStyle=s.lv?'#f0f':s.kind==='wall'?'#0ff':'#ff0';ctx.beginPath();ctx.moveTo(s.ax,s.ay);ctx.lineTo(s.bx,s.by);ctx.stroke()}
+  for(const c of circs){ctx.strokeStyle=c.lv?'#f0f':'#0f0';ctx.beginPath();ctx.arc(c.x,c.y,c.r,0,7);ctx.stroke()}
   for(const s of sensors){ctx.strokeStyle='#f80';ctx.strokeRect(s.x0,s.y0,s.x1-s.x0,s.y1-s.y0)}
   ctx.restore()}
 
@@ -542,38 +592,37 @@ function layout(){
   dmd.style.width=w+'px';dmd.style.height=dh+'px';dmd.width=Math.round(w*dpr);dmd.height=Math.round(dh*dpr);
   $('#bar').style.width=w+'px';scale=pf.width/W;dmdDirty=true;
 }
-addEventListener('resize',layout);layout();
-let last=0,acc=0,ready=false;
+addEventListener('resize',layout);layout();buildArt();
+let last=0,acc=0;
 function frame(t){
   requestAnimationFrame(frame);
   const dt=Math.min(.05,(t-last)/1000||0);last=t;
-  if(ready&&!window.__pinPause){acc+=dt;while(acc>=HSTEP){step(HSTEP);acc-=HSTEP}}
-  // roll orientation
+  if(!window.__pinPause){acc+=dt;while(acc>=HSTEP){step(HSTEP);acc-=HSTEP}}
   for(const b of balls)if(b.st==='play')rot(b,b.vy/R,-b.vx/R,0,dt);
-  // stuck ball: give it a nudge
-  for(const b of balls){if(b.st!=='play'||inShooter(b)||g.state!=='play'||b.y>1240){b.still=0;continue}
+  // a ball that sits still away from the flippers gets a nudge
+  for(const b of balls){if(b.st!=='play'||inShooter(b)||g.state!=='play'||(b.lv===0&&b.y>1240)||(b.lv===1&&b.y>400&&b.x<690)){b.still=0;continue}
     if(!b.anc||Math.hypot(b.x-b.anc[0],b.y-b.anc[1])>8){b.anc=[b.x,b.y];b.still=0}else if((b.still+=dt)>2.5){b.vy=-700;b.vx=(b.x<512?1:-1)*(200+Math.random()*300);b.still=0;b.anc=null;sfx.kick()}}
   render();drawDMD();updRoll();
 }
 function render(){
   ctx.setTransform(scale,0,0,scale,0,0);
-  if(!field.complete||!field.naturalWidth){ctx.fillStyle='#120a1c';ctx.fillRect(0,0,W,H);return}
-  ctx.drawImage(field,0,0,W,H);
-  drawLamps();
-  if(spr.complete&&spr.naturalWidth){if(!sil)silhouettes();drawTargets();drawFlip(fL,'L',1);drawFlip(fR,'R',1)}
-  drawFlashes();
-  for(const b of balls)drawShadow(b);
-  if(sil){drawFlip(fL,'L');drawFlip(fR,'R')}
-  drawPlunger();
-  for(const b of balls)drawBall(b);
+  ctx.drawImage(fieldC,0,0);
+  drawLamps(0);slingFlash();drawTargets(0);
+  for(const c of bumpers)drawBumper(c);
+  const low=balls.filter(b=>b.lv===0),up=balls.filter(b=>b.lv===1);
+  for(const b of low)drawShadow(b);
+  drawFlip(fL);drawFlip(fR);drawPlunger();
+  for(const b of low)drawBall(b);
+  ctx.drawImage(deckC,0,0);
+  drawLamps(1);drawTargets(1);for(const c of dbump)drawBumper(c);drawFlip(dL);drawFlip(dR);
+  for(const b of up)drawShadow(b);for(const b of up)drawBall(b);
   drawBig();drawHint();
   if(DEBUG)drawDebug();
   drawOverlay();
 }
-Promise.all([field.decode?field.decode().catch(()=>{}):0,spr.decode?spr.decode().catch(()=>{}):0]).then(()=>{ready=true});
 requestAnimationFrame(frame);
 // test hook
-window.__pin={g,balls,fL,fR,plg,press,release,step,mkBall,startGame,segs};
+window.__pin={g,balls,fL,fR,dL,dR,plg,press,release,step,mkBall,startGame,segs};
 })();
 </script>
 </body>
