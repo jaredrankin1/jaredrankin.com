@@ -110,7 +110,7 @@ const RFL=qn('fl',35),RFW=qn('fw',25);   // short flares either side of the mout
 for(const sg of[-1,1]){S(...rp(RLEN,sg*RW1),...rp(RLEN+RFL,sg*(RW1+RFW)),{r:4});C(...rp(RLEN+RFL+3,sg*(RW1+RFW+3)),10,{e:.6})}
 S(196,562,790,562,{r:4,hid:true});
 // pop bumpers
-const BP=(new URLSearchParams(location.search).get('bp')||'680,780,790,730,760,850').split(',').map(Number);
+const BP=(new URLSearchParams(location.search).get('bp')||'680,780,760,725,750,845').split(',').map(Number);
 const bumpers=[0,1,2].map(i=>C(BP[i*2],BP[i*2+1],44,{kind:'bumper',id:i,e:.5}));
 // centre bank
 face(170,935,300,870,[.2,.5,.8],.11,'bank');PL([300,870,190,858,170,935],{r:4});
@@ -119,8 +119,10 @@ const SLL=[110,993,100,1180,200,1245],SLR=[900,1000,908,1180,822,1244];
 function sling(p,id){S(p[0],p[1],p[4],p[5],{r:6,e:.5,kind:'sling',id});S(p[0],p[1],p[2],p[3],{r:5});S(p[2],p[3],p[4],p[5],{r:5});
   C(p[0],p[1],10);C(p[2],p[3],10);C(p[4],p[5],10)}
 sling(SLL,0);sling(SLR,1);
-S(48,1218,234,1328,{r:4});S(962,1218,790,1328,{r:4});
-S(230,1405,400,1536,{r:4});S(794,1405,624,1536,{r:4});
+// flipper pivots sit close enough that the centre gap is about two balls wide, like a real machine
+const FPL=qn('fp',283),FPR=1024-FPL;
+PL([48,1218,234,1328,FPL-2,1342],{r:4});PL([962,1218,790,1328,FPR+2,1342],{r:4});
+S(FPL-6,1405,FPL+164,1536,{r:4});S(FPR+6,1405,FPR-164,1536,{r:4});
 const plg={y:1472,pull:0,charging:false,t0:0,snap:0};
 const plSeg=S(962,1472,1012,1472,{r:2,e:.05,kind:'plunger',one:true,hid:true});
 SN(48,330,100,400,'orbitL');SN(910,330,962,400,'orbitR');
@@ -133,7 +135,9 @@ const DX=529.5,DY=200,DA=319.5,DB=110,darc=[];
 PL(darc,{e:.25});
 S(210,200,210,395,{r:4});S(210,395,375,447,{r:4});          // deck left wall and left inlane
 rline(s=>-rw(s),0,RLEN,{r:4,e:RE});S(RTX-RW0,556,RTX-RW0,395,{r:4});S(RTX-RW0,420,609,447,{r:4});          // ramp left wall, deck rail and right inlane
-rline(s=>rw(s),0,RLEN,{r:4,e:RE});{const X=RTX+RW0,p=[X,556];for(let k=0;k<=8;k++){const t=k/8*Math.PI/2*.85;p.push(X-110+110*Math.cos(t),300-150*Math.sin(t))}PL(p,{r:4})}   // deck lane right wall, curling left at the top                                   // ramp right wall and deck right wall
+rline(s=>rw(s),0,RLEN,{r:4,e:RE});{const X=RTX+RW0,p=[X,556];for(let k=0;k<=8;k++){const t=k/8*Math.PI/2*.85;p.push(X-110+110*Math.cos(t),300-150*Math.sin(t))}
+  const ex=p[p.length-2]-40;p.push(ex,DY-DB*Math.sqrt(Math.max(0,1-((ex-DX)/DA)**2))+2);PL(p,{r:4})}   // closes onto the deck arc
+S(790,130,790,556,{r:4,hid:true});   // backstop on the deck's right edge   // deck lane right wall, curling left at the top                                   // ramp right wall and deck right wall
 C(RTX-RW0,395,7,{e:.5});
 PL([410,98,430,145],{r:4});face(430,145,555,145,[.2,.5,.8],.11,'dtgt');PL([555,145,575,91],{r:4});
 const dbump=[C(310,290,30,{kind:'bumper',id:3,e:.5}),C(560,300,30,{kind:'bumper',id:4,e:.5})];
@@ -145,7 +149,7 @@ function rloc(b){let bi=0,bd=1e18;for(let k=0;k<RC.length;k+=2){const d=(b.x-RC[
 /* ---------- flippers ---------- */
 const UP=22,DN=16;
 function mkF(px,py,rest,up,L,r0,r1,lv){return{px,py,rest,up,ang:rest,w:0,on:false,L,r0,r1,lv}}
-const fL=mkF(236,1370,0.576,-0.384,200,33,23,0),fR=mkF(788,1370,Math.PI-0.576,Math.PI+0.384,200,33,23,0);
+const fL=mkF(FPL,1370,0.576,-0.384,200,33,23,0),fR=mkF(FPR,1370,Math.PI-0.576,Math.PI+0.384,200,33,23,0);
 const dL=mkF(375,470,0.52,-0.42,92,18,12,1),dR=mkF(609,470,Math.PI-0.52,Math.PI+0.42,92,18,12,1);
 const flips=[fL,fR,dL,dR];
 function stepFlip(f,h){const tg=f.on?f.up:f.rest,sp=f.on?UP:DN,d=tg-f.ang,st=sp*h;
@@ -468,8 +472,8 @@ function buildArt(){
   c.strokeStyle='rgba(255,255,255,.025)';c.lineWidth=1;for(let x=0;x<W;x+=64){c.beginPath();c.moveTo(x,0);c.lineTo(x,H);c.stroke()}for(let y=0;y<H;y+=64){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke()}
   // shooter lane and apron
   c.fillStyle='#16181d';c.fillRect(962,300,50,1236);
-  c.fillStyle='#14161a';c.beginPath();c.moveTo(0,1290);c.lineTo(230,1405);c.lineTo(400,1536);c.lineTo(0,1536);c.fill();
-  c.beginPath();c.moveTo(1024,1290);c.lineTo(794,1405);c.lineTo(624,1536);c.lineTo(1024,1536);c.fill();
+  c.fillStyle='#14161a';c.beginPath();c.moveTo(0,1290);c.lineTo(FPL-6,1405);c.lineTo(FPL+164,1536);c.lineTo(0,1536);c.fill();
+  c.beginPath();c.moveTo(1024,1290);c.lineTo(FPR+6,1405);c.lineTo(FPR-164,1536);c.lineTo(1024,1536);c.fill();
   // sling bodies
   for(const p of [SLL,SLR]){c.fillStyle='#2b3039';c.beginPath();c.moveTo(p[0],p[1]);c.lineTo(p[2],p[3]);c.lineTo(p[4],p[5]);c.closePath();c.fill()}
   // islands
@@ -481,7 +485,7 @@ function buildArt(){
   drawWalls(c,0);
   label(c,'ORBIT',74,560,-Math.PI/2,16);label(c,'ORBIT',936,560,-Math.PI/2,16);
 label(c,'RAMP',...rp(RLEN+150,0),rang(RLEN),18);label(c,'BANK',268,985,-.46,15);
-  label(c,'SHOOT AGAIN',512,1490,0,14);label(c,'MULTIPLIER',505,1300,0,14);
+  label(c,'SHOOT AGAIN',512,1520,0,13);label(c,'MULTIPLIER',505,1300,0,14);
   // deck plate and ramp, on their own layer so balls on the main level pass underneath
   deckC=document.createElement('canvas');deckC.width=W;deckC.height=H;const d=deckC.getContext('2d');
   const plate=()=>{d.beginPath();d.moveTo(196,556);d.lineTo(196,200);d.ellipse(DX,DY,DA+10,DB+10,0,Math.PI,2*Math.PI-Math.acos((800-DX)/(DA+10)));d.lineTo(800,556);d.closePath()};
