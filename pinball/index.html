@@ -79,20 +79,43 @@ function rail(a,b,xEnd,left){const p=[],tEnd=Math.acos((xEnd-ACX)/a);
 const L1=[100,420,100,300].concat(rail(427,195,270,true)),R1=[910,430,910,300].concat(rail(383,195,755,false));
 PL(L1,{r:4});PL(R1,{r:4});
 // the space under the upper deck is closed off on the main level; the orbits run around it
-PL([270,135,512,100,755,143],{r:4,hid:true});S(196,180,196,562,{r:4,hid:true});S(775,177,775,562,{r:4});
-S(196,562,690,562,{r:4,hid:true});
+PL([270,135,512,100,755,143],{r:4,hid:true});S(196,180,196,562,{r:4,hid:true});S(790,157,790,562,{r:4});
 // left target island (3) and right target island (2)
 PL([48,480,124,500],{r:4});face(124,500,162,695,[.21,.47,.735],.09,'ltgt');PL([162,695,64,772,48,772],{r:4});
 PL([962,500,888,556],{r:4});face(888,556,852,708,[.45,.78],.1,'rtgt');PL([852,708,950,775,962,775],{r:4});
-// ramp lane on the main level (a ball that is too slow rolls back out)
-S(690,562,690,760,{r:4});S(775,562,775,760,{r:4});S(690,562,775,562,{r:4,hid:true});
-C(690,764,8,{e:.6});C(775,764,8,{e:.6});
+// ramp: a curved "banana" ramp like many real machines. Its mouth sits in the middle of the field, where most
+// shots from either flipper naturally go (left flipper 10-20 degrees right of vertical, right flipper 5-20 left),
+// then it sweeps right over the main field and climbs into the deck's entrance lane
+const QS=new URLSearchParams(location.search),qn=(k,d)=>QS.has(k)?+QS.get(k):d;
+const RE=qn('re',.15),RTX=qn('tx',715),RTY=556,RW0=43,RW1=qn('rw',72);
+// centreline built from the top down: straight, bend right-to-left, long diagonal, bend back, straight mouth
+const RC=[];{const H=qn('H',55)*Math.PI/180,M=qn('mh',10)*Math.PI/180,R2=qn('r2',120),R1=qn('r1',120),Lt=qn('lt',0),Lm=qn('lm',30),MX=qn('mx',495);
+  // pick the diagonal length so the mouth lands at x = MX
+  const dxArcs=R2*(1-Math.cos(H))+R1*(Math.cos(M)-Math.cos(H)),Lh=Math.max(0,(RTX-MX-dxArcs-Lm*Math.sin(M))/Math.sin(H));
+  const segsH=[[Lt,0,0],[R2*H,0,H],[Lh,H,H],[R1*(H-M),H,M],[Lm,M,M]];
+  let x=RTX,y=RTY,S=0;RC.push({x,y,s:0,h:0});
+  for(const[L,h0,h1]of segsH){const n=Math.max(1,Math.ceil(L/4));for(let k=1;k<=n;k++){const h=h0+(h1-h0)*(k-.5)/n,ds=L/n;x-=Math.sin(h)*ds;y+=Math.cos(h)*ds;S+=ds;RC.push({x,y,s:S,h:h0+(h1-h0)*k/n})}}
+  for(const c of RC){c.ux=Math.sin(c.h);c.uy=-Math.cos(c.h)}}   // u = unit vector pointing up the ramp
+const RLEN=RC[RC.length-1].s,RDEC=qn('dec',700);
+const rw=s=>RW0+(RW1-RW0)*Math.max(0,Math.min(1,s/RLEN));
+function rsample(s){if(s<=0)return[RC[0],s];if(s>=RLEN)return[RC[RC.length-1],s-RLEN];
+  let lo=0,hi=RC.length-1;while(hi-lo>1){const m=(lo+hi)>>1;if(RC[m].s<=s)lo=m;else hi=m}return[RC[lo],s-RC[lo].s]}
+const rp=(s,w)=>{const[c,ds]=rsample(s);return[c.x-c.ux*ds-c.uy*w,c.y-c.uy*ds+c.ux*w]};   // s = distance down the ramp, w = across it (+ is right)
+const rang=s=>{const c=rsample(s)[0];return Math.atan2(c.ux,-c.uy)};
+const rline=(w,s0,s1,o)=>{const p=[];for(let s=s0;s<s1;s+=8)p.push(...rp(s,w(s)));p.push(...rp(s1,w(s1)));PL(p,o)};
+// on the main level only the mouth has walls (a slow ball rolls back out); the rest of the ramp passes overhead
+const RM0=RLEN-110;
+rline(s=>-rw(s),RM0,RLEN,{r:4,e:RE});rline(s=>rw(s),RM0,RLEN,{r:4,e:RE});S(...rp(RM0,-rw(RM0)),...rp(RM0,rw(RM0)),{r:4,hid:true});
+const RFL=qn('fl',35),RFW=qn('fw',25);   // short flares either side of the mouth turn near-misses inward
+for(const sg of[-1,1]){S(...rp(RLEN,sg*RW1),...rp(RLEN+RFL,sg*(RW1+RFW)),{r:4});C(...rp(RLEN+RFL+3,sg*(RW1+RFW+3)),10,{e:.6})}
+S(196,562,790,562,{r:4,hid:true});
 // pop bumpers
-const bumpers=[C(330,690,44,{kind:'bumper',id:0,e:.5}),C(470,650,44,{kind:'bumper',id:1,e:.5}),C(395,810,44,{kind:'bumper',id:2,e:.5})];
+const BP=(new URLSearchParams(location.search).get('bp')||'680,780,790,730,760,850').split(',').map(Number);
+const bumpers=[0,1,2].map(i=>C(BP[i*2],BP[i*2+1],44,{kind:'bumper',id:i,e:.5}));
 // centre bank
-face(500,910,660,910,[.2,.5,.8],.11,'bank');PL([500,910,580,868,660,910],{r:4});
+face(170,935,300,870,[.2,.5,.8],.11,'bank');PL([300,870,190,858,170,935],{r:4});
 // slingshots
-const SLL=[110,993,100,1180,200,1245],SLR=[912,1000,907,1180,822,1244];
+const SLL=[110,993,100,1180,200,1245],SLR=[900,1000,908,1180,822,1244];
 function sling(p,id){S(p[0],p[1],p[4],p[5],{r:6,e:.5,kind:'sling',id});S(p[0],p[1],p[2],p[3],{r:5});S(p[2],p[3],p[4],p[5],{r:5});
   C(p[0],p[1],10);C(p[2],p[3],10);C(p[4],p[5],10)}
 sling(SLL,0);sling(SLR,1);
@@ -105,18 +128,19 @@ SN(50,1040,98,1090,'retL');SN(912,1040,960,1090,'retR');
 
 /* level 1: ramp and upper deck */
 LV=1;
-const DX=492,DY=200,DA=283,DB=110,darc=[];
-for(let k=0;k<=36;k++){const th=Math.PI+Math.PI*k/36;darc.push(DX+DA*Math.cos(th),DY+DB*Math.sin(th))}
+const DX=529.5,DY=200,DA=319.5,DB=110,darc=[];
+{const tE=Math.PI-Math.acos((790-DX)/DA);for(let k=0;k<=36;k++){const th=Math.PI+tE*k/36;darc.push(DX+DA*Math.cos(th),DY+DB*Math.sin(th))}}
 PL(darc,{e:.25});
 S(210,200,210,395,{r:4});S(210,395,375,447,{r:4});          // deck left wall and left inlane
-S(690,785,690,395,{r:4});S(690,420,609,447,{r:4});          // ramp left wall, deck rail and right inlane
-S(775,785,775,200,{r:4});                                   // ramp right wall and deck right wall
-C(690,395,7,{e:.5});
-PL([410,95,430,145],{r:4});face(430,145,555,145,[.2,.5,.8],.11,'dtgt');PL([555,145,575,95],{r:4});
+rline(s=>-rw(s),0,RLEN,{r:4,e:RE});S(RTX-RW0,556,RTX-RW0,395,{r:4});S(RTX-RW0,420,609,447,{r:4});          // ramp left wall, deck rail and right inlane
+rline(s=>rw(s),0,RLEN,{r:4,e:RE});{const X=RTX+RW0,p=[X,556];for(let k=0;k<=8;k++){const t=k/8*Math.PI/2*.85;p.push(X-110+110*Math.cos(t),300-150*Math.sin(t))}PL(p,{r:4})}   // deck lane right wall, curling left at the top                                   // ramp right wall and deck right wall
+C(RTX-RW0,395,7,{e:.5});
+PL([410,98,430,145],{r:4});face(430,145,555,145,[.2,.5,.8],.11,'dtgt');PL([555,145,575,91],{r:4});
 const dbump=[C(310,290,30,{kind:'bumper',id:3,e:.5}),C(560,300,30,{kind:'bumper',id:4,e:.5})];
-SN(695,400,770,440,'rampTop');
+SN(RTX-RW0+5,400,RTX+RW0-5,440,'rampTop');
 LV=0;
-const RAMP={x0:690,x1:775,top:540,mouth:760};
+function rloc(b){let bi=0,bd=1e18;for(let k=0;k<RC.length;k+=2){const d=(b.x-RC[k].x)**2+(b.y-RC[k].y)**2;if(d<bd){bd=d;bi=k}}
+  const c=RC[bi],dx=b.x-c.x,dy=b.y-c.y;return{s:c.s-(dx*c.ux+dy*c.uy),w:-dx*c.uy+dy*c.ux,up:b.vx*c.ux+b.vy*c.uy,ux:c.ux,uy:c.uy}}
 
 /* ---------- flippers ---------- */
 const UP=22,DN=16;
@@ -190,7 +214,7 @@ function orbit(side){add(5000);flash('orbit'+side,.8);sfx.lane();msg(side==='L'?
 function rampMade(){g.ramps++;add(10000);g.jackV+=25000;flash('ramp',1);
   if(g.ramps%3===0){sfx.complete();bigText('RAMP x3');msg('3 RAMPS','MULTIPLIER UP',1.8);multUp()}
   else{sfx.lane();msg('RAMP','UPPER DECK  '+(g.ramps%3)+' OF 3',1.4)}}
-const SETS={ltgt:['LEFT TARGETS',()=>{add(25000)}],rtgt:['RIGHT TARGETS',()=>{add(25000)}],bank:['CENTER BANK',()=>{add(15000);multUp()}],dtgt:['DECK TARGETS',deckJackpot]};
+const SETS={ltgt:['LEFT TARGETS',()=>{add(25000)}],rtgt:['RIGHT TARGETS',()=>{add(25000)}],bank:['LEFT BANK',()=>{add(15000);multUp()}],dtgt:['DECK TARGETS',deckJackpot]};
 function target(kind,i){const a=g[kind];sfx.target();if(a[i]){add(500);return}a[i]=1;add(2500);
   if(a.every(Boolean)){const [name,fn]=SETS[kind];flash(kind,1);setTimeout(()=>{a.fill(0)},800);
     if(kind!=='dtgt'){sfx.complete();msg(name,'COMPLETE',1.6)}fn()}}
@@ -221,13 +245,14 @@ function sense(b){
 }
 // moving between levels
 function levels(b){
-  const inRamp=b.x>RAMP.x0&&b.x<RAMP.x1;
-  if(b.lv===0&&inRamp&&b.y<RAMP.mouth&&b.y>RAMP.mouth-70&&b.vy<-400){b.lv=1;sfx.ramp()}
-  else if(b.lv===1&&inRamp&&b.y>RAMP.mouth-60&&b.vy>0){b.lv=0}
-  else if(b.lv===1&&b.y>592&&b.x>200&&b.x<RAMP.x0-2){b.lv=0;b.vy=Math.max(b.vy,120);flash('drop',.6);sfx.drop()}
+  const q=rloc(b),inLane=Math.abs(q.w)<rw(q.s)+2&&q.s>0;
+  if(b.lv===0&&inLane&&q.s<RLEN&&q.s>RLEN-80&&q.up>400){b.lv=1;sfx.ramp()}
+  else if(b.lv===1&&inLane&&q.s>RLEN-70&&q.up<0){b.lv=0}
+  else if(b.lv===1&&b.y>592&&b.x>200&&!(Math.abs(q.w)<rw(q.s)+30&&q.s>-10)){b.lv=0;b.vy=Math.max(b.vy,120);flash('drop',.6);sfx.drop()}
 }
 function inShooter(b){return b.st==='play'&&b.x>962&&b.y>1300}
-function serve(auto){const b=mkBall(987,1450,0);g.skill=!auto;if(auto)setTimeout(()=>{if(balls.includes(b)&&inShooter(b)){b.vy=-2700;b.launched=1;sfx.launch(.8)}},700);return b}
+function serve(auto){const b=mkBall(987,1450,0);g.skill=!auto;if(auto)b.launched=1;   // a saved ball doesn't earn a fresh ball save
+  if(auto)setTimeout(()=>{if(balls.includes(b)&&inShooter(b)){b.vy=-2700;b.launched=1;sfx.launch(.8)}},700);return b}
 function startGame(){Object.assign(g,NEW());balls.length=0;serve(false);msg('BALL 1','PULL THE PLUNGER',2);sfx.start()}
 function drained(b){balls.splice(balls.indexOf(b),1);
   if(g.state!=='play')return;
@@ -249,7 +274,7 @@ function step(h){
     if(b.st==='scoop'){if(now>b.hold){b.st='play';b.x=232;b.y=440;b.vx=60+Math.random()*80;b.vy=750;sfx.kick()}continue}
     b.vy+=G*h;
     // the ramp climbs, so a ball on it slows down more
-    if(b.lv===1&&b.x>RAMP.x0&&b.x<RAMP.x1&&b.y>RAMP.top)b.vy+=900*h;
+    if(b.lv===1&&b.y>556){const q=rloc(b);if(Math.abs(q.w)<rw(q.s)+6&&q.s>0){b.vx-=q.ux*RDEC*h;b.vy-=q.uy*RDEC*h}}
     const sp=Math.hypot(b.vx,b.vy);if(sp>VMAX){b.vx*=VMAX/sp;b.vy*=VMAX/sp}
     b.vx*=1-.12*h;b.vy*=1-.12*h;
     b.x+=b.vx*h;b.y+=b.vy*h;
@@ -412,9 +437,9 @@ function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);
 /* lamp inserts: [x,y,r,label] */
 const LP={
   ltgt:[[100,545,16],[110,596,16],[120,647,16]],rtgt:[[906,624,16],[894,675,16]],
-  bank:[[532,946,15],[580,946,15],[628,946,15]],dtgt:[[455,184,12],[492,184,12],[530,184,12]],
+  bank:[[211,952,15],[250,932,15],[289,913,15]],dtgt:[[455,184,12],[492,184,12],[530,184,12]],
   orbitL:[[74,452,15]],orbitR:[[936,456,15]],
-  ramp:[[732,712,14],[732,660,14],[732,608,14]],
+  ramp:[rp(RLEN-20,0).concat(14),rp(RLEN-55,0).concat(14),rp(RLEN-90,0).concat(14)],
   mult:[[385,1268,30,'2X'],[465,1239,30,'3X'],[543,1239,30,'4X'],[625,1268,30,'5X']],
   save:[[512,1452,17,'AGAIN']],jack:[[492,392,26,'JP']]};
 const LV1LAMPS=['dtgt','jack'];
@@ -449,23 +474,23 @@ function buildArt(){
   for(const p of [SLL,SLR]){c.fillStyle='#2b3039';c.beginPath();c.moveTo(p[0],p[1]);c.lineTo(p[2],p[3]);c.lineTo(p[4],p[5]);c.closePath();c.fill()}
   // islands
   c.fillStyle='#262a32';
-  for(const poly of [[48,480,124,500,162,695,64,772,48,772],[962,500,888,556,852,708,950,775,962,775],[500,910,580,868,660,910]]){c.beginPath();c.moveTo(poly[0],poly[1]);for(let i=2;i<poly.length;i+=2)c.lineTo(poly[i],poly[i+1]);c.closePath();c.fill()}
+  for(const poly of [[48,480,124,500,162,695,64,772,48,772],[962,500,888,556,852,708,950,775,962,775],[300,870,190,858,170,935]]){c.beginPath();c.moveTo(poly[0],poly[1]);for(let i=2;i<poly.length;i+=2)c.lineTo(poly[i],poly[i+1]);c.closePath();c.fill()}
   for(const k in LP){if(LV1LAMPS.includes(k))continue;for(const l of LP[k])insert(c,l[0],l[1],l[2],l[3])}
   // ramp entrance arrow
-  c.fillStyle='#2b3038';c.beginPath();c.moveTo(732,830);c.lineTo(700,880);c.lineTo(764,880);c.closePath();c.fill();
+  c.fillStyle='#2b3038';c.beginPath();c.moveTo(...rp(RLEN+75,0));c.lineTo(...rp(RLEN+130,-30));c.lineTo(...rp(RLEN+130,30));c.closePath();c.fill();
   drawWalls(c,0);
   label(c,'ORBIT',74,560,-Math.PI/2,16);label(c,'ORBIT',936,560,-Math.PI/2,16);
-label(c,'RAMP',732,905,0,18);label(c,'BANK',580,980,0,15);
+label(c,'RAMP',...rp(RLEN+150,0),rang(RLEN),18);label(c,'BANK',268,985,-.46,15);
   label(c,'SHOOT AGAIN',512,1490,0,14);label(c,'MULTIPLIER',505,1300,0,14);
   // deck plate and ramp, on their own layer so balls on the main level pass underneath
   deckC=document.createElement('canvas');deckC.width=W;deckC.height=H;const d=deckC.getContext('2d');
-  const plate=()=>{d.beginPath();d.moveTo(196,556);d.lineTo(196,200);d.ellipse(DX,DY,DA+10,DB+10,0,Math.PI,2*Math.PI);d.lineTo(785,556);d.closePath()};
+  const plate=()=>{d.beginPath();d.moveTo(196,556);d.lineTo(196,200);d.ellipse(DX,DY,DA+10,DB+10,0,Math.PI,2*Math.PI-Math.acos((800-DX)/(DA+10)));d.lineTo(800,556);d.closePath()};
   d.save();d.shadowColor='rgba(0,0,0,.6)';d.shadowBlur=28;d.shadowOffsetX=10;d.shadowOffsetY=16;plate();d.fillStyle=PAL.deck;d.fill();d.restore();
   plate();d.strokeStyle=PAL.deckRim;d.lineWidth=3;d.stroke();
   // ramp: clear plastic over the main level
   d.save();d.shadowColor='rgba(0,0,0,.45)';d.shadowBlur=16;d.shadowOffsetX=8;d.shadowOffsetY=10;
-  d.fillStyle='rgba(170,190,215,.16)';d.fillRect(684,554,97,236);d.restore();
-  d.strokeStyle='rgba(200,215,235,.25)';d.lineWidth=2;for(let y=570;y<780;y+=26){d.beginPath();d.moveTo(694,y+10);d.lineTo(732,y);d.lineTo(770,y+10);d.stroke()}
+  d.fillStyle='rgba(170,190,215,.16)';d.beginPath();for(let s=-2;s<=RLEN+8;s+=6)d.lineTo(...rp(s,-rw(s)-7));for(let s=RLEN+8;s>=-2;s-=6)d.lineTo(...rp(s,rw(s)+7));d.closePath();d.fill();d.restore();
+  d.strokeStyle='rgba(200,215,235,.25)';d.lineWidth=2;for(let s=30;s<RLEN;s+=26){d.beginPath();d.moveTo(...rp(s+10,-rw(s)+8));d.lineTo(...rp(s,0));d.lineTo(...rp(s+10,rw(s)-8));d.stroke()}
   for(const k of LV1LAMPS)for(const l of LP[k])insert(d,l[0],l[1],l[2],l[3]);
   drawWalls(d,1,true);
   
@@ -622,7 +647,7 @@ function render(){
 }
 requestAnimationFrame(frame);
 // test hook
-window.__pin={g,balls,fL,fR,dL,dR,plg,press,release,step,mkBall,startGame,segs};
+window.__pin={g,balls,fL,fR,dL,dR,plg,press,release,step,mkBall,startGame,segs,circs,RC};
 })();
 </script>
 </body>
