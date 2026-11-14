@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Double Flipper Showdown</title>
 <style>
+*{touch-action:none;user-select:none;-webkit-user-select:none;-moz-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;background:#04050b;overflow:hidden;touch-action:none;
   user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
@@ -16,7 +17,7 @@ canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges;
 </head>
 <body>
 <div id="wrap"><canvas id="c"></canvas></div>
-<button id="mute" aria-label="Sound: all, effects only, or off">ALL</button>
+<button id="mute" aria-label="Sound: tap to enable, then all, effects only, or off">TAP</button>
 <script>
 (function(){
 'use strict';
@@ -218,15 +219,25 @@ function musStep(n,t){var s=n%16,bar=(n>>4),ci=bar%8,root=ROOTS[ci],play=S.mode=
     mOsc('sawtooth',root*4,t,0.2,0.03,mus.gain,1400);mOsc('sawtooth',root*4*th,t,0.2,0.03,mus.gain,1400);mOsc('sawtooth',root*4*1.4983,t,0.2,0.03,mus.gain,1400);}}
 function musTick(){if(!ac||ac.state!=='running')return;var now=ac.currentTime;if(mus.next<now-0.2)mus.next=now+0.05;
   while(mus.next<now+0.15){if(sndMode===0){try{musStep(mus.step,mus.next);}catch(e){}}mus.step++;mus.next+=60/BPM/4;}}
-function unlock(){if(!ac)return;try{if(ac.state!=='running')ac.resume();var s=ac.createBufferSource();s.buffer=ac.createBuffer(1,1,22050);s.connect(ac.destination);s.start(0);}catch(e){}}
-function initAudio(){if(ac){if(ac.state!=='running')unlock();return;}
-  try{var A=window.AudioContext||window.webkitAudioContext;if(!A)return;ac=new A();
-    var comp=ac.createDynamicsCompressor();comp.connect(ac.destination);master=ac.createGain();master.gain.value=0.9;master.connect(comp);
-    mus.gain=ac.createGain();mus.gain.gain.value=0.42;mus.gain.connect(comp);
+function unlock(){if(!ac)return;try{if(ac.state!=='running'){var rp=ac.resume();if(rp&&rp.catch)rp.catch(function(){});}var s=ac.createBufferSource();s.buffer=ac.createBuffer(1,1,22050);s.connect(ac.destination);s.start(0);}catch(e){}}
+function mkAudio(ctx){try{var A=window.AudioContext||window.webkitAudioContext;if(!A&&!ctx)return;ac=ctx||new A();acBorn=Date.now();
+    master=ac.createGain();master.gain.value=0.8;master.connect(ac.destination);
+    mus.gain=ac.createGain();mus.gain.gain.value=0.36;mus.gain.connect(ac.destination);
     var nb=ac.createBuffer(1,Math.floor(ac.sampleRate*0.6),ac.sampleRate),d=nb.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=Math.random()*2-1;mus.noise=nb;
     mus.delay=ac.createDelay(1);mus.delay.delayTime.value=60/BPM*0.75;var fbk=ac.createGain();fbk.gain.value=0.38;mus.delay.connect(fbk);fbk.connect(mus.delay);mus.delay.connect(mus.gain);
-    mus.next=ac.currentTime+0.1;mus.timer=setInterval(musTick,25);
-    unlock();}catch(e){}}
+    mus.next=ac.currentTime+0.1;if(!mus.timer)mus.timer=setInterval(musTick,25);}catch(e){ac=null;}}
+var acTry=0,acBorn=0,silentEl=null,IOS=typeof navigator!=='undefined'&&(/iPad|iPhone|iPod/.test(navigator.userAgent||'')||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1));
+// Call only from a trusted gesture (key press, mouse press, touch release, click).
+function initAudio(){
+  try{if(navigator.audioSession)navigator.audioSession.type='playback';}catch(e){}
+  // iPhone/iPad: a looping silent clip moves the page to the media channel, so the ring/silent switch no longer mutes the game
+  if(IOS&&!silentEl){try{var n=4410,buf2=new ArrayBuffer(44+n),v=new DataView(buf2),w=function(o,q){for(var i=0;i<q.length;i++)v.setUint8(o+i,q.charCodeAt(i));};
+    w(0,'RIFF');v.setUint32(4,36+n,true);w(8,'WAVEfmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,44100,true);v.setUint32(28,44100,true);v.setUint16(32,1,true);v.setUint16(34,8,true);w(36,'data');v.setUint32(40,n,true);
+    for(var i=0;i<n;i++)v.setUint8(44+i,128);silentEl=new Audio(URL.createObjectURL(new Blob([buf2],{type:'audio/wav'})));silentEl.loop=true;silentEl.setAttribute('playsinline','');}catch(e){}}
+  if(silentEl&&silentEl.paused){try{var pr=silentEl.play();if(pr&&pr.catch)pr.catch(function(){});}catch(e){}}
+  if(ac&&ac.state!=='running'&&Date.now()-acBorn>2500&&acTry<3){acTry++;try{var cp=ac.close();if(cp&&cp.catch)cp.catch(function(){});}catch(e){}ac=null;}   // still stuck seconds later: build a fresh one inside this gesture
+  if(!ac)mkAudio();
+  unlock();}
 
 /* ---------- rules ---------- */
 // playfield multiplier: (1 + limbs destroyed) x combo x2 in a power surge x2 in multiball, capped at 99
@@ -1013,25 +1024,33 @@ function render(){
 }
 
 /* ---------- input ---------- */
-function press(){initAudio();
+function press(){
   if(S.mode==='attract'||(S.mode==='over'&&S.t-S.modeT>1)){newGame();return true;}
   if(canCharge())armed=true;return false;}
 function flipFx(k){if(S.mode!=='play')return;snd('flip');var f=flips[k];spark(f.px+f.c*f.len,f.py+f.s*f.len,5,K.mag,90,0.3,-1.57,1.5);f=flips[k+2];spark(f.px+f.c*f.len,f.py+f.s*f.len,4,K.mag,90,0.3,-1.57,1.5);}
 var KEYMAP={ArrowLeft:0,KeyZ:0,ShiftLeft:0,KeyA:0,ArrowRight:1,Slash:1,ShiftRight:1,KeyL:1,KeyM:1,Space:2,ArrowDown:2,Enter:2};
-window.addEventListener('keydown',function(e){var k=KEYMAP[e.code];if(k==null)return;e.preventDefault();if(e.repeat)return;
+window.addEventListener('keydown',function(e){var k=KEYMAP[e.code];if(k==null)return;e.preventDefault();if(e.repeat)return;initAudio();
   if(!press()){kb[k]=true;if(k<2)flipFx(k);}});
 window.addEventListener('keyup',function(e){var k=KEYMAP[e.code];if(k==null)return;kb[k]=false;});
 window.addEventListener('blur',function(){kb[0]=kb[1]=kb[2]=false;ptr={};});
-function pdown(e){if(e.target&&e.target.id==='mute')return;e.preventDefault();
+function pdown(e){if(e.target&&e.target.id==='mute')return;e.preventDefault();if(e.pointerType==='mouse')initAudio();
   if(!press()){var k=e.clientX<window.innerWidth/2?0:1;ptr[e.pointerId]=k;flipFx(k);}}
 function pup(e){delete ptr[e.pointerId];initAudio();}
 window.addEventListener('pointerdown',pdown,{passive:false});
 window.addEventListener('pointerup',pup);window.addEventListener('pointercancel',pup);
 window.addEventListener('touchend',initAudio);window.addEventListener('click',initAudio);window.addEventListener('mousedown',initAudio);
+// swallow the browser's own handling of touches on the game (text selection, "search with...", double-tap zoom, long-press menus)
+function eat(e){if(e.target&&e.target.id==='mute')return;if(e.cancelable)e.preventDefault();}
+window.addEventListener('touchstart',eat,{passive:false});window.addEventListener('touchend',eat,{passive:false});
+window.addEventListener('selectstart',function(e){e.preventDefault();});window.addEventListener('dblclick',function(e){e.preventDefault();});
+window.addEventListener('gesturestart',function(e){e.preventDefault();});
+document.addEventListener('visibilitychange',function(){if(document.hidden===false)unlock();});
 window.addEventListener('contextmenu',function(e){e.preventDefault();});
 window.addEventListener('touchmove',function(e){e.preventDefault();},{passive:false});
 var mb=document.getElementById('mute');
-mb.addEventListener('click',function(){initAudio();sndMode=(sndMode+1)%3;mb.textContent=['ALL','SFX','OFF'][sndMode];mb.blur();});
+function mbLabel(){var q=(!ac||ac.state!=='running')&&sndMode!==2?'TAP':['ALL','SFX','OFF'][sndMode];if(mb.textContent!==q)mb.textContent=q;}
+mb.addEventListener('click',function(){var was=ac&&ac.state==='running';initAudio();if(was)sndMode=(sndMode+1)%3;setTimeout(mbLabel,150);mb.blur();});
+setInterval(mbLabel,400);
 
 function resize(){var s=Math.min(window.innerWidth/W,window.innerHeight/H),dpr=window.devicePixelRatio||1;if(s>1)s=Math.floor(s*dpr)/dpr||s;
   cv.style.width=Math.floor(W*s)+'px';cv.style.height=Math.floor(H*s)+'px';cv.style.imageRendering=s*dpr<1?'auto':'pixelated';}
@@ -1041,7 +1060,9 @@ balls=[mkBall(CAP_HOME.x,CAP_HOME.y,'captive')];
 buildBg();
 var last=0;
 function frame(ts){var dt=(ts-last)/1000;last=ts;if(!(dt>0)||dt>0.1)dt=1/60;update(dt);render();requestAnimationFrame(frame);}
-window.__pin={dbg:function(){return{missiles:missiles,cables:cables,APE:APE};},S:S,getBalls:function(){return balls;},kb:kb,update:update,render:render,fb:fb,W:W,H:H,press:press,laneBall:laneBall,parts:parts};
+window.__pin={audioTest:function(which){var keep=sndMode,m=S.mode,i;sndMode=0;mkAudio(new OfflineAudioContext(1,44100*3,44100));var o=ac;S.mode='play';
+  if(which==='music')for(i=0;i<24;i++)musStep(i,i*0.113);else{var names=['flip','bump','sling','target','orbit','launch','rail','lock','boom','psi','blast','zap','squeak','fanfare','drain','spin','lane','start','tick'];lastS={};for(i=0;i<names.length;i++)snd(names[i]);}
+  S.mode=m;sndMode=keep;ac=null;return o.startRendering().then(function(b){var d=b.getChannelData(0),mx=0,nz=0;for(i=0;i<d.length;i++){var a=Math.abs(d[i]);if(a>mx)mx=a;if(a>0.001)nz++;}return{peak:+mx.toFixed(3),audibleFraction:+(nz/d.length).toFixed(2)};});},dbg:function(){return{missiles:missiles,cables:cables,APE:APE,audio:ac?ac.state:"none",t:ac?ac.currentTime:0};},S:S,getBalls:function(){return balls;},kb:kb,update:update,render:render,fb:fb,W:W,H:H,press:press,laneBall:laneBall,parts:parts};
 requestAnimationFrame(frame);
 })();
 </script>
