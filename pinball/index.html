@@ -117,6 +117,13 @@ var AP={"pal":[253,243,250,248,203,223,247,183,229,244,181,137,251,163,223,232,1
 var APX=b64(AP.d),APC=[],APCW=[];(function(){for(var i=0;i<AP.pal.length;i+=3){var c=C(AP.pal[i]<<16|AP.pal[i+1]<<8|AP.pal[i+2]);APC.push(c);APCW.push(mix(c,K.white,0.7));}})();
 function apeSpr(n,cx,cy,fl){var q=AP.s[n],w=q[0],h=q[1],o=q[2],X0=Math.round(cx*SC)-q[3],Y0=Math.round((cy+oy)*SC)-q[4],i,j,v,X,Y,pal=fl?APCW:APC;
   for(j=0;j<h;j++){Y=Y0+j;if(Y<0||Y>=H)continue;for(i=0;i<w;i++){v=APX[o+j*w+i];if(v===255)continue;X=X0+i;if(X>=0&&X<W)buf[Y*W+X]=pal[v];}}}
+/* ---------- level 3 boss sprites: Hackrat standing and hanging, from the supplied art ---------- */
+var RD={"pal":[254,245,217,247,199,165,242,174,161,241,172,119,247,160,129,246,157,85,232,158,119,213,157,131,241,150,122,244,142,122,237,144,73,219,148,121,221,141,88,199,141,112,252,129,106,233,130,111,253,114,98,239,115,107,245,125,84,246,114,86,203,132,104,203,121,105,200,121,67,183,123,106,185,116,65,162,118,103,245,102,101,243,101,82,217,100,101,215,100,73,233,86,84,234,72,77,207,77,79,184,101,88,166,101,89,174,99,50,177,83,85,174,82,56,175,69,73,149,97,94,149,95,55,146,81,94,147,80,49,127,92,79,124,81,66,123,75,66,137,67,100,120,66,105,141,67,52,122,67,49,108,65,98,104,64,96,104,66,67,225,54,58,187,53,63,155,58,64,154,48,55,230,19,24,187,24,30,153,23,29,119,59,102,112,59,107,124,57,70,125,55,37,122,45,49,123,36,44,123,14,18,105,60,98,98,59,90,100,53,96,92,53,79,96,55,36,88,45,80,94,44,39,93,34,39,93,26,31,94,10,12,78,46,64,70,47,48,72,41,59,71,36,69,70,35,41,58,33,45,67,26,44,70,23,17,53,25,39,44,23,35,35,20,27,66,8,10,47,6,7,30,15,23,30,6,8,17,9,14,10,5,7,6,1,2,1,0,0],"s":{"stand":[86,109,0,42,106],"hang":[103,145,9374,55,9]},"d":"////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AP//////////////////////////////////////////////////////////////////////////////////////////////////////////////////Av//////////////////////////////////////////////////////////////////////////////////////////////////////AAAA////////BP////////////////////////////////////////////////////////////////////////////////////////////8JAgH///////8BAP//////Av////////////////////////////////////////////////////////////////////////////////////////////////8AAP////8BAgD/////Av//////////////////////////////////////////////////////////////////////////////////////////////////AgIA//8ABwD/AP8B////////////////////////////////////////////////////////////////////////////////////AhAQEP//////////BBQC//8VBAAA////////////////////////////////////////////////////////////////////////////////////Dg8cQEkhFQ7//////////xQLAQIVAgH//wD//////////////////////////////////////////////////////////////////////////////w4cICAgIDhLMBEE////////AiENBw0VBP//Av//AP////////////////////////////////////////////////////////////////////////8RICAgICAgIDZBQBEE/////wAGCw0XCw0UBP8A//8A/////////////////////////////////////////////////////////////////////////xwgICAeICAgICBBQBAC//////8nFw0XDScXAgQB/wAE//////////////////////////////////////////////////////////////////////8AIB4QEBoeHiA2NjZUJBACAgIBBhcXFyIXCxkNBAQAAgT//////////////////////////////////////////////////////////////////////wkQEBAQGx4QHiAgIEBAEA4oURcUFwYtISErLRkNCwsEBP//////////////////////////////////////////////////////////////////////FSYdEBAeEB4bECA4W10dEBEiGQsNRzQ2TDgeIS0xFwsCBP///////////////////////////////////////////////////////////zs7Ov////8OGxAQEBAQEBAeIEBfX1QdISInKxkZTTpZWVlMOhokMScC/////////////////////////////////////////////////////////0JCQjtCQv///wAQEBAQEBAQHiAbJkpeVU4XNAcXL0hbNllZWUw1NTo7ICQg//////////////////////////////////////////////////////87Qjo5OTlCQv///xEnKhsQEBAeEBATHklOJxczQ09XXl42O0xMNTU5WFlMOjgmIBz//////////////////////////////////////////////////0I6OREEOTlC////AQojIBAQEBAQHSQgECIZC1xXNCIiTltZTDo5OUxZWTpMTCY6OiAa////////AP//////////////////////////////////////Qjo5AAAaOUI5//8BIyUlMR0QJSVKVzEiGQsXJw0LDQYGFyIsTllYQkI6TFFKS0JZWTo7//////////////////////////////////////////////9COjkJHjk5Qv///wX//woWHf//////RzQHFw0LCw0LIk5ONCsrGRlWVEwnFA0XJ1FMOv///////////////////////////////////////////////zpCOjoCIEJC////BQX/BQr///////8AAhcUFxcGCzQ0TlxOJw0NDQcLCwsLCwsGAhEO/////////////////////////////////////////////////0JCQRw4TP//////BQoF//////8AAgsUFy0sCwYLDQsLTl9eTkcZBgsNBgsLCwscDgEA/////////wD///////////////////////////////////////86Qjr///////////////8AABk0JxRJKwYUFAYGBgYLR0E0UU5SLBcLCwsLGSQdJAIA//////////8C////////////////////////////////////////Hv///////////////////wEHFw0iJxcLDQYGBgYLJ1QsWVcoWlInDQsLJB5JEBD///////////////////////////////////////////////////8aHv////////////////8AGSctWlYnFxcLFwYLBgYGFzQsMVJfWxg/UTRRHhAbAf///////////////////////////////////////////////////xof//////////////////9HTlQZGRlNJzQXFwsGCwYGCydRMV40AQU/I1tUQSD//////////////////////////////////////////////////////xv/////////////////AAkFCiM/KgpaIiIUFw0HCwsLBgssWgcBFwcY/w//////////////////////////////////////////////////////////Gzn//////////wAACR5BS1JSTSgsFkdcRzRVUSsnLCcrCxQ0AQEZASz///////////////////////////////////////////////////////////8QNf///////wAEHEFKUkhGREREKkcjR19dViciIiIiTldOVhkBDQEN//////////////////////////////////////////////////////////////84VP///////xpBSFJaXl5aUEZGSDQWXCsXIhQXIlcw////KwcZB///////////////////////////////////////////////////////////////AQIZNh///////xo6VF9dXFxcVVBGTQpUJyENFBcs/////////wH///////////////////8BAgD//////////////////////////////////////wAHLS9MOf///////zpBN0ZEM0RSXFJPGEcsFxcUC05L////////////////////////////////JhEB////////////////////////////////////ACctSFVC////////GjhSVlZSRDNNXVZHFlQtDQ0LX11UOh////////////////////8ACQQE//8gGw4A////////////////////////////////////PkkHFzY5Of//AR5LXl5WVlpdSDNPT1w/ChYtFwtOXF5XSDYC////////////////////ExAJ//9UGwL///////////////////////////////////8CBy9QVlNUO/8aS10iAQ0ZM09dTURaTVxdPwooFwtdX1pPUEYhCf//////////////////GxAB/0kQBP////////////////////////////////8ABy8iL1JTWFhcIDhcBxcBAQEBJ1JcRFVNRldfXSMjFxcrJ1dQRkREIgL///////8AAP////9LEA4OJhsC////////////////////////////////Ai4YLxYvUFM7TF4gVRkNRAcCLxcXRF1PTVIzNFZfWyMxCw1XWlBISEY+H////////wQO//////8QE0oQDv////////////////////////////////8LLyIvLy9QU1ZdXzhRBwIHGQdGGQ0zUlJGXDQKUT9bIzEHDQdOV0hERjX/////////GxH/////BBATMBP//////////////////////////////////wsvLy9IL09TXF5aFxcvAQIHAQICJ0hIWlBcRk5HCj8qUgsLDQsnTUY1//////////8QEw4JACYEEBAbDv//////////////////////////////////Ai5SQ0UvT1NfWgcpRA0vFycBKUZGM1pdUlooRiMjI1lcTgsLDVVXPjr///////////8JHhAQCRATGwn///////////////////////////////////8ALi8vL1BaVVsNFy5GMi8nBzNERFIzVldaNChHFiojXywLDSsGDVcwQf//////////////GxAQIB0T/////////////////////////////////////wAuRVVcXl9dHDZUVlZGM0gzMkQzVU9VXlY+TSMjFlRXURkGKyIGJypTHAD///////////8JGxAgFQn//////////////////////////////////////zVcVV5HTlw1W19aUV5aUkQZRkZPVlpaRkgxFiM/V0ZXKwsGDSwrKlVGJwL//////////yIRICQe//////////////////////////////////////////8HWigqWzVYVhcXNEdfXEYzSEhdXEZPVQojI11ILEcXCw0GNFpHR1BGKf//////////GQ8kJBD//////////////////////////////////////////ydaQln//yYCBA0NIldfXU1GVV1QWlojIxZbUC0sRwYNCwYNXFsqVUg2////////ACcHR0dJ//////////////////////////////////////////8AQlE1Qv8CAgsLCwYXGVdfXERWXVxXMSMWVFJERiNUKwsLCwYXWj9HTVf///8AACcCThQiTTr//////////////////////////////////////////zVCNTv//xkCBgsGCwsXLV9dRlpfVzQWFlRPLRhEI1w0DQYLCzQ0Wz9aQQD//wEBNAdEUk5YH/////////////////////////////////////////8fO/85Ov8BBw0NRwYUFC1aV01SX1dGIxY/UkQxFjQjUQsLBgsLBjRdR0dVPjQXBAsnTzJITzr/////////////////////////////////////////Gjr//zpUNDQ0K0Y0GQ0iWv//XF5XSCoKP1UtLTRPRiNHBg0GCwYLDTRdI1RWFwsLCws0VVJB/////////////////////////////////////////w46////UQcCBxkZGQcZRkdW////Sz5QI0cqIyMWFiMqIyssIgYGBiIGNF9bI0crFw0UGRcnMP////////////////////////////////////////8JOv//ABcZAhkZGRkZGS8ZL07///82SDEWI0dZX19fWz8jWk4GBgsLFAYHNF9bI0crJywUIiIe////////////////////////////////////////ADr//wEvUAcvXltbW1tWRBlIPv///zY4P1lfX11dVVZeX15aDQsrBgsiGQsnNF9bI0dWIhkiIBv///////////////////////////////////////8fOv//DQMzAlpYTDs7TFlbGU1EH/8fNllfX19dUlZIUFpcXRkNNFoNCy1NCy1SVV9ZI1QnIkof////////////////////////////////////////Ajr///8VIysZW0I1Hx81TFMZTzI1/zVYX19eX11cV1dXSFpOIjRVSFJHV1VSGVdaX14jWykl//////////////////////////////////////////85Of///xczGS9ZNVg1Qjs7RkQzJP///zlYGBYWFhYWR11XX1YrR1ZaBwMHBwcrVVxeKkdbEP///////////////////////////////////////////zk5////AkQHVlg6NTo1NUwvTU9A/////yoWIyMjGEdbRxhHVAojMVEXR1JSVxhWR0dH/x//////////////////////////////////////////////OTr///8NRgJXWEI2NTVYVRlQN1j/////FiMjIyMYW1wqI1FRFiNHUSgWDChGKjFHIQj/////////////////////////////////////////////////OTn/ACIrGVlCQkJCQlhGL0g7Ov///xgjIyMoI0dHVyMqUlQjKEdRMSpXT0YxMUdHDP//////////////////////////////////////////////////OkIHLxlQWDs6Ozo6TC9QPTpMOf///0laVFpRVD9aMU4HKDE/XV1HGCwsMSNHSUcj////////////////////////////////////////////////////QjJVAk1ZWVlYWVhVGVAyO105//8DKioqKCNHVF9NBhgYUVZXUFwxMUcxMVpePyX/////////////////////////////////////////////////////AkQHGQcHFxkZLy8vSD5MWzn//xhHGDEYKjFaNCsjIyNaRkREUl1VVl1aTVdUUf////////////////////////////////////////////////////8DM1dWT09NT09NRlAvJltCQlRHFiojIxhHMU4GKEcoXFJGRkREUisyTzIuUSg//////////////////////////////////////////////////////xdPLxc+KwUoLzJGUjI4WDtbTFQwMDExMVEnF0cYMV1fXFZPT0hINCIsSDxJRxZHMU4iAP//////////////////////////////////////////////QFc3OUpHI0dIOjpPV0H///9MXlxbXFxaIhgxMUdUVU1NMzMyTVI0MkZNMi5VMRhXR1QM////////////////////////////////////////////////LS9KLy8vLy9KSzdbQv///0JZX1NfLBYqIypHXVJERkhIRDMzREcyRk8yMiZLR1wwUSoB//////////////////////////////////////////////8ABylNV1ZXVkYyOFT///81Ol5eRxQWKjEjVFxQRk9GMzMzMzNETTJGTTIyMiA4XklHVBj//////////////////////////////////////////////wA4XVo0LCtHXlY2/////zlCRxYjKipHKlpdUEZEMzIzMzMzM01GMlJGMzIyLjZbVCox/////////////////////////////////////////////////zdaLRcLBgYrWlH///85O/8/KlEjKFFeXE0zMzMyMjIyMzMzTzMzUjNEMjI8Nl1HMRb///////////////////////////////////////8AAAAA//////8XDQ0GBgsEAgD//zr///8wR0dfXFIzMjMzREQyMjIyMk1IRFJISEYyMjI3S0k/I/////////////////////////////////////8CBAkJHAkJAv///wsGFAsGDxAQDgT//////1JaXFxSTk5OTTMzMzIzMjNPVkRaXFxIMzIyUisnSTEqBf////////////////////////////////8ACRwQECETEBAhAf//BwYNCwsQITAQEAT///8cJy4yMiknJyJRRjMzMkZWVVpSXF5WTTMyRE9SLSQRSVT/////////////////////////////////Ag4QIB4gICYgJBAQ//8CDQYXCST//zcdGf//CS4vJzIyLxgyJ11GMzNIXFxNXF9fWkYzM0ZIRlZGIh0R/////////////////////////////////wscEB4mCf//////Gxr//wIVBAsc/////zACRwAkMjI0MjI0KC9OVjMzRFpaRlZfVlZEMzNETzIyVkYtIhoB//////////////////////////////8EECEgGv////////8OHv8BDwkJDiH//////xf/H0BRT1JPTUZEJ1pGMjNPVkRGXV9WUDMyMk9GMzJPXFZVVDf/////////////////////////////CxAQHv///////////wIg/wkQJA4Q//////8JC/81S1JaUlJcXFxdVTIzTVdEM1xfX11QRjMzUjMzM0RcLUY4/////////////////////////////wIPJCD/////////////EBAADiYmDib//////////0EgRE0yMlIyMk5NMzJXRjNVX19fX1xIRE1NMzMzMlIrLjgE////////////////////////////CRAbHv///////////wke/wAQMAAQHf////////8cKRU0JycsKS8ZVjIzM0gzSF1fX11PVlJNUk0zMzMyTVEnJhz//////////////////////////wAOEB7///////////8CHv///x43/xAQDv//////Aj4VMzQuKSspKSdXMjIyMjJXVVZeUkZEWk1WMzMzMzIzVikuJgL/////////////////////////CSAkGv///////////xr//////yH/DiAXAhf//wAVJClGLzIrLzIpR00yRkRNT/81SlxIMzNGWlIzMjMzMzNcNCk2Dv///////////////////////wAOEBr///////////8JG///////////IScn////CU8VMjQyRCsiMiJdMzMzTVD///86VUQzM01WMjJEMkhEM1w0KT4eBP//////////////////////BBAQEP///////////x7//////////////////wknVVE0NDROJywuLVwzMzNNVv////84RDNEVTMyRDNEV0YzVjRHR0A1//////////////////////8EICQa////////////Hv////////////////8EGS5EWl5cXF1XTk5aTTMzMz7//////x83M09GMzIyM1JWMzNPX19fWTX//////////////////////xwcEA7///////////8f/////////////////wkXMjJPTUREUl9eXFIzMzMzH////////zUmMzIzMkRWWkQzM01WSl06////////////////////////CRAQEP///////////xr//////////////wAJKTIySEQyM09cWk8zM0QzMzIf////////Gi4yM0REWl5PM0YzMzI1TP////////////////////////8EEBATAv///////////x////////////8ACQsXJzMnKUZPRkQzM0ZPTVVGNv////////8kMjNERFdfVzMzMzMzMhwa//////////////////////////8QJCQJ/////////////xoJ/////////wsuM0RNJy4yMjIyM0RVXFZdVTb/////////GjwzTU1cX15IM0QzMzMzKRD//////////////////////////yEbEA7/////////////////////////JjNSXVdEMzIyMkZVXF9fXlE1//////////8eNz5QXF9fUjJEMjMzRkZEIP//////////////////////////DhAQEA7///////////////////////8eQF9cREZEM0YzRlJcVV1BH///////////////HzhWX1czRDMzRlZeX1c8Gv//////////////////////////EBAhFQL//////////////////////x46VEYzREZSXlJEMjNGPh//////////////////NThaRERERFJeXVpVTSb///////////////////////////8eIB0QDgT//////////////////wAEPlk6PkhPXV9fX1xSMzMm////////////////////IERESERaXldGMy42//////////////////////////////83GxAcHAkA/////////////wACFRomWVg2Vl5aUk1PXF5WTzI1/////////////////xwvRFBPWl1PM0ZINv////////////////////////////////8gHiEQEA4LAv////8AAQIEDhAkICZKNA8pRERQTU1XVl9XNjX/////////////////IDNNXVxWRk9XXV4+H/////////////////////////////////8gJhMQHBwQDw8JFQkOJBAQECQmN1EJKURGRDNQVz5LOjX/////////////////////NTo7QE9aVU1GTzX///////////////////////////////////8aIB4kEBAhGhAkEBAcHB4gIED//0leXlJNRjNIOP////////////////////////////86WlAzMzIm////////////////////////////////////////HjcgHiQbHiYeICA3IBr//////0siLVdXT0Mf/////////////////////////////zZGRERGUkD//////////////////////////////////////////xoaJDY2NzYeGv//////////DQsUIixdQRr/////////////////////////////ID5SXF9JSf////////////////////////////////////////////////////////////////8CDQ0XNP//////////////////////////////////VFQtJw3///////////////////////////////////////////////////////////////8ADQYXCyIQ////////////////////////////////////ISILCwH///////////////////////////////////////////////////////////////8HBgsLNP////////////////////////////////////8VDQsiCAD/////////////////////////////////////////////////////////////AQIUCwtH////////////////////////////////////HBwXFA0iAP//////////////////////////////////////////////////////////FxkECwYXFzH///////////////////////////////////8iCysGBgYGAgD/////AQEA////////////////////////////////////////AAQOEQIEBCErKwsNHB7//////////////////////////////////wELDQsGCwsLCwIBAQILJAQHKxEC/////////////////////////////////wAVICUZFR4bLAIaIQ8kIP////////////////////////////////8CGhwLHBUPCw8PCQ4OEA4XIA4NJhoE//////////////////////////////8ADh5JJwIbNzAHDx0mQBoL////////////////////////////////ABweHiA3NiAdGxAQEDAQEAkxIA4rQR0C////////////////////////////Ag9LXlwBHjhUXg0RMEBLIBpL////Li8vLy8vLy8vLy8vLy8vLy8vL01BJiBAOFlUXks4ICAbWTBAGhleQAteXiQX//////////////8uLkVQUFBNTVILVV9fKxVbX19fGSpfX19eMF5cXE9QUFBQUFBQUE1NUE1NTVJWX19fX15fX19fX19fX19eSVlfX19HCF1fNE5cVydSUP//////////Li4uLi4uL1BQVk5XV1crVVdXV1onW1pXV1dXV1dXVlZWVlJQUlBQUFBQTUhQUFBQUFBQUFBQUFBQUFVXV1dXV1dXV1onV1VVVlBQVlBIUEP///////////////9ISEhISEhISFVQSFBIUFJQUFBIUEhQSEhISEhISP///////////////y9QTUhQSEhISEhISEhISEhISEhQSFVQSEb///////////////////////////////////////////////////////////////////////////////9KQCcpKTBC/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////0oVDQQOCQ4RByJK////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////WSgEEiEODg4LBwITDiFU////////////////////////////////////////////////////////////////////////////////////////////////////////////////////WSEcEhMdExMTIQ4OAg4SE1T//////////////////////////////////////////////////////////////////////////////////////////////////////////////////yoOJh4fOB8fHyYbExMCDhMTWf///////////////////////////////////////////////////////////////////////////////////////////////////////////////1k3OEFUS1RZWEtBNRsSEgsXITBSLi4u/////////////////////////////////////////////////////////////////////////////////////////////////////zckJCQkJCQkJCQ8REhVXFsgEyEVBBIOSi88L0b///////////////////////////////////////////////////////////////////////////////////////////////////8rFScZFxcZGRcXIikuLkhaWyYdEwQOEyVQKS5I////////////////////////////////////////////////////////////////////////////////////////////////////SEg9PUU9PT1QRUNQPUM9UFxZHhMODhMbVkhISP///////////////////////////////////////////////////////////////////////////////////////////////////0g9Qz09PT09RUM9PT1DRUVVXyYTEg4TEEtQPUj///////////////////////////////////////////////////////////////////////////////////////////////////9VUFVQUFBQUlBQUFBQUFBQVV5LExIJEhs/VlBV////////////////////////////////////////////////////////////////////////////////////////////////////SztBQUFBQUJBQUpTVVVVVVVbWSAhFyQmOFxSVf////////////////////////////////////////////////////////////////////////////////////////////////////9bXl5eXl9fX19fWTgmNkFbX18dEg4TGz9UQkz/////////////////////////////////////////////////////////////////////////////////////////////////////QltbW1tYX19fVB4REx0gNllYGxISEhM2/////////////////////////////////////////////////////////////////////////////////////////////////////////0E4NjY4O19fWRMSBBITHjZMVBMTEhMbP/////////////////////////////////////////////////////////////////////////////////////////////////////////84Hx4mNzZbXyUhDSEhEx87XTchExIbGzj/////////////////////////////////////////////////////////////////////////////////////////////////////////TB4gEhIbOFkPEwQSEyU1W0sTEyEkJiBb//////////////////////////////////////////////////////////////////////////////////////////////////////////82Gw4OHTgtEw4IExMeVFQmEhISExs4////////////////////////////////////////////////////////////////////////////////////////////////////////////SxsTFREwHBMODhITHlk2Ex0TGx4eVP////////////////////////////////////////////////////////////////////////////////////9LODv///////////////////8lGx0SPw8TDhIOEzZLHRMdIB8bS////////////////////////1s7QVT///////////////////////////////////////////////////////8tAgICF1n/////////////////WR0gG0sPJBkiIh0/ShsdGzUfP////////////////////////1QLAgICSf////////////////////////////////////////////////////9JAgQOBAgX//////////////////9UNh9UIRMEDhIdSUE2NiAbP/////////////////////////8NDwIJDgJJ//////////////////////////////////////////////////9UAg8PCAgMCf///////////////////1s4QRISBBIQEz9BNh82TP////////////////////////9MBA4ICA8DC1n//////////////////////////////////////1lR////////FwQDCAMMDBX//////////////////////0AOEwkTEhM/QThM////////////////////////////WA8PCAMGCAQt//////////////////////////////////////8ZR///////MQYEBggiMBYx//////////////////////83EBMJEhITJf////////////////////////////////8lISUhCAwMBFT//////0tU//////////////////////////9JATT/////SQIEAw8hCAwPTP//////////////////////Nw4OHCEkHTb/////////////////////////////////PwwGDxYIDAQX//////9UGf//////////////////////////NwMZ////SQQGDA8hIQwYIf///////////////////////0EdIRUOEiE//////////////////////////////////zgUDBUVFggGBiz/////UQFL/////////////////////0pZ/z8DAydRIgYGBgwkJRUiFBX/////////////////////////HBISDhITG1j///////////////////////////////83FAYVMCEVDgYEK1n/XRcCP/////////////////////8NWf//FxYbIRcXCB0lJTEhDAwIVP///////////////////////xEbEgkSEhBC////////////////////////////////IgwUFCowKhIICwcrThkCA0L//0D/////////////////Aiv//0sbEyAODiUlJTgxKAwGCC3///////////////////////8RGw4OEg4QP///////////////////////////////VAYIDyEwPyUlEwwMCxQdDCL//1YH/////////////////wYDLFldVEEgEx03JThYJSQMDAgLW///////////////////////JhsSDhIOEz///////////////////////////////ywECxQVJUs/JSUlDg4dGyBY/1sXBv////////////////8sAwIXFzFASz8qMCVZ/0shFAwUCED//////////////////////zEQEhIhIR0d/////////////////////////////0sGCwgLJT///zglMBwfQUFKVi0HAxT/////////////////WxQMFhIdDh0SJSVU//9ZHSEMBgwLWz4tJz7///////////////9LDyYhDxEdJV7//////////////////////////1kNAwwUFR1L//9ZJSolPzggIQ8hAwhH//////////////////9bMBsdHR0/KiVL/////yUMDBYsKSQkJCAJTP///////////////yQSDg4SEhM7////////////////////PgkRHCQtJyIMBiEdXv///1QlJRIgDh0TGyUx//////////////////8iTl1ZVEtUOBIw//////8wHTA3KTxFMj4uIDf///////////////8gEBIOEhIQP///////////////////WREgN0UuLi4pPiolJUz/////QSUqSj82PzhL/1T/////////////////RwELDSEbJh0dVP//////SzApPT1IPUhSV1NJSllM////////////JRMSDhIOEyX//////////////////0EkPj5FJ0hIPTwpQEr//////1kgHTY4P0pHLBcs//////////////////9HAwMWEhs/WP///////0AuPUU9SFZSPiQuPj4LAglJ/////////0ETEhISDhMbW////////////1RAQFsnN1NaWlZQPT1GQzw3WP//////WDggGxMWAwMhWf///////////////////0soHR4/////////WTguQ0U9Uk9ELkhXXDQRHCQkEUv///////87CRMSFR0cE0z//////////1QJCQkRKUhFLi5GVVdQPUVIPDdL////////QRsbFQ8xW///////////////////////////////////WyY8NENIV0YvRVZaVkAeJE1WUiYcWf//////Qg8kIQ8dHCFY/////////1gcHCQkHho+XVxWRi5DUlpQQ0ZIJkv///////9LO0z//////////////////////////////////////zcmRj5VXEguRVJFPC4gKVVcXFdSIEH///////8hEBIOEhIQMP////////8kGi5VVTIpHjhVUlpVRT1IXFpQSDcfWP////////////////////////////////////////////////8cJj5WXkg8PUU9LzwgLlJSRS8pJCQ+W///////ERsSDhISEzD///////9LGiRVXFxVRS4kOFAvSFJQPUVaXUo2H0z/////////////////////////////////////////////////QR9KXlApPT09L0VAJEhIPTwvPS4kHBxZ/////xEbEhISEhsg//////9LNyZIVkguLz09LyZAUC9FWlI9PFdcNjj//////////////////////////////////////////////////10fWjgpLj09PUVVJkVDPT1IPUhIRS4gJlFAWVswODcTGxsfH/////8+JCZNRiQkLj09PT0uLk1FL0VaUC4uSktC////////////////////////////////////////////////////VDYmLj09RVJcPi9FPUgrGU89SFpVRiY3JBEJERwkKys0QUFe//8pGkA+HB4kLi9FTjRIQz0uSD0vRVJILiY2Qv///////////////////////////////////////////////////0AaJj1IVl1fVS49Q08XIiFRSD1FT1xSPjhQJiAmRjAmISQRHDg+GiYcHx8uLz09UiINF05IPT1QPT09RS8mGkz///////////////////////////////////////////////////8kHzxSXV1cXC48SCwXMBgtIVI9PT1DT1VTQVpQRikxKiNRTU80Gh4kJiQuPT09Q1EhMikiKFJFPVZQRT1FLiBK//////////////////////////////////////////////////9MCSZQX19cXUYyTSIiPEcxTSIxUD09PT08Nz5TXl1WVkZIUVNAHC5QQCA9PT1FPVIoKSo/LTwhMU1EXFxXWkMmJv//////////////////////////////////////////////////Ph9DWl9fXk1ETRctKzQtMUU8IVNFRUVFPT08JjdKXF5dXV1TJk9cQCYvPVBSRT1SIT1FSS4+Pi0hTUVeXl5SPh5Y/////////////////////////////////////////////////yIgSF5fXEguTRQ+TS1FQzE+MikoUj09SFBQSENDPEVVXFxXVVZTNykvRVdaQz1SKCkyNC1DQ0coPipESFxfVTwcTP////////////////////////////////////////////////8rIENPUEU9SFooKklOLUUvPzw8IklQPT09RUhIUFJTRykkNC4mLi9DUF1WRT09UiE9PjEuRS1SRzBUSC5DSEU8IFj/////////////////////////////////////////////////Sx4uLkVDPFBeWzBFRUkyPjFHUFEoVUU9PT09PT0uRSIpIk89PUVSXFxQPT09UDEpRUgtPDxHRUU/XlY+Rkg3NkL///////////////////////////////////////////////////9UNTY+OD5WXlxXKUNGMUhIUTEnIUdSPT1QUEM9PUgpRTxJUFZcX11VRUVFQ1UsTlBHRUUxTy4mXV9WOEE1OkL//////////////////////////////////////////////////////15CQjo3Vl9WXEc+PlJRUSgpKD4YUUU9RT1FRVBQSVVaW11cVlBIRUVFPVBHFicsUVBNUT4+P15fSDtMTFn///////////////////////////////////////////////////////////9UH0BcVFNdMEZSRylDRipIITFVRT09PUhSWlRWUkdIQz09PT09PUVWKCcrNCkxV08+OF5cVTZY/////////////////////////////////////////////////////////////////0w6QVRAVVxHJz5IRUVDKUddUD09PUNFRT1NKSklT0ZQUEU9PT1QSRdDP01FRCxHSVRLQTtY/////////////////////////////////////////////////////////////////////1hYNkFVUT4WNEUpR1xfV0VDUFdSQz09QyhDL009PUhQVlA9SFpJLTJFRUgiPj9MTP///////////////////////////////////////////////////////////////////////////0w2OFwqTT4wV19cUVRWV1xQPD0vRUhRVVVaVUhFL0hWWlBQXV1RLURFP0BH////////////////////////////////////////////////////////////////////////////////ODdWWyVJXlwsFhgqW1pFPUVQUFpSUjQ0NDQ0UlJIQ1BcWlVaX11JLUU4/////////////////////////////////////////////////////////////////////////////////zseSlVcXlcUP0sWP0dVUlpaUldUARYoKj8qCiNdWlJXVDFXWlxcX1xHVP////////////9ZWVhZWVv/////////////////////////////////////////////////////////////TDtKVCpHIyoqIyMqXjAYW1Q/RwVHPyMYPyMjST9UXT8YIypbXFpeQVj///////////9bWUxCQkxYWVv/////////////////////////////////////////////////////////////USNHSRZJJT8jKlwqIz8lKkkWDSgwIz8jI0clI0sqIyUlI1RaVTZCH0BZ//////9ZWEI6OTk6QkxZ/////////////////////////////////////////////////////////////yUlPz8qPz8jKlk/VCUqKipRCkdJIyVHIyNJKj9HKioqIyo/XkpCTDk5HFj/////WUw5OTU1OTlCWFv///////////////////////////////////////////////////////////9YHSo/VBYqVFk/I1QqIz8jSQojKCgoKhYjRyNJPyM/Kj8jW1RUXl9bQjkcWP//WVg7OR4AAAI5OkxZ/////////////////////////////////////////////////////////////yo/I0dbWUclIyNHKiNUWV8/Pz9HS0tHVF9bVCMlPz9HR1lLHVlfX19MOiH//1lYOzkEAAAAOTlMWf////////////////////////////////////////////////////////////9YI0tdWyM/KiojP1RLWVxWXV5eXFxaXVxQWkkjKjA/JVRJPyUlX19fXzofTP9ZWEI5NQ8ABDk6TFv///////////////////////////////////////////////////////////////9MS1kqPz8/VF9fXFVGUFBSND40RjJIUFBeVD8qKipbRz8lQV9fX19YNTD//1lMNgIaOjk5Qlhb////////////////////////////////////////////////////////////////S0tRPyoqKkdSWlxaVUZELC5IXFxGJD5PVl1eW0dUSz9LO15fX19fWDkk//9ZWTc2Gjs6QlhZ////////////////////////////////////////////////////////////////TigKCgoKCgoKCgoWKEdXVkZXXUlHXFU8J0RSXF9fWz8lOl5fX19fX1g5N////1kgQkpMTFlZ////////////////////////////////////////////////////////////////LAoKI0dZXl5dVEcqIwoKCihXVzEiIUdVV0UpKU9cXldZODtfX19fX19CNUH///9AOUxZWVlZ////////////////////////////////////////////////////////////////QQojWV9fXldSSEVIUFJRRyMKPzEhGBQUJVRcVUU+VSsKTjtZX19fX19eOjVZ//9YGzr/////////////////////////////////////////////////////////////SyY3//////9LWF9fXFZQRi4pPD0nIlA/ClQiDAwPFAYiR1dcV04KCgpJX19fX19fQjVB////JDlY//////////////////////////////////////////////////////9LQREcKycRERxK/////1hdW1xdXVxSSC4vIyNQIxZXDBQGDAsGDCI0U1IKI1cjCktfX19eVTs6Xv//SzVC//////////////////////////////////////////////////////8pCQkRHCAcPj4gGkotKRURHCYuPEhSXVxQL0RITwo/RwUMDAsXCBgLLVEWClEtViMKW19eVCA2WUsPJxk3W///////////////////////////////////////////////////W1k0HEpNPCQePi44TS4gOCAmLicuPRkZL1BaXVAuLzEKVCgMFBcDFBYGMTEjCkdNFlVZCiNfXktPSlwVHCEXJFn/////////////////////////////////////////////////WBwgKVZfX11XQylFPE1ILiRNPikHGQ0CDQcZSFxaMjIjCloVFAYMBgsUDDBHCj9ISE9NXUcKSSYVFQICKT8+PCQw/////////////////////////////////////////////////0weOj5eX1tXWlpDKUY8UkUuPEhDFw0CF0VFAilSVlBQCiNJDAwGCAMMBhVUFhZPPDdWVV5ZIzQtNCkPLiQVRk8dQf////////////////////////////////////////////////83OUxKXUcVISpXVzw+RUVXPS5IRScZAgcyLgMNRVdSRwpHMBYDAwwDBgMiPwpHQ0Q4XFpWU0AqKlMpFy0MLhwpQVv///////////////////////////////////9bWVv///////9LGjtbTicCAwwhKFpQLkU9VUNIL1AzBw0nBAMDBEVXSFEKI0kUFgMhAwYMRwojTS5FPkteX0pPP1NFFy8tIzI9JBVA/////////////////////////////////1lZWExYWf//////MDVMXEcHDwwUBhVJXDxERUVQUEVSSA0CBycNAw1FVkVQKgpUISIhDBcDKEcKRyMWSFM6X1xUVUtVLxc9PT09LgolCUH///////////////////////////9ZW1lYQjoeIExZ/////xw5WCwNBAwDAwYhIldQPVA9VVVQUFBGCxdIQwInUFI9RVUKI1QXKCEUDDFZCj9JR0hBTF9VUFJaRRkvPVU9PTMjLhxZ/////////////////////////1tZWExCOh4eOzo2WFv///8fOV5XBgYGDAYMBiFJVj1QQ1ZWUFY0BxkDGQ0NRVZIPDJIPwpUKgYjIioiUSMjSC5FQVhZUFJQUFA+PD1DQ0VDPSQ4/////////////////////////1lZTEI6GjVCTDpCHkJZ////N0JdKyIXBgMGFA8VMVpDT0hVVlBcKyJQGRcpSFJWPTw9L08KIzEYDCgWFzFUCjQpPkxVO15eWlpcXlpILz1ISC8eW///////////////////////W1lMQjobIEJCOztCTDo1WFn/VEA7TgILGTQrIhQWIT9cSFJQV1JaXUZXUFBQUlVaRUM9IgpPKgpHFQwhBiIwWwojRDdZVjhBX11dXlVNWlJDPT0kQf///////////////////////1tMOhofO0w7HxAOHkJCHkJZ/y0YOCs3JCNPLhcpMCVUXEhWUFxQXVdUVldXVlxcSD0pPDQ/SFEKKiEUFCIoSVs/Ck84XlZNOEBfX10WHVRcWlAuIFn///////////////////////9ZQgk1OztCHxAQOjU2TDo6WFs+N1MlIyNHNBJNN0BJXVpQWlNaS1Y7S0FLWV5aRjw8PUVPST8jCgoxDCEoGElcXQo/S1pSPiAaKV5bPyNbJT5bQUv/////////////////////////WUI2ETtCQhA2GjsgNlhCHkxUKU1TVlJPUjQ7QEYwQVtXUFZUSkw7WVleX1xVSDxFTz8jCgoKChYjVA8WIRZJV1cjFltaSD1PPiYiQEJbRwodWVj//////////////////////////1tMOxw7TEIeOzU1GjtMQjo6ER8cFREkLk1VVUpJMUpeUEE7O0L//zhTVVVQUEhJKgoKFiNHWV9dVxgGDA8lVk1IVAo/VUhFLikpOCRAWVg/R///////////////////////////////WEI2HExMIB4aGjU2QjpCIBxLQUg+PSQkFSJTUk9AVTZMWEL///8xNlBVUFAqCgojVF5eXV1dMSIGCAwMJF1FIlUjFldFLjxSSiQcHBwpS////////////////////////////////1tMOxw7WExCHzY6OjU7QkA3Ojk6OkJLTS03UFZCOFlM////////WzU+UFEjCipbXllaVlVWMSIMBhQMFUdcNCNVIz9XMjxWTSk+JiA3NxxK////////////////////////////////WUI2HkxMTDs6IDU1OkI3QR0KNRsbOTZIPlZQWzv/////////VEtBPlEWClRfXlc0PkhNVjEUBQMMDCFaXFBQPyNbUENSTS9IJEZWXFpbVFRbP1T//////////////////////////1tMOxE7QjsgNTU1NkJCJjsKCjUKCjpAPEhIQFlC////////VCBVWFQjClRfXVJQLE80WjAsIgwMDCExW1xQSQpHXkhVVi9GLk9cRyEMBwIXDzBJJxdATP//////////////////////WUI2HkI2NR82OzocMC5COjUKNQpBSC5QSCpB////////WSQ+V0cjKFRfX1xNUDQrWlEhJygMIRY/VF9eViMjXVpQXEZFL0hcLBQMCAQCBAEBAQ8wW17//////////////////////1tYOxFCOzZCQh8eQkxVSjdAOztCNkY3UEkjQf//////SRgoKBYKIywsXVxdK1pbC1wlDCUnITAxS1tdVVQKVF5XVlo9SDxaSSIMDAwGCwwGBQgPCCFB////////////////////////WUI2IEJCNh46OxwcID5IUFJTRT4uTVAjP0z//////0kKCgojR15cFRdXX0crXiQXKhYwBzExUTRfUkhZI1RLU1xXUEhQWyIVDAgDDAMGAyEnGTNLWP///////////////////////1tYOxo6HjZMJhE1CREcETgkPkZSU1JQUztZ/////////1RdVVNaWlQdBCtZBDRRDxchKg8rMVshXFBGVz8/WUJTVlZQVUkkCxYPBgYFBiIZAhUCB1X/////////////////////////WUw4IEJLER4PBDUPGh8aCTguPlpcWlBB////////////S0lTQUpaSh0IByIENCQIDTAdBFVdAlpSUFxbI1RbO0JVUFdbHSEhBiEPCBUvGRcHRklN/1n//////1kwJkv///////////9ZW1skER4aNTUJGgkJEUE+PlJSVUxY//////////////9LFRUrTlw/DAgLIQYiIQgXMA4LWwgrVlRbPktU//9YO0BWX1Q3HSElFSExLykvURYIAgIwXv//VRcIBwILNP///////////1QVIAkRGhECHxwaHEEmRVJNJlQ6Wf//////VEonJylLTFtAIQgIKzAUDw8VBhUhCCETCScPDV0qJzD/Wf///0xCSF1fVCUdJSElT0VDUhgGBgMEBCdbLAIOHRIOFgIr/////////0sCES5BQTgPOwkCNkgmSFInIU1CWP////9bKQgEEg4TBAQiVEAlIRUVJBUVFA8MDAgGJA8EHQhUKARY////////WDtKVUtYIB1LOEpISFUhCQgMDBQXBA4OHh82HyMFAVH///////83KT4uLiQpPjxLQkYkSFBQLTpLWf////9YFQkTHSUlHQ4ODggiKiEiKAwXBgsWFRQMBBcUDwsELQ8UXlj///////9bO0JZWVQgXUteS0FUJSQSDAUSDhITNjZUXkFUMAMn////////OC5GU1NQRTw3JiQmUEg3VVNCVP////9bDQ4gODYgNjhLJRISDhRJFQYUISIGAwQiIRQEKA8EDBcJIklU////////////////QVtZ//9bWEs/IQ4OHRASGzZb//////8YJ////////zhECjs2NThATUg+RkAWPlVQO1n/////Ig4gICAgICA4QUtBExIOC0ciIRQhKBQMBCchDBcMBBUVDyExW0D//////////////1lY////////NA4SEzY2HyBBQf//////MTT///////9LLktKNQQ5NhVCPEhKP1JcS1n/////SQkgIB8fICAgIDY4S0sbEhIUUSEoKDEtIgwDKCEGIgwLHQgIWyRZ//////////////////////9ULQQOEhA4NkFBICT//////0tU/////////1haT01KQT46S0U+UFdZ/////////xUTIBMbHhseICA2OEFLSxISEiFRFRQUIiIhDAwVFBUVBiELFUki/1j///9LNzhBWf///////04ZFw4SExseOCA2Hx4TLf////////////////9ZQFdeXFdVUFBGQVpAP////////0wJGxMTExMeGxsgNjY4QlkqEhsTKkcwFBQIBgMGBg8GDAYUCwsUK1FB/1swMFn//////////04IEA4gGyBBQTYgGyATExQnWP//////////////Jx0wMDFUVFtdV1sxEg////////9ACRMTExAbExsTHiA2OEFMWxMSFTEwFAwMBggDAwMIBgMGBA8LCVEhWVs3VP////////////80FR0TQUFYVDYfGxIbHx0OEgQiVP//////////LA8dFwwhMB0lSUFLGxIh////////SRwdExAQExMTExsgNjZBTF4wEh0qKAwYDAMIFCgoKAYGBggICA8kIl43VP//////////////BwMjH1n///9ZNhsTHUA4HhMSCQ3/////////QQYTGQ4SNwsdHTZUWzcOCDf//////1QiExAQEBAQExsbEB4gOEteVBMlDAYiJy0xFAgUCAYoAwYIBhIIBElAQf///////////////wIFSVT//////1Q2Eg9UW0seGw4UJ////////00VMAsOIBcIDjZU//8TDgg///////9bDhMQEBAQEBATEBMTHyBUXl9JMSssTgQJGjBHFCgDDBgDDAwPDARUJv////////////////8EFv//////////IBMJWP//VDgbDgRJ//////8iEy0VHSshDhtZ//9bIRQh/////////yoQEBAQEBAQEBAbGzY4VEtOGRkZJ0QaJlk7HjFUIQgsAxcMBggIFUv/////////QjtM////JyH//////////zYTDiz///9BExIJJ///////JxsXEh1NDBI//0ssGAMNW/////////9ZHCgoKhMQEBAQECAREh1BQFJNSE0pEUJZW1g7HzFHUQ8YBgsMFBAi/////1gwNzEwQEtZ/1QXWv///////1s3EhIt////QR4WFyv//////1QlBxJBFw4TQf//VCcxW////////////0cFIz8bEBAQEBMTEiUSHRYiMVZcIBpYWVlZWVg7HzdURyEhFBYPCD7//0E3VP//////////V0r//////1skDhIbMP///1klAwFZ////////NCETQQ0OE1T//////////////////1QFI1QdEzATEBMTEzhUJRsMGCEhRzU1WFlZWVlZQjk5HyZUUTEdKg8XXkBL//////////////////////9AIRITHEv/////KAMX/////////0sPEzcZEiBU//9Z//////////////8qClReVEkWRw4oIFRfX1koDAwMCxZHTDs7WFlYQjUfNTpCNSBJWyo/VElU//////////////////////9RGQIYGzD/////VAMDVP//////////SiU/DxMQJf9ULf//////////////Kgo/X19RClRZXV5dSSIIDyEqAwIICSFHWDs7OzU1NTpYQlhCQR8xVFRU////TEspKUBM////////SxkNBAMDKEH/////VA0NVP///////////////zEOFgwiA0n//////////////10WCiMjCir/WUEmFQgMHBUiFAgSIQwGDBUxVEI5OTtYTEJCOjtMQiAgQVtJODAwQjtBMUFL//////9URygoS////////zBK////////////////////SSgEBkf/////////////////VCMWFj9b/////1lUQSEhKAwIISEqVyoGFCEwVEw6QjtcXFtCWVk4TB9LS1v/////////WP//////////////////////////////////////////////TFj/////////////////////TEz/////////LQgMFRUMCBQMBihfSQwMDB0kSUxUKiExWFg7Qjo7//////////////////////////////////////////////////////////////////////////////////////////////9UFwgPFSIhFgYDCAYGV1QxFgwUDxIUDBQMDBRJOjo5Wf//////////////////////////////////////////////////////////////////////////////////////////WT4iCBIlRyUUIhgMBgYGBiFLLFEMDAwMDwwGDAgMCCxCTFRJODA3JjdAWf//////////////////////////////////////////////////////////////////////////////TDdBQUFZWxUIFhQhIgwMCAMGR1EsRwwGDAwLCwgPDgwVGVj///////9ZSzdA////////////////////////////////////////////////////////////////////////////////////WRUMDB0hLBQoFQYGBhQZVF4/DAYUBgYGBiEPGw8nWf//////////SzdZ/////////////////////////////////////////////////////////////////////////////////ygIJS0dJSUxMTEhDwwGLBhYK1cdAwYUAxgTEQkJCSlLMVj///////9ZOFn//////////////////////////////////////////////////////////////////////////////0kISVsVMB0hISIqSUcWDAYsLFlfRyUOAwMlHVkbDgkEXlQwQP///////1lU//////////////////////////////////////////////////////////////////////////////8kS/8xVBcPFSUoKC1RVCQGFCtCUQoqSR0IIRA/IBMlHP///0ow////////////////////////////////////////////////////////////////////////////////////////P///VFsGDCEhISEiSVFaJQgWVBkBBRZUPyUlEBMbIUv/////SjD//////////////////////////////////////////////////////////////////////////////////////0z///8sAwwwDBQhMTAxVFclBiwBAQEYChZUVDg2JUv///////9LQP////////////////////////////////////////////////////////////////////////////////////////9ZDww3IQwPKDAlMTFJVz8XAQEHAwE/XUr//////////////0BU////////////////////////////////////////////////////////////////////////////////////////LA83VAQPJSExIS0iR0dOAQEBDQEr/0pY//////////////9bN///////////////////////////////////////////////////////////////////////////////////////SQ8/XS0IFiIlKhQoIS0sNA0BDQEZS////////////////////0tC////////////////////////////////////////////////////////////////////////////////////Sh1L/10PDCMVPyUPIiExISVbP0cZXFn/////////////////////TP//////////////////////////////////////////////////////////////////////////////////WUtZ//9KBCUPFUEwCCEVSyUMVEE/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////IR1JCBJbMQgWDD9LDD//WP//////////////////////////////////////////////////////////////////////////////////////////////////////////////////SwRLQQYd/0IEDAw//yUo/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////0Ak/0wEJf//FQ8MP/9UIf////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8pTP//CyX//zEDDCT//yb/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////MFv//yQl//9UCAYw//9B/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////0xd//9KD////yUGIv//TP///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yRY//9UDxX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9UQf///zAGWP///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////0z///9ZDDH//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////0oh////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////MEv//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////1s/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////WVj/////////////////////////////////////////////////////////////"};
+var RPX=b64(RD.d),RPC=[],RPCW=[],RPCR=[];(function(){for(var i=0;i<RD.pal.length;i+=3){var c=C(RD.pal[i]<<16|RD.pal[i+1]<<8|RD.pal[i+2]);RPC.push(c);RPCW.push(mix(c,K.white,0.7));RPCR.push(mix(c,C(0xff2030),0.6));}})();
+// the sprite is anchored at its feet (standing) or at the pipe (hanging); shear swings the hanging one, glitch tears rows sideways
+function ratSpr(n,ax,ay,pal,shear,glitch){var q=RD.s[n],w=q[0],h=q[1],o=q[2],X0=Math.round(ax*SC)-q[3],Y0=Math.round((ay+oy)*SC)-q[4],i,j,v,X,Y,tt=(S.t*30)|0;
+  for(j=0;j<h;j++){Y=Y0+j;if(Y<0||Y>=H)continue;var off=Math.round(shear*SC*j/h)+(glitch&&hash(j>>1,tt)%5===0?((hash(j,tt)%9)-4)*glitch:0);
+    for(i=0;i<w;i++){v=RPX[o+j*w+i];if(v===255)continue;X=X0+i+off;if(X>=0&&X<W)buf[Y*W+X]=pal[v];}}}
 function BU(n){var p=BD.pts[n];return{x:BX0+p[0]/2,y:BY0+p[1]/2};}
 
 /* ---------- physics constants ---------- */
@@ -143,17 +150,20 @@ var S={mode:'attract',score:0,hi:0,ball:1,mult:1,bonus:0,bonusVal:0,targets:[0,0
   orbitT:[0,0],spin:0,spinV:0,spinAcc:0,skyT:0,
   mission:1,boss:'alive',bossT:0,limbs:[],psi:0,psiT0:0,psiNext:12,psiBlast:-9,hurtT:0,
   dmgT:0,lock:[null,null],lockLit:true,saucerT:[0,0],multiball:false,mbSave:0,autoQ:0,hackT:0,hackFlash:0,
-  shake:0,zap:null,flipFx:[0,0],bodyFlash:0,drops:[1,1,1],viaOpen:false,viaT:0,vocT:6,kind:'dolphin',mbLevel:0,mbSize:3,combo:1,comboT:0,surgeT:0,delugeT:0,delNext:0,del:null,cyberT:0,cyberT0:0,missNext:1e9,banner:null,animT0:-9};
+  shake:0,zap:null,flipFx:[0,0],bodyFlash:0,drops:[1,1,1],viaOpen:false,viaT:0,relightAt:0,loops:0,ebNeed:10,extra:0,ebTotal:0,ebMB:0,mbCount:0,spin2:0,spin2V:0,spin2Acc:0,lastKind:null,fhT0:-99,redT:0,vocT:6,kind:'dolphin',mbLevel:0,mbSize:3,combo:1,comboT:0,surgeT:0,delugeT:0,delNext:0,del:null,cyberT:0,cyberT0:0,missNext:1e9,banner:null,animT0:-9};
 var balls=[],parts=[],rings=[],pops=[],orbs=[],cables=[],missiles=[];
 // level 2 boss state
 var STG=[{n:'s1',r:11,hp:1,spd:135,nm:'BABY'},{n:'s2',r:14,hp:3,spd:48,nm:'CHILD'},{n:'s3',r:17,hp:4,spd:30,nm:'ADOLESCENT'},{n:'s4',r:22,hp:6,spd:18,nm:'ADULT'}];
+var RSTG=[{hp:3,nm:'RED ALERT'},{hp:3,nm:'PIPE SWING'},{hp:4,nm:'FLIP HACK'},{hp:0,nm:'VIRUSES'}];
+var RAT={stage:0,hp:3,max:3,x:103.5,sway:0,ph:0,evoT:-9,flash:0,cd:0,fw:0,fwN:1,fhNext:0,virNext:0,cx:103.5,cy:92},ratC=[],vir=[];
 var APE={x:103.5,y:60,vx:0,vy:0,stage:0,hp:1,max:1,wx:103.5,wy:60,wT:0,flash:0,cd:0,holdCd:0,hold:null,evoT:-9,throwT:0,orb:[]},apeC=null,orbC=[],fruit=[];
 var keys=[false,false,false],kb=[false,false,false],ptr={};
 var armed=false,charging=false,charge=0;
 var DOME=BU('dome'),TORSO=BU('torso'),BOSS={x:TORSO.x,y:TORSO.y-4},LIMBS=[],bossCs=[],debris=[];
 var SAUC=[{x:40,y:134},{x:167,y:134}];
 var MAG=[{x:36,y:92,cd:0,hold:0},{x:171,y:92,cd:0,hold:0}],DROPS=[],VIA={x:46,y:230},VIA_OUT={x:42,y:173};
-var CAP_HOME={x:103.5,y:295.6};
+var CAP_HOME={x:123,y:276.6},HACKP={x:123,y:236};
+var EB_FIRST=10,EB_STEP=5,MB_DELAY=45,MB_GROW=20;   // locks relight this many seconds after a multiball ends (longer each time), or at once from the 3 targets   // loop shots needed for the first extra ball, and how many more each later one costs
 try{S.hi=parseInt(localStorage.getItem('dfs-hi')||'0',10)||0;}catch(e){}
 function mkBall(x,y,state){return{x:x,y:y,vx:0,vy:0,py:y,state:state||'free',held:0,still:0,rail:null,rs:0,rv:0,auto:0,dead:false,k:-1,fx:0};}
 
@@ -176,7 +186,12 @@ function tone(f,d,type,vol,slide,delay){if(!ac||sndMode===2)return;try{var t=ac.
 function vox(f0,f1,d,form,vol,delay,type){if(!ac||sndMode===2)return;try{var t=ac.currentTime+(delay||0),o=ac.createOscillator(),g=ac.createGain(),bp=ac.createBiquadFilter();
   o.type=type||'sawtooth';o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+d);bp.type='bandpass';bp.frequency.value=form;bp.Q.value=3.5;
   g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+Math.min(0.03,d*0.3));g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.connect(bp);bp.connect(g);g.connect(master);o.start(t);o.stop(t+d+0.03);}catch(e){}}
-function voice(n){var i,k=[1.9,1.45,1.1,0.78][APE.stage]||1;
+function ratVoice(n){var i;
+  if(n==='ratsq'){tone(2900,0.06,'triangle',0.07,1.3);tone(3500,0.08,'triangle',0.07,0.8,0.07);}
+  else if(n==='ratlaugh'){for(i=0;i<8;i++)tone(i%2?2300:2900,0.035,'sawtooth',0.035,1.2,i*0.06);}
+  else if(n==='rathack'){for(i=0;i<16;i++)tone(400+Math.random()*2600,0.045,'square',0.035,1,i*0.05);tone(70,0.8,'sawtooth',0.05,1.4);}
+  else if(n==='ratdie'){tone(2600,1.1,'sawtooth',0.07,0.04);for(i=0;i<10;i++)tone(200+Math.random()*1500,0.04,'square',0.04,1,0.2+i*0.09);}}
+function voice(n){if(n.indexOf('rat')===0){ratVoice(n);return;}var i,k=[1.9,1.45,1.1,0.78][APE.stage]||1;
   // Baron Sonar: echolocation clicks, signature whistle, ek-ek-ek laugh, squeal, angry chatter, goodbye
   if(n==='dclick'){for(i=0;i<7;i++)tone(2600+Math.random()*1800,0.008,'square',0.05,1,i*0.028+Math.random()*0.01);}
   else if(n==='dwhistle'){tone(2100,0.22,'sine',0.07,2.0);tone(4200,0.2,'sine',0.07,0.62,0.22);tone(2600,0.16,'sine',0.06,1.5,0.42);}
@@ -193,7 +208,7 @@ function voice(n){var i,k=[1.9,1.45,1.1,0.78][APE.stage]||1;
   else if(n==='agrunt'){vox(150*k,95*k,0.16,420,0.55);}
   else if(n==='aom'){for(i=0;i<3;i++){tone([110,165,220][i],3,'sine',0.07,1,0.3);vox([110,165,220][i],[110,165,220][i]*1.001,3,500,0.25,0.3,'sawtooth');}}}
 function snd(n){var now=S.t,i;if(lastS[n]&&now-lastS[n]<0.04)return;lastS[n]=now;
-  if(n.length>3&&(n.charAt(0)==='d'||n.charAt(0)==='a')&&n!=='drain'){voice(n);return;}
+  if(n.length>3&&(n.charAt(0)==='d'||n.charAt(0)==='a'||n.indexOf('rat')===0)&&n!=='drain'){voice(n);return;}
   if(n==='flip')tone(150,0.05,'square',0.04,0.5);
   else if(n==='bump'){tone(440,0.07,'square',0.05,2);}
   else if(n==='sling')tone(260,0.06,'triangle',0.09,1.6);
@@ -262,7 +277,7 @@ function initAudio(){
 
 /* ---------- rules ---------- */
 // playfield multiplier: (1 + limbs destroyed) x combo x2 in a power surge x2 in multiball, capped at 99
-function scoreMult(){var d=0,i;if(S.kind==='ape')d=S.boss==='alive'?APE.stage:0;else if(S.boss==='alive')for(i=0;i<S.limbs.length;i++)if(S.limbs[i].dead)d++;
+function scoreMult(){var d=0,i;if(S.kind==='ape')d=S.boss==='alive'?APE.stage:0;else if(S.kind==='rat')d=S.boss==='alive'?RAT.stage:0;else if(S.boss==='alive')for(i=0;i<S.limbs.length;i++)if(S.limbs[i].dead)d++;
   var m=(1+d)*S.combo*(S.t<S.surgeT?2:1)*(S.multiball?2:1);return m>99?99:m;}
 function mulTxt(q){var m=scoreMult();return m===1?q:q.replace(/\b\d{3,}\b/g,function(v){return String(Math.round(+v*m));});}
 function add(n){S.score+=Math.round(n*scoreMult());}
@@ -273,16 +288,18 @@ function say(m,d){m=mulTxt(m);S.msg=m;S.msgT=S.t+(d||1.5);}
 function boom(x,y,n,big){spark(x,y,n,K.yel,190,0.8);spark(x,y,n>>1,K.org,120,1);spark(x,y,n>>1,K.white,260,0.4);
   if(big){spark(x,y,n>>1,K.steelL,90,1.4,null,0,260,3);shock(x,y,40,K.white,0.4);shock(x,y,26,K.org,0.55);shake(big);}}
 function limbsLeft(){var n=0;for(var i=0;i<5;i++)if(!S.limbs[i].dead)n++;return n;}
-function resetBoss(){var hp=Math.min(7,3+S.mission);S.limbs=[];for(var i=0;i<5;i++){S.limbs.push({hp:hp,max:hp,dead:false,flash:0,cd:0});LIMBS[i].cs.forEach(function(c){c.off=false;});}
+function lvl(){return Math.floor((S.mission-1)/3);}
+function resetBoss(){var hp=Math.min(7,4+lvl());S.limbs=[];for(var i=0;i<5;i++){S.limbs.push({hp:hp,max:hp,dead:false,flash:0,cd:0});LIMBS[i].cs.forEach(function(c){c.off=false;});}
   bossCs.forEach(function(c){c.off=false;});debris.length=0;
   S.surgeT=0;S.delugeT=0;S.del=null;S.cyberT=0;cables.length=0;missiles.length=0;S.missNext=1e9;S.boss='alive';S.psi=0;S.psiNext=S.t+10;orbs.length=0;apeSetup();}
 /* ---------- level 2 boss: the superpsychic orangutan. Pop his bubble and he grows up a stage ---------- */
 function apeOk(x,y,r){r+=13;if(x<8+r||x>199-r||y>172-r)return false;if(y<104){var dx=x-111.5,dy=y-104,m=103.5-r;return dx*dx+dy*dy<m*m;}return true;}
-function apeStage(){var A=APE,st=STG[A.stage],i,n;A.max=A.hp=st.hp+(A.stage?Math.floor((S.mission-2)/2):0);apeC.r=st.r;A.hold=null;A.holdCd=S.t+2.5;A.throwT=S.t+3;A.orb=[];fruit.length=0;
+function apeStage(){var A=APE,st=STG[A.stage],i,n;A.max=A.hp=st.hp+(A.stage?lvl():0);apeC.r=st.r;A.hold=null;A.holdCd=S.t+2.5;A.throwT=S.t+3;A.orb=[];fruit.length=0;
   n=A.stage===2?6:A.stage===3?5:0;for(i=0;i<6;i++){orbC[i].off=true;orbC[i].r=A.stage===2?4:4.6;}
   for(i=0;i<n;i++)A.orb.push({st:'orbit',back:0,x:A.x,y:A.y,vx:0,vy:0,t:0});}
-function apeSetup(){var i;S.kind=S.mission%2===1?'dolphin':'ape';apeC.off=true;for(i=0;i<6;i++)orbC[i].off=true;APE.hold=null;APE.orb=[];fruit.length=0;
-  if(S.kind!=='ape')return;
+function apeSetup(){var i;var ks=['dolphin','ape','rat'].filter(function(q){return q!==S.lastKind;});S.kind=ks[(Math.random()*ks.length)|0];S.lastKind=S.kind;ratC.forEach(function(c){c.off=true;});vir.length=0;S.fhT0=-99;S.redT=0;RAT.fw=0;apeC.off=true;for(i=0;i<6;i++)orbC[i].off=true;APE.hold=null;APE.orb=[];fruit.length=0;
+  if(S.kind==='dolphin')return;
+  if(S.kind==='rat'){for(i=0;i<5;i++){S.limbs[i].dead=true;S.limbs[i].hp=0;LIMBS[i].cs.forEach(function(c){c.off=true;});}bossCs.forEach(function(c){c.off=true;});ratSetup();return;}
   for(i=0;i<5;i++){S.limbs[i].dead=true;S.limbs[i].hp=0;LIMBS[i].cs.forEach(function(c){c.off=true;});}bossCs.forEach(function(c){c.off=true;});
   APE.x=103.5;APE.y=62;APE.vx=APE.vy=0;APE.stage=0;APE.evoT=S.t-0.4;APE.wT=0;apeC.off=false;apeStage();
   S.banner={s:'PONGO',sub:'PONGO THE SERENE - POP HIS BUBBLE',t:S.t+3.2};snd('aah');S.vocT=S.t+6;}
@@ -349,8 +366,81 @@ function drawApe(){var t=S.t,A=APE,st=STG[A.stage],flee=S.boss==='flee',ft=t-S.b
   var base=t*(A.stage===2?1.3:0.8);
   for(i=0;i<n;i++){var o=A.orb[i];if(o.st==='gone')continue;var ox=o.x-cam.x*1.1,oy3=o.y-cam.y*1.1;
     if(A.stage===2){glow(ox,oy3,7,K.yel,0.3);banana(ox,oy3,base+i*6.2832/n,true);}
-    else{if(o.st==='fly')glow(ox,oy3,12,K.mag,0.7);else{line(x,y,ox,oy3,scl(K.mag,0.25),0.5);}shadow(ox+1.5,oy3+3,4,0.6);apeSpr('rk'+(i%3),ox,oy3,o.st==='fly'&&((t*20|0)&1));}}
+    else{if(o.st==='fly')glow(ox,oy3,12,K.mag,0.7);shadow(ox+1.5,oy3+3,4,0.6);apeSpr('rk'+(i%3),ox,oy3,o.st==='fly'&&((t*20|0)&1));}}
   for(i=0;i<fruit.length;i++)banana(fruit[i].x,fruit[i].y,fruit[i].a,false);}
+/* ---------- level 3 boss: Hackrat. Three stages you can hit, then a fourth you can only end with a multiball firewall ---------- */
+function ratFinal(){return S.kind==='rat'&&S.boss==='alive'&&RAT.stage===3&&!RAT.fw;}
+function magBad(){return S.kind==='rat'&&S.boss==='alive'&&RAT.stage===0;}
+function ratStage(){var A=RAT,i;A.max=A.hp=RSTG[A.stage].hp+(A.stage<3?lvl():0);A.fw=0;vir.length=0;
+  if(A.stage===1){A.x=103.5;A.ph=Math.random()*6;}
+  if(A.stage===2)A.fhNext=S.t+3;
+  if(A.stage===3){A.virNext=S.t+1.5;if(!S.multiball){S.lockLit=true;S.relightAt=0;}}}
+function ratSetup(){RAT.stage=0;RAT.evoT=S.t-0.4;RAT.cd=0;ratC.forEach(function(c){c.off=false;});ratStage();
+  S.banner={s:'HACKRAT',sub:'RED ALERT - MAGLOCKS ARE DOWN',t:S.t+3.2};snd('ratlaugh');snd('rathack');S.vocT=S.t+6;}
+function hitRat(n,x,y){var A=RAT;if(S.boss!=='alive'||S.kind!=='rat'||A.stage>2)return;A.hp-=n;A.flash=S.t+0.15;shot(x,y);add(1500);S.bonus+=2;snd('ratsq');snd('bump');
+  spark(x,y,26,K.red,200,0.6);spark(x,y,12,K.white,260,0.35);shock(x,y,18,K.red,0.3);popup(S.multiball?'X2 HIT':'HIT',x,y-10,K.red);
+  if(A.hp>0)return;
+  spark(A.cx,A.cy,90,K.red,300,0.8);spark(A.cx,A.cy,40,K.white,340,0.5);shock(A.cx,A.cy,60,K.red,0.5);shock(A.cx,A.cy,40,K.white,0.35);shake(7);snd('boom');snd('ratlaugh');add(15000);popup('15000',A.cx,A.cy-30,K.white);
+  A.stage++;A.evoT=S.t;ratStage();
+  S.banner={s:['','STAGE 2','STAGE 3','VIRUS SWARM'][A.stage],sub:['','HACKRAT TAKES TO THE PIPES','HE IS HACKING THE TOP FLIPPERS','START A MULTIBALL TO FIREWALL HIM'][A.stage],t:S.t+3};}
+function ratCb(b,t,imp,nx,ny){if(imp<30)return;b.vx+=nx*220;b.vy+=ny*220;var A=RAT;if(S.t<A.cd||S.t<A.evoT+1.2||A.fw)return;A.cd=S.t+0.35;
+  if(A.stage===3){spark(b.x,b.y,14,K.red,160,0.4);popup('ACCESS DENIED',b.x,b.y-10,K.red);snd('tick');if(!S.multiball)say('START A MULTIBALL!',1.5);return;}
+  hitRat(S.multiball?2:1,b.x-nx*R,b.y-ny*R);}
+function stepRat(dt){var A=RAT,t=S.t,i,j,b,dx,dy,d,play=S.mode==='play';
+  if(S.boss==='alive'){
+    if(A.stage===0){A.cx=105;A.cy=94;ratC[0].x=108.7;ratC[0].y=78.8;ratC[1].x=105.2;ratC[1].y=92;ratC[2].x=105.2;ratC[2].y=109;S.redT=t+0.15;}
+    else{var tx=103.5+Math.sin(t*0.6+A.ph)*42;A.x+=(tx-A.x)*Math.min(1,dt*2.5);A.sway=Math.sin(t*2.3)*4+(tx-A.x)*0.25;
+      ratC[2].x=A.x+A.sway*0.2;ratC[2].y=38;ratC[1].x=A.x+A.sway*0.45;ratC[1].y=51;ratC[0].x=A.x+A.sway*0.85;ratC[0].y=78;A.cx=A.x+A.sway*0.45;A.cy=56;}
+    // stage 3+: he hacks the top flippers every ten seconds or so
+    if(A.stage>=2&&play&&!A.fw&&t>A.fhNext&&t>A.evoT+1.5){S.fhT0=t;A.fhNext=t+10+Math.random()*3;S.redT=t+0.5;say('TOP FLIPPERS HACKED!',2.2);snd('rathack');
+      spark(flips[2].px,flips[2].py,30,K.red,180,0.6);spark(flips[3].px,flips[3].py,30,K.red,180,0.6);}
+    // stage 4: viruses spawn from him and keep dividing
+    if(A.stage===3&&play&&!A.fw&&t>A.evoT+1.2&&t>A.virNext&&vir.length<26){var src=vir.length?vir[(Math.random()*vir.length)|0]:{x:A.cx,y:A.cy+16};
+      vir.push({x:src.x+(Math.random()-0.5)*6,y:src.y+(Math.random()-0.5)*6,vx:(Math.random()-0.5)*80,vy:(Math.random()-0.5)*80,ph:Math.random()*6});spark(src.x,src.y,8,K.grn,90,0.4);A.virNext=t+(vir.length<4?0.5:1.5);}
+    // a multiball during stage 4 closes the firewall: the balls ring him and burn him out
+    if(A.stage===3&&play&&!A.fw&&S.multiball&&t>A.evoT+1.5){var fr=freeBalls();if(fr.length>=2){A.fw=t;A.fwN=fr.length;for(i=0;i<fr.length;i++){fr[i].state='held';fr[i].k=6;fr[i].held=2.6;fr[i].oi=i;fr[i].vx=fr[i].vy=0;}
+      for(i=0;i<vir.length;i++)spark(vir[i].x,vir[i].y,10,K.grn,140,0.6);vir.length=0;S.fhT0=-99;S.banner={s:'FIREWALL',sub:'HACKRAT IS BOXED IN',t:t+2.6};snd('fanfare');snd('ratsq');shake(5);}}
+    if(A.fw){for(i=0;i<4;i++){var fa=Math.random()*6.283;spark(A.cx+Math.cos(fa)*34,A.cy+Math.sin(fa)*34,2,Math.random()<0.5?K.org:K.yel,70,0.7,-1.57,1,-60);}
+      if(t-A.fw>2.6){S.boss='flee';S.bossT=t;ratC.forEach(function(c){c.off=true;});add(100000*S.mission);popup(String(100000*S.mission),A.cx,A.cy+24,K.yel);say('MISSION '+S.mission+' COMPLETE!',4.2);
+        S.banner={s:'ACCESS DENIED',sub:'HACKRAT DISCONNECTED',t:t+3.2};boom(A.cx,A.cy,120,10);snd('boom');snd('fanfare');snd('ratdie');}}}
+  // the swarm: each virus runs at the nearest ball. A fast ball squashes them; a slow one gets bogged down
+  for(i=vir.length-1;i>=0;i--){var v=vir[i],best=null,bd=1e9;for(j=0;j<balls.length;j++){b=balls[j];if(b.state!=='free'||b.x>199)continue;dx=b.x-v.x;dy=b.y-v.y;d=dx*dx+dy*dy;if(d<bd){bd=d;best=b;}}
+    var gx=best?best.x:A.cx+Math.cos(v.ph+t)*30,gy=best?best.y:A.cy+30+Math.sin(v.ph+t)*20;dx=gx-v.x;dy=gy-v.y;d=Math.sqrt(dx*dx+dy*dy)||1;
+    v.vx+=(dx/d*300+(Math.random()-0.5)*500)*dt;v.vy+=(dy/d*300+(Math.random()-0.5)*500)*dt;var vs=Math.sqrt(v.vx*v.vx+v.vy*v.vy);if(vs>82){v.vx*=82/vs;v.vy*=82/vs;}
+    var nx=v.x+v.vx*dt,ny=v.y+v.vy*dt;if(inTable(nx,ny)&&nx<197&&ny<446){v.x=nx;v.y=ny;}else{v.vx=-v.vx;v.vy=-v.vy;}
+    if(best&&bd<(R+3.4)*(R+3.4)){var bs=Math.abs(best.vx)+Math.abs(best.vy);
+      if(bs>260){vir.splice(i,1);add(100);S.bonus+=1;snd('tick');spark(v.x,v.y,12,K.grn,160,0.5);popup('100',v.x,v.y-5,K.grn);}
+      else{if(best.vt!==t){best.vt=t;best.vn=0;}if(best.vn++<2){var dmp=1-2.2*dt;best.vx*=dmp;best.vy*=dmp;best.vx+=(Math.random()-0.5)*10;}v.vx=best.vx;v.vy=best.vy;}}}}
+function drawVirus(v,t){var x=v.x,y=v.y,w=Math.sin(t*18+v.ph),i;glow(x,y,6,K.grn,0.3);
+  for(i=0;i<6;i++){var a=i*1.047+v.ph+w*0.2,ex=x+Math.cos(a)*(4.2+(i&1)*w*0.6),ey=y+Math.sin(a)*(4.2+(i&1)*w*0.6);line(x,y,ex,ey,C(0x124a0e),1);line(x,y,ex,ey,C(0x8aff4a),0.5);disc(ex,ey,0.8,C(0xd8ff8a));}
+  disc(x,y,2.9,K.ink);disc(x,y,2.4,C(0x3fc022));disc(x-0.6,y-0.7,1.4,C(0x8aff4a));hp(x-1.2,y-0.2,K.red);hp(x+0.6,y-0.2,K.red);hp(x-0.2,y+1,K.ink);}
+function padlock(x,y,c){ring(x,y-3.5,2.6,c,1);rect(x-4,y-3,8,6.5,K.ink);rect(x-3.5,y-2.5,7,5.5,c);rect(x-0.6,y-1,1.2,2.6,K.ink);glow(x,y,10,c,0.6);}
+function drawRat(){var t=S.t,A=RAT,flee=S.boss==='flee',ft=t-S.bossT,evo=t-A.evoT,i,k,fl=t<A.flash||(evo<1.2&&((t*14|0)&1)),pal=fl?RPCW:RPC,gl=0,px0=-cam.x*1.1,py0=-cam.y*1.1;
+  if(flee){if(ft>3)return;pal=RPCR;gl=3+ft*4;if(ft>1.8&&((t*20|0)&1))return;}
+  if(A.stage===0&&!flee){shadow(105,121,16,0.55);glow(104,95,34,K.red,0.25+0.1*Math.sin(t*6));ratSpr('stand',103.5+px0,121+py0,pal,0,((t*3|0)%7===0)?2:0);
+    // his wrist rig broadcasts the hack
+    for(k=0;k<3;k++){var rr=((t*30+k*14)%42);ring(92+px0,96+py0,4+rr,scl(K.red,1-rr/42),0.5);}}
+  else{ // the pipe, then the rat hanging from it by his tail
+    var pc=C(0x4a3466),pd=C(0x241832),ph2=C(0x7a5aa0);rect(40,21.5,134,5,K.ink);rect(40,22,134,4,pc);rect(40,22,134,1,ph2);rect(40,25,134,1,pd);
+    for(k=0;k<4;k++){var bx=52+k*36;rect(bx,21,5,6,K.ink);rect(bx+0.5,21.5,4,5,C(0x5a4478));hp(bx+2,23,C(0xc0a0e0));
+      for(i=0;i<4;i++)rect(bx+9+i*5,22,2.5,4,i&1?pc:K.amb);}
+    if(!flee){shadow(A.cx+3,A.cy+34,14,0.6);glow(A.cx,A.cy,36,K.red,0.18+0.08*Math.sin(t*5));}
+    ratSpr('hang',A.x+px0,24.5+py0,pal,A.sway,gl||((t*3|0)%9===0?2:0));}
+  if(flee){if(ft<2){for(k=0;k<3;k++)ring(A.cx,A.cy,34+k*2,k?K.org:K.yel,1);glow(A.cx,A.cy,46,K.org,0.5);}textG('DISCONNECTED',A.cx,A.cy+40,K.white,K.red,1);return;}
+  for(i=0;i<A.max;i++)disc(A.cx-(A.max-1)*1.5+i*3,(A.stage?92:126),1.1,i<A.hp?K.white:C(0x5a1820));
+  // stage 4 shield and the multiball prompt
+  if(A.stage===3&&!A.fw){for(k=0;k<6;k++){var ha=t*0.8+k*1.047;line(A.cx+Math.cos(ha)*30,A.cy+Math.sin(ha)*30,A.cx+Math.cos(ha+1.047)*30,A.cy+Math.sin(ha+1.047)*30,scl(K.red,0.6+0.3*Math.sin(t*7+k)),0.5);}
+    if((t*3|0)&1)textG(S.multiball?'TRAP HIM!':'NEED MULTIBALL',A.cx,A.cy+40,K.white,K.red,1);}
+  // firewall: a closing ring of fire while the balls circle him
+  if(A.fw){var fq=Math.min(1,(t-A.fw)/0.6),fr=60-26*fq;for(k=0;k<3;k++)ring(A.cx,A.cy,fr+k*1.6,k===1?K.yel:K.org,1);glow(A.cx,A.cy,fr+14,K.org,0.45);
+    for(k=0;k<16;k++){var wa=k*0.3927+t*2,wx=A.cx+Math.cos(wa)*fr,wy=A.cy+Math.sin(wa)*fr;poly([[wx-2,wy+1],[wx+2,wy+1],[wx+(Math.random()-0.5)*2,wy-5-Math.random()*4]],k&1?K.org:K.yel);}}
+  // flipper hack: red arcs from his rig to the top flippers, then padlocks while they are frozen
+  var hq=t-S.fhT0;if(hq>=0&&hq<4.5){for(k=2;k<4;k++){var f=flips[k],fx=f.px+f.c*f.len*0.5,fy=f.py+f.s*f.len*0.5;glow(fx,fy,14,K.red,0.6);
+      if(hq<2.5){var zx=A.cx,zy=A.cy;for(i=1;i<=7;i++){var zx2=A.cx+(fx-A.cx)*i/7+(i<7?(Math.random()-0.5)*10:0),zy2=A.cy+(fy-A.cy)*i/7+(i<7?(Math.random()-0.5)*8:0);line(zx,zy,zx2,zy2,K.red,1);line(zx,zy,zx2,zy2,C(0xffc0c0),0.5);zx=zx2;zy=zy2;}
+        if(Math.random()<0.5)spark(fx,fy,2,K.red,120,0.3);}
+      else{padlock(fx,fy-12,blinkC(t));}}}
+  for(i=0;i<vir.length;i++)drawVirus(vir[i],t);}
+function blinkC(t){return((t*6|0)&1)?K.red:C(0xffb0b0);}
 function damage(i,n){var L=S.limbs[i],Lm=LIMBS[i],c=Lm.cs[0];if(L.dead||S.boss!=='alive')return;L.hp-=n;L.flash=S.t+0.14;S.hurtT=S.t+0.5;
   spark(c.x,c.y,18,K.yel,170,0.5);shock(c.x,c.y,16,K.yel,0.25);snd('dsqueal');
   if(L.hp>0){snd('bump');return;}
@@ -365,15 +455,16 @@ function damage(i,n){var L=S.limbs[i],Lm=LIMBS[i],c=Lm.cs[0];if(L.dead||S.boss!=
 function limbCb(i){return function(b,t,imp,nx,ny){if(imp<30)return;b.vx+=nx*330;b.vy+=ny*330;var L=S.limbs[i];
   if(!L||S.t<L.cd)return;L.cd=S.t+0.15;add(1000);S.bonus+=1;spark(b.x-nx*R,b.y-ny*R,8,K.cyan,150,0.35);
   if(S.t<S.dmgT){L.flash=S.t+0.06;snd('tick');return;}S.dmgT=S.t+0.6;shot(b.x,b.y);popup(S.multiball?'X2 HIT':'HIT',b.x,b.y-8,K.cyan);damage(i,S.multiball?2:1);};}
-function hack(){if(S.t<S.hackT)return;S.hackT=S.t+0.5;S.hackFlash=S.t+0.3;shot(103.5,256);add(2000);S.bonus+=2;snd('target');
-  spark(103.5,258,20,K.amb,160,0.5,-1.57,2.4);popup('2000',103.5,250,K.amb);
-  if(S.kind==='ape'){if(S.boss==='alive'&&S.t>APE.evoT+1.2){S.zap={x1:103.5,y1:256,x2:APE.x,y2:APE.y,t:S.t};snd('zap');say('SYSTEM HACK 2000',1.2);hitApe(1,APE.x,APE.y);}}
+function hack(){if(S.t<S.hackT)return;S.hackT=S.t+0.5;S.hackFlash=S.t+0.3;shot(HACKP.x,HACKP.y);add(2000);S.bonus+=2;snd('target');
+  spark(HACKP.x,HACKP.y+3,20,K.amb,160,0.5,-1.57,2.4);popup('2000',HACKP.x,HACKP.y-6,K.amb);
+  if(S.kind==='rat'){if(S.boss==='alive'&&RAT.stage<3&&S.t>RAT.evoT+1.2){S.zap={x1:HACKP.x,y1:HACKP.y,x2:ratC[1].x,y2:ratC[1].y,t:S.t};snd('zap');say('SYSTEM HACK 2000',1.2);hitRat(1,ratC[1].x,ratC[1].y);}}
+  else if(S.kind==='ape'){if(S.boss==='alive'&&S.t>APE.evoT+1.2){S.zap={x1:HACKP.x,y1:HACKP.y,x2:APE.x,y2:APE.y,t:S.t};snd('zap');say('SYSTEM HACK 2000',1.2);hitApe(1,APE.x,APE.y);}}
   else if(S.boss==='alive'){var al=[],i;for(i=0;i<5;i++)if(!S.limbs[i].dead)al.push(i);
-    if(al.length){i=al[(Math.random()*al.length)|0];S.zap={x1:103.5,y1:256,x2:LIMBS[i].cs[0].x,y2:LIMBS[i].cs[0].y,t:S.t};snd('zap');say('SYSTEM HACK 2000',1.2);damage(i,1);}}}
+    if(al.length){i=al[(Math.random()*al.length)|0];S.zap={x1:HACKP.x,y1:HACKP.y,x2:LIMBS[i].cs[0].x,y2:LIMBS[i].cs[0].y,t:S.t};snd('zap');say('SYSTEM HACK 2000',1.2);damage(i,1);}}}
 function hitTarget(i,b){if(S.targets[i]){add(50);snd('tick');return;}
   S.targets[i]=1;add(500);S.bonus+=2;snd('target');spark(b.x,b.y,12,K.yel,150,0.4);popup('500',b.x,b.y-6,K.yel);
   if(S.targets.every(function(v){return v;})){S.targets=[0,0,0];S.mult=Math.min(10,S.mult+1);add(5000);
-    if(!S.multiball)S.lockLit=true;say('LOCKS LIT  BONUS X'+S.mult,2.2);snd('fanfare');
+    if(!S.multiball){S.lockLit=true;S.relightAt=0;}say('LOCKS LIT  BONUS X'+S.mult,2.2);snd('fanfare');
     spark(SAUC[0].x,SAUC[0].y,30,K.grn,140,0.8);spark(SAUC[1].x,SAUC[1].y,30,K.grn,140,0.8);}
   else say('TARGET 500',0.8);}
 function targetCb(side){return function(b,t,imp){if(b.state!=='free'||imp<40||t<0.1||t>0.9)return;hitTarget(t<0.37?0:t<0.63?1:2,b);};}
@@ -394,11 +485,12 @@ function rampDone(r,b){shot(b.x,b.y);S.bonus+=3;spark(b.x,b.y,24,r.col,150,0.6);
   if(S.multiball){add(15000);say('JACKPOT 15000',1.6);snd('fanfare');popup('JACKPOT',b.x-8,b.y-8,K.yel);spark(b.x,b.y,50,K.yel,220,0.9);}
   else{add(r.score);say(r.name+' '+r.score,1.3);snd('orbit');popup(String(r.score),b.x-6,b.y-8,r.col);}}
 function freeCount(){var n=0;for(var i=0;i<balls.length;i++){var s=balls[i].state;if(!balls[i].dead&&(s==='free'||s==='rail'||s==='held'))n++;}return n;}
-function startMultiball(){var size=[3,5,10][Math.min(2,S.mbLevel)],k,i;S.mbLevel++;S.mbSize=size;S.multiball=true;S.lockLit=false;S.mbSave=S.t+10+size;S.autoQ+=size-2;
+// multiball order: 3-ball, 5-ball, extra ball + 3-ball, 5-ball, then round again
+function startMultiball(){var mi=S.mbLevel%4,size=mi%2?5:3,eb=mi===2,k,i;S.mbLevel++;S.mbCount++;if(eb){S.extra++;S.ebTotal++;S.ebMB++;}S.mbSize=size;S.multiball=true;S.lockLit=false;S.mbSave=S.t+10+size;S.autoQ+=size-2;
   for(k=0;k<2;k++){var b=S.lock[k];if(b){b.state='held';b.held=0.8+k*0.5;b.k=k;}S.lock[k]=null;
     spark(SAUC[k].x,SAUC[k].y,70+size*8,NEONS[k],240,1.1);shock(SAUC[k].x,SAUC[k].y,50,NEONS[k],0.6);}
   for(i=0;i<size*6;i++)spark(20+Math.random()*170,150+Math.random()*260,6,NEONS[i%6],180,1);
-  shake(7+size);S.banner={s:size===3?'MULTIBALL':size+'-BALL MULTIBALL',sub:size===10?'KERNEL PANIC! X2 DAMAGE X2 SCORE':size===5?'OVERCLOCK! X2 DAMAGE X2 SCORE':'X2 DAMAGE X2 SCORE',t:S.t+2.8};
+  shake(7+size);S.banner={s:eb?'EXTRA BALL':size===3?'MULTIBALL':'5-BALL MULTIBALL',sub:eb?'PLUS 3-BALL MULTIBALL - X2 DAMAGE X2 SCORE':size===5?'OVERCLOCK! X2 DAMAGE X2 SCORE':'X2 DAMAGE X2 SCORE',t:S.t+2.8};
   say(size+' BALLS IN PLAY',3);snd('fanfare');snd('boom');}
 
 /* ---------- boss phases: one new attack for each limb he loses ---------- */
@@ -483,9 +575,9 @@ function stepRail(b,h){var r=b.rail;railAt(r,b.rs);
   circ(23,318,2.5,{e:0.7});circ(M(23),318,2.5,{e:0.7});
   // captive-ball lane: a trapped ball you strike from below; it drives up into the HACK target
   var hk=function(b,t,imp){if(b.state==='captive'&&imp>70)hack();};
-  seg(96.5,264,96.5,298);seg(110.5,264,110.5,298);
-  seg(96.5,264,103.5,259,{cb:hk,e:0.5});seg(103.5,259,110.5,264,{cb:hk,e:0.5});
-  circ(97.5,300,1.5,{e:0.6});circ(109.5,300,1.5,{e:0.6});
+  seg(116,245,116,279);seg(130,245,130,279);
+  seg(116,245,123,240,{cb:hk,e:0.5});seg(123,240,130,245,{cb:hk,e:0.5});
+  circ(117,281,1.5,{e:0.6});circ(129,281,1.5,{e:0.6});
   // slingshots
   seg(40,322,40,368,{draw:'none',e:0.6});seg(40,368,59,384,{draw:'none',e:0.6});seg(40,322,59,384,{draw:'none',e:0.6,cb:slingCb(0)});
   seg(M(40),322,M(40),368,{draw:'none',e:0.6});seg(M(40),368,M(59),384,{draw:'none',e:0.6});seg(M(40),322,M(59),384,{draw:'none',e:0.6,cb:slingCb(1)});
@@ -498,9 +590,10 @@ function stepRail(b,h){var r=b.rail;railAt(r,b.rs);
    ['CANNON',5,'jC',-0.85,[['cannon',6.5]]]].forEach(function(d,i){
     LIMBS.push({n:d[0],lab:d[1],j:BU(d[2]),ang:d[3],cs:d[4].map(function(q){var u=BU(q[0]);return circ(u.x,u.y,q[1],{kind:'limb',e:0.5,cb:limbCb(i)});})});});
   apeC=circ(103.5,60,11,{kind:'ape',e:0.6,cb:apeCb});apeC.off=true;
+  [8,10,10].forEach(function(r){var c=circ(103.5,90,r,{kind:'rat',e:0.6,cb:ratCb});c.off=true;ratC.push(c);});
   for(i=0;i<6;i++){var oc=circ(0,0,4,{kind:'orb',e:0.6,cb:orbCb(i)});oc.off=true;orbC.push(oc);}
   // flippers: lower pair + upper-deck pair
-  function flip(x,y,len,rest,act,side,r0,r1){flips.push({px:x,py:y,len:len,rest:rest,act:act,side:side,r0:r0,r1:r1,a:0,w:0,ang:rest,c:Math.cos(rest),s:Math.sin(rest)});}
+  function flip(x,y,len,rest,act,side,r0,r1){flips.push({upper:len<25,px:x,py:y,len:len,rest:rest,act:act,side:side,r0:r0,r1:r1,a:0,w:0,ang:rest,c:Math.cos(rest),s:Math.sin(rest)});}
   flip(64.5,408,30,0.52,-0.5,0,4.5,2.8);flip(142.5,408,30,Math.PI-0.52,Math.PI+0.5,1,4.5,2.8);
   flip(70,200,22,0.52,-0.5,0,4,2.5);flip(137,200,22,Math.PI-0.52,Math.PI+0.5,1,4,2.5);
   // wireform ramps
@@ -525,7 +618,8 @@ function bounce(b,nx,ny,vn,e){var sp=-vn;if(sp<25)e=0;else e*=1-Math.min(0.3,sp/
   var j=(1+e)*sp;b.vx+=nx*j;b.vy+=ny*j;
   if(sp>25){var tx=-ny,ty=nx,vt=b.vx*tx+b.vy*ty,f=Math.min(Math.abs(vt),0.08*j);if(vt<0)f=-f;b.vx-=f*tx;b.vy-=f*ty;}
   if(sp>200&&b.state==='free'&&S.t>b.fx){b.fx=S.t+0.04;spark(b.x-nx*R,b.y-ny*R,Math.min(18,4+(sp/90|0)),sp>700?K.white:K.amb,sp*0.25,0.3,Math.atan2(ny,nx),2.2);}}
-function stepFlip(f,h){var up=S.mode==='play'&&keys[f.side],range=Math.abs(f.act-f.rest);
+function stepFlip(f,h){var fq=f.upper?S.t-S.fhT0:9;if(fq>=2.5&&fq<4.5){f.w=0;return;}   // hacked top flippers: 2.5s of flapping on their own, then 2s locked solid
+  var up=S.mode==='play'&&(fq<2.5?((S.t*11+f.side*0.37)%1)<0.5:keys[f.side]),range=Math.abs(f.act-f.rest);
   var na=f.a+(up?FLIP_UP:-FLIP_DN)/range*h;if(na>1)na=1;if(na<0)na=0;
   f.w=(na-f.a)/h*(f.act-f.rest);f.a=na;f.ang=f.rest+(f.act-f.rest)*na;f.c=Math.cos(f.ang);f.s=Math.sin(f.ang);}
 function hitFlip(b,f){var tx=f.c*f.len,ty=f.s*f.len,t=((b.x-f.px)*tx+(b.y-f.py)*ty)/(f.len*f.len);
@@ -542,10 +636,12 @@ function stepBall(b,h){
   if(b.state==='locked')return;
   if(b.state==='rail'){stepRail(b,h);return;}
   if(b.state==='held'){b.held-=h;var mg=(b.k===3||b.k===4)?MAG[b.k-3]:null;
-    if(b.held>0){if(mg){b.x=mg.x+(Math.random()-0.5)*1.4;b.y=mg.y+(Math.random()-0.5)*1.4;}else if(b.k===5){b.x=b.hx+(Math.random()-0.5)*1.2;b.y=b.hy+(Math.random()-0.5)*1.2;}return;}
+    if(b.held>0){if(mg){b.x=mg.x+(Math.random()-0.5)*1.4;b.y=mg.y+(Math.random()-0.5)*1.4;}else if(b.k===5){b.x=b.hx+(Math.random()-0.5)*1.2;b.y=b.hy+(Math.random()-0.5)*1.2;}
+      else if(b.k===6){var fa2=(S.t-RAT.fw)*5.5+b.oi*6.2832/RAT.fwN,fr2=Math.min(34,10+(S.t-RAT.fw)*60);b.x=RAT.cx+Math.cos(fa2)*fr2;b.y=RAT.cy+Math.sin(fa2)*fr2;spark(b.x,b.y,2,K.org,60,0.5);}return;}
     b.state='free';b.still=0;
-    if(mg){var fa=Math.random()*6.2832;b.x=mg.x;b.y=mg.y;b.vx=Math.cos(fa)*980;b.vy=Math.sin(fa)*980;mg.cd=S.t+4;mg.hold=0;add(500);snd('zap');snd('launch');
+    if(mg){var fa=Math.random()*6.2832;b.x=mg.x;b.y=mg.y;var fsp=magBad()?1300:980;b.vx=Math.cos(fa)*fsp;b.vy=Math.sin(fa)*fsp;mg.cd=S.t+(magBad()?1.2:4);mg.hold=0;add(500);snd('zap');snd('launch');
       spark(mg.x,mg.y,40,K.cyan,260,0.6);spark(mg.x,mg.y,24,K.white,320,0.4,fa,0.6);shock(mg.x,mg.y,30,K.cyan,0.35);shake(3);popup('FLING!',mg.x,mg.y-12,K.cyan);}
+    else if(b.k===6){var ox6=b.x-RAT.cx,oy6=b.y-RAT.cy,od6=Math.sqrt(ox6*ox6+oy6*oy6)||1;b.vx=ox6/od6*420;b.vy=oy6/od6*420+120;}
     else if(b.k===5){var hx=b.hx-APE.x,hy=b.hy-APE.y,hd=Math.sqrt(hx*hx+hy*hy)||1;b.x=b.hx;b.y=b.hy;b.vx=hx/hd*460;b.vy=hy/hd*460+60;APE.hold=null;APE.holdCd=S.t+3.5;snd('blast');spark(b.x,b.y,30,K.mag,220,0.5);shock(b.x,b.y,20,K.mag,0.3);}
     else if(b.k===2){b.x=VIA_OUT.x;b.y=VIA_OUT.y;b.py=b.y;b.vx=70;b.vy=30;resetDrops();snd('lock');spark(b.x,b.y,30,K.grn,170,0.6);shock(b.x,b.y,18,K.grn,0.4);}
     else{b.vx=(b.k===0?1:-1)*(50+Math.random()*60);b.vy=230;if(b.k>=0)S.saucerT[b.k]=S.t+0.6;snd('lock');spark(b.x,b.y,20,K.grn,160,0.5);}
@@ -563,21 +659,27 @@ function stepBall(b,h){
   for(i=0;i<circs.length;i++){s=circs[i];if(s.off)continue;nx=b.x-s.x;ny=b.y-s.y;d2=nx*nx+ny*ny;rr=R+s.r;if(d2>=rr*rr)continue;
     d=Math.sqrt(d2)||1e-6;nx/=d;ny/=d;b.x+=nx*(rr-d);b.y+=ny*(rr-d);vn=b.vx*nx+b.vy*ny;
     if(vn<0){bounce(b,nx,ny,vn,s.e);if(s.cb)s.cb(b,0,-vn,nx,ny);}}
-  if(cap){if(b.x<97||b.x>110||b.y<258||b.y>305){b.x=CAP_HOME.x;b.y=CAP_HOME.y;b.vx=b.vy=0;}return;}
+  if(cap){if(b.x<116.5||b.x>129.5||b.y<239||b.y>286){b.x=CAP_HOME.x;b.y=CAP_HOME.y;b.vx=b.vy=0;}return;}
   for(i=0;i<flips.length;i++)hitFlip(b,flips[i]);
   var sp=Math.sqrt(b.vx*b.vx+b.vy*b.vy);if(sp>VMAX){b.vx*=VMAX/sp;b.vy*=VMAX/sp;}
   for(i=0;i<sensors.length;i++){s=sensors[i];if(b.x>s.x0&&b.x<s.x1){
     if(s.dir<=0&&b.py>s.y&&b.y<=s.y)s.fn(b,-1);else if(s.dir>=0&&b.py<s.y&&b.y>=s.y)s.fn(b,1);}}
   // ramp flaps: only a ball travelling up fast enough climbs onto the wire
   for(i=0;i<rails.length;i++){s=rails[i];if(b.py>s.ey&&b.y<=s.ey&&Math.abs(b.x-s.ex)<8&&b.vy<-250){
-    b.state='rail';b.rail=s;b.rs=0;b.rv=Math.min(sp,1100);b.still=0;snd('rail');spark(b.x,b.y,16,s.col,160,0.4,-1.57,1.2);return;}}
+    b.state='rail';b.rail=s;b.rs=0;b.rv=Math.min(sp,1100);b.still=0;snd('rail');spark(b.x,b.y,16,s.col,160,0.4,-1.57,1.2);
+    if(i===0){S.spin2V+=sp/11;S.loops++;   // the blue loop's spinner: enough loop shots earn an extra ball
+      if(S.loops>=S.ebNeed){S.loops=0;S.ebNeed+=EB_STEP;S.extra++;S.ebTotal++;S.banner={s:'EXTRA BALL',sub:'SHOOT AGAIN IS LIT',t:S.t+2.8};snd('fanfare');snd('orbit');shake(6);
+        spark(s.ex,s.ey,90,K.yel,260,1);spark(103.5,438,60,K.yel,200,1,-1.57,2);shock(s.ex,s.ey,40,K.yel,0.6);popup('EXTRA BALL!',s.ex+14,s.ey-16,K.yel);}
+      else popup('LOOP '+S.loops+'/'+S.ebNeed,s.ex+12,s.ey-12,K.cyan);}
+    return;}}
   // electromagnets beside the boss: they drag a nearby ball in, hold it, then fling it somewhere random
-  for(i=0;i<2;i++){s=MAG[i];if(S.t<s.cd||s.hold)continue;nx=s.x-b.x;ny=s.y-b.y;d2=nx*nx+ny*ny;if(d2>=484)continue;d=Math.sqrt(d2)||1e-6;
-    if(d<5&&sp<800){b.state='held';b.k=3+i;b.held=0.8;b.vx=b.vy=0;s.hold=1;snd('psi');spark(s.x,s.y,20,K.cyan,120,0.5);say('MAGNET LOCK!',1);return;}
+  var mbad=magBad();for(i=0;i<2;i++){s=MAG[i];if(S.t<s.cd||s.hold||(mbad&&((S.t*1.3+i*0.5)%1)>0.6))continue;nx=s.x-b.x;ny=s.y-b.y;d2=nx*nx+ny*ny;if(d2>=(mbad?900:484))continue;d=Math.sqrt(d2)||1e-6;
+    if(d<5&&sp<800){b.state='held';b.k=3+i;b.held=mbad?0.25:0.8;b.vx=b.vy=0;s.hold=1;snd('psi');spark(s.x,s.y,20,K.cyan,120,0.5);say('MAGNET LOCK!',1);return;}
     var pull=(600+3200*(1-d/22))*h;b.vx+=nx/d*pull;b.vy+=ny/d*pull;b.vx*=1-3*h;b.vy*=1-3*h;}
   // lock saucers: only a ball slow enough to settle is captured
-  for(i=0;i<2;i++){if(S.lock[i]||S.t<S.saucerT[i]||!S.lockLit||S.multiball)continue;nx=b.x-SAUC[i].x;ny=b.y-SAUC[i].y;
-    if(nx*nx+ny*ny<36&&sp<450){b.x=SAUC[i].x;b.y=SAUC[i].y;b.vx=b.vy=0;b.k=i;S.bonus+=3;
+  for(i=0;i<2;i++){if(S.lock[i]||S.t<S.saucerT[i]||!S.lockLit||S.multiball||mbad)continue;nx=b.x-SAUC[i].x;ny=b.y-SAUC[i].y;
+    var rf=ratFinal(),sd2=nx*nx+ny*ny;if(rf&&sd2<676&&sd2>1){var sdd=Math.sqrt(sd2),spl=(500+1800*(1-sdd/26))*h;b.vx-=nx/sdd*spl;b.vy-=ny/sdd*spl;b.vx*=1-2.5*h;b.vy*=1-2.5*h;}
+    if(sd2<36&&sp<(rf?800:450)){b.x=SAUC[i].x;b.y=SAUC[i].y;b.vx=b.vy=0;b.k=i;S.bonus+=3;
       b.state='locked';S.lock[i]=b;shot(b.x,b.y);add(5000);popup('LOCK',b.x,b.y-10,K.grn);spark(b.x,b.y,40,K.grn,130,0.9);shock(b.x,b.y,22,K.grn,0.4);
       if(S.lock[0]&&S.lock[1])startMultiball();else{say('BALL LOCKED - 1 MORE',2.2);snd('lock');spawn();S.launched=false;}
       return;}}
@@ -590,11 +692,12 @@ function laneBall(){for(var i=0;i<balls.length;i++){var b=balls[i];if(b.state===
 function spawn(){var b=mkBall(207,447-R-0.2);balls.push(b);armed=false;charging=false;charge=0;return b;}
 function canCharge(){var b=laneBall();return S.mode==='play'&&b&&!b.auto&&b.y>425&&Math.abs(b.vy)<40?b:null;}
 function newGame(){S.mode='play';S.score=0;S.ball=1;S.mult=1;S.bonus=0;S.targets=[0,0,0];S.launched=false;S.newHi=false;S.saveT=0;
-  S.mbLevel=0;S.combo=1;S.banner=null;S.mission=1;S.lock=[null,null];S.lockLit=true;S.multiball=false;S.autoQ=0;parts.length=0;resetDrops();MAG[0].cd=MAG[1].cd=0;MAG[0].hold=MAG[1].hold=0;
-  balls=[mkBall(CAP_HOME.x,CAP_HOME.y,'captive')];resetBoss();S.banner={s:'BARON SONAR',sub:'TEST SUBJECT 07 HAS THE MAINFRAME',t:S.t+3};say('STOP BARON SONAR!',2.6);snd('start');snd('dlaugh');S.vocT=S.t+6;spawn();}
+  S.relightAt=0;S.loops=0;S.ebNeed=EB_FIRST;S.extra=0;S.ebTotal=0;S.ebMB=0;S.mbCount=0;S.mbLevel=0;S.combo=1;S.banner=null;S.mission=1;S.lock=[null,null];S.lockLit=true;S.multiball=false;S.autoQ=0;parts.length=0;resetDrops();MAG[0].cd=MAG[1].cd=0;MAG[0].hold=MAG[1].hold=0;
+  balls=[mkBall(CAP_HOME.x,CAP_HOME.y,'captive')];S.lastKind=null;resetBoss();snd('start');
+  if(S.kind==='dolphin'){S.banner={s:'BARON SONAR',sub:'TEST SUBJECT 07 HAS THE MAINFRAME',t:S.t+3};say('STOP BARON SONAR!',2.6);snd('dlaugh');S.vocT=S.t+6;}spawn();}
 function drain(b){b.dead=true;spark(Math.max(12,Math.min(196,b.x)),TH-4,40,K.red,260,0.8,-1.57,1.6);shake(4);
   if(S.multiball){if(S.t<S.mbSave)S.autoQ++;
-    if(freeCount()+S.autoQ<=1){S.multiball=false;say('MULTIBALL OVER',1.6);}}
+    if(freeCount()+S.autoQ<=1){S.multiball=false;S.relightAt=S.t+(ratFinal()?8:MB_DELAY+MB_GROW*(S.mbCount-1));say('MULTIBALL OVER',1.6);}}
   if(freeCount()+S.autoQ>0)return;
   if(S.t<S.saveT){S.saveT=0;say('BALL SAVED',2);snd('lane');spawn();return;}
   snd('drain');S.mode='bonus';S.modeT=S.t;S.bonusVal=S.bonus*100*S.mult;S.score+=S.bonusVal;}
@@ -611,7 +714,7 @@ function update(dt){
     if(S.autoQ>0&&!laneBall()){S.autoQ--;spawn().auto=S.t+0.5;}
     // boss psychic attack: telegraph, then shove every ball on the upper deck away and scatter psi orbs
     if(S.boss==='alive'){
-      if(S.kind==='ape'){}else if(!S.psi&&S.t>S.psiNext){for(i=0;i<balls.length;i++){b=balls[i];if(b.state==='free'&&b.y<190&&b.x<199){S.psi=1;S.psiT0=S.t;S.animT0=S.t;snd('psi');snd('dwhistle');break;}}}
+      if(S.kind!=='dolphin'){}else if(!S.psi&&S.t>S.psiNext){for(i=0;i<balls.length;i++){b=balls[i];if(b.state==='free'&&b.y<190&&b.x<199){S.psi=1;S.psiT0=S.t;S.animT0=S.t;snd('psi');snd('dwhistle');break;}}}
       else if(S.psi&&S.t-S.psiT0>0.9){S.psi=0;S.psiBlast=S.t;S.psiNext=S.t+9+Math.random()*5;snd('blast');say('PSYCHIC BLAST!',1);shake(5);
         spark(DOME.x,DOME.y,70,K.mag,260,0.7);shock(DOME.x,DOME.y,110,K.mag,0.45);shock(DOME.x,DOME.y,80,K.pur,0.6);
         var no=10+Math.min(8,S.mission*2);for(i=0;i<no;i++){var oa=i/no*6.283+Math.random()*0.2;orbs.push({x:DOME.x+Math.cos(oa)*24,y:DOME.y+Math.sin(oa)*24,vx:Math.cos(oa)*26,vy:Math.sin(oa)*26+10,life:7});}
@@ -619,15 +722,17 @@ function update(dt){
           if(d<135&&b.x<199){b.vx+=dx/d*380;b.vy+=dy/d*380+90;}}}
     }
   }else if(S.mode==='bonus'&&S.t-S.modeT>2.4){
+    if(S.extra>0){S.extra--;S.mode='play';S.bonus=0;S.mult=1;S.launched=false;S.banner={s:'SHOOT AGAIN',sub:'EXTRA BALL',t:S.t+2.2};snd('orbit');spawn();return;}
     S.ball++;if(S.ball>3){S.mode='over';S.modeT=S.t;S.multiball=false;if(S.score>S.hi){S.hi=S.score;S.newHi=true;try{localStorage.setItem('dfs-hi',String(S.hi));}catch(e){}}}
     else{S.mode='play';S.bonus=0;S.mult=1;S.launched=false;say('BALL '+S.ball,1.5);spawn();}}
   if(S.boss==='flee'){var ft=S.t-S.bossT;
     if(Math.random()<dt*9)spark(20+Math.random()*170,20+Math.random()*150,26,NEONS[(Math.random()*6)|0],170,0.9);   // fireworks
-    if(ft>4.6){S.mission++;resetBoss();spark(BOSS.x,BOSS.y,60,K.mag,200,0.8);shock(BOSS.x,BOSS.y,50,K.mag,0.5);if(S.mode==='play')say('MISSION '+S.mission+(S.kind==='ape'?': PONGO':': SONAR RETURNS'),2.5);}}
+    if(ft>4.6){S.mission++;resetBoss();spark(BOSS.x,BOSS.y,60,K.mag,200,0.8);shock(BOSS.x,BOSS.y,50,K.mag,0.5);if(S.mode==='play')say('MISSION '+S.mission+(S.kind==='ape'?': PONGO':S.kind==='rat'?': HACKRAT':': SONAR RETURNS'),2.5);}}
   for(i=debris.length-1;i>=0;i--){var db=debris[i];db.x+=db.vx*dt;db.y+=db.vy*dt;db.vy+=520*dt;if(S.t-db.t>1.9)debris.splice(i,1);}
-  stepPhases(dt);if(S.kind==='ape'&&S.boss==='alive')stepApe(dt);
+  stepPhases(dt);if(S.kind==='ape'&&S.boss==='alive')stepApe(dt);if(S.kind==='rat')stepRat(dt);
+  if(S.mode==='play'&&!S.lockLit&&!S.multiball&&S.relightAt&&S.t>S.relightAt){S.lockLit=true;S.relightAt=0;say('LOCKS RELIT',2);snd('lock');spark(SAUC[0].x,SAUC[0].y,30,K.grn,140,0.8);spark(SAUC[1].x,SAUC[1].y,30,K.grn,140,0.8);}
   // the bosses chatter to themselves
-  if(S.mode==='play'&&S.boss==='alive'&&S.t>S.vocT){S.vocT=S.t+6+Math.random()*7;var vr=Math.random();snd(S.kind==='ape'?(APE.stage===3&&vr<0.4?'along':vr<0.7?'aooh':'aah'):(vr<0.45?'dclick':vr<0.8?'dwhistle':'dlaugh'));}if(S.t>S.comboT)S.combo=1;
+  if(S.mode==='play'&&S.boss==='alive'&&S.t>S.vocT){S.vocT=S.t+6+Math.random()*7;var vr=Math.random();snd(S.kind==='rat'?(vr<0.55?'ratlaugh':'ratsq'):S.kind==='ape'?(APE.stage===3&&vr<0.4?'along':vr<0.7?'aooh':'aah'):(vr<0.45?'dclick':vr<0.8?'dwhistle':'dlaugh'));}if(S.t>S.comboT)S.combo=1;
   // camera drifts toward the action; raised layers shift against it for parallax
   var cx=0,cy=0,cn=0;for(i=0;i<balls.length;i++){b=balls[i];if((b.state==='free'||b.state==='rail')&&!(b.x>199)){cx+=b.x;cy+=b.y;cn++;}}
   var ctx2=cn?(cx/cn-103.5)/95:Math.sin(S.t*0.5)*0.7,cty=cn?(cy/cn-228)/228:Math.cos(S.t*0.37)*0.6;cam.x+=(ctx2-cam.x)*Math.min(1,dt*2.5);cam.y+=(cty-cam.y)*Math.min(1,dt*2.5);
@@ -637,6 +742,8 @@ function update(dt){
     for(i=0;i<balls.length;i++){var a=balls[i];if(a.dead||(a.state!=='free'&&a.state!=='captive'))continue;
       for(j=i+1;j<balls.length;j++){b=balls[j];if(!b.dead&&(b.state==='free'||b.state==='captive'))hitBalls(a,b);}}}
   for(i=balls.length-1;i>=0;i--)if(balls[i].dead)balls.splice(i,1);
+  S.spin2+=S.spin2V*dt;S.spin2Acc+=S.spin2V*dt;S.spin2V*=Math.pow(0.2,dt);if(S.spin2V<0.5)S.spin2V=0;
+  while(S.spin2Acc>Math.PI){S.spin2Acc-=Math.PI;if(S.mode==='play'){add(100);snd('spin');spark(64,262,3,K.cyan,90,0.3);}}
   // spinner
   S.spin+=S.spinV*dt;S.spinAcc+=S.spinV*dt;S.spinV*=Math.pow(0.25,dt);if(S.spinV<0.5)S.spinV=0;
   while(S.spinAcc>Math.PI){S.spinAcc-=Math.PI;if(S.mode==='play'){add(100);snd('spin');spark(16.5,225,3,K.yel,90,0.3);}}
@@ -650,12 +757,12 @@ function update(dt){
     else if(b.state==='free'){var sp2=Math.abs(b.vx)+Math.abs(b.vy);if(sp2>160)spark(b.x,b.y,sp2>700?4:2,sp2>900?K.white:surge?NEONS[(Math.random()*6)|0]:col,36,0.5,null,0,20);if(S.combo>2)spark(b.x,b.y,1,K.mag,60,0.6,null,0,-20);}
     else if(b.state==='locked'&&Math.random()<dt*14)spark(b.x,b.y,1,K.grn,40,0.7,-1.57,1,-30);}
   if(parts.length<900){
-    if(S.kind!=='ape'&&S.boss==='alive'&&Math.random()<0.5){var ma=Math.random()*6.283;parts.push({x:DOME.x+Math.cos(ma)*20,y:DOME.y+Math.sin(ma)*20,vx:Math.cos(ma)*12,vy:Math.sin(ma)*12-6,life:1.6,max:1.6,r:160,g:50,b:200,s:1,gr:-8,k:0});}
+    if(S.kind==='dolphin'&&S.boss==='alive'&&Math.random()<0.5){var ma=Math.random()*6.283;parts.push({x:DOME.x+Math.cos(ma)*20,y:DOME.y+Math.sin(ma)*20,vx:Math.cos(ma)*12,vy:Math.sin(ma)*12-6,life:1.6,max:1.6,r:160,g:50,b:200,s:1,gr:-8,k:0});}
     if(charging)spark(207,446,2,K.org,60,0.4,1.57,1.5,-40);
     if(TR.length){var tv=TR[(Math.random()*TR.length)|0],te=tv.p[tv.p.length-1];spark(te[0],te[1],surge?5:1,surge?NEONS[(Math.random()*6)|0]:tv.col,surge?140:40,0.6,null,0,-10);}
     if(surge)for(i=0;i<3;i++)spark(10+Math.random()*190,20+Math.random()*420,3,NEONS[(Math.random()*6)|0],120,0.5);
     for(i=0;i<2;i++)if(S.t>=MAG[i].cd&&Math.random()<0.3){var mga=Math.random()*6.283;parts.push({x:MAG[i].x+Math.cos(mga)*18,y:MAG[i].y+Math.sin(mga)*18,vx:-Math.cos(mga)*40,vy:-Math.sin(mga)*40,life:0.4,max:0.4,r:60,g:200,b:255,s:1,gr:0,k:1});}
-    if(S.kind!=='ape'&&S.boss==='alive'&&Math.random()<0.3)spark(TORSO.x,TORSO.y+2,1,K.org,70,0.5);
+    if(S.kind==='dolphin'&&S.boss==='alive'&&Math.random()<0.3)spark(TORSO.x,TORSO.y+2,1,K.org,70,0.5);
     if(S.mode==='attract'&&Math.random()<dt*3)spark(20+Math.random()*180,150+Math.random()*250,18,NEONS[(Math.random()*6)|0],120,0.9);}
   for(i=parts.length-1;i>=0;i--){p=parts[i];p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=p.gr*dt;if(!p.k){p.vx*=1-1.5*dt;p.vy*=1-1.5*dt;}if(p.life<=0){parts[i]=parts[parts.length-1];parts.pop();}}
   for(i=rings.length-1;i>=0;i--){rings[i].life-=dt;if(rings[i].life<=0)rings.splice(i,1);}
@@ -725,14 +832,14 @@ function buildBg(){
   spr('fan',200,3);spr('c3',189,1);spr('c4',180,0);spr('l2',165,1);spr('l5',151,0);spr('t11',215,36);spr('bat',208,38);
   // components on the board
   spr('qfps',94.5,163);spr('dip',41,147);spr('soic',147.5,147.5);spr('c5',61,165);spr('c6',137,165);
-  spr('c2',70,213);spr('c6',80,220);spr('c3',129,213);spr('c5',118,220);
+  spr('c2',70,213);spr('c6',80,220);spr('c3',136,214);spr('c5',106,222);
   spr('hs',27,292);spr('qfps',156,300);spr('tor',MAG[0].x-9.5,MAG[0].y-8.75,true);spr('tor',MAG[1].x-9.5,MAG[1].y-8.75,true);spr('c7',49,338);spr('l3',147,340);
   spr('t6',10,418);spr('dip',33,436);spr('l4',35,424);spr('t9',178,418);spr('t8',163,424);spr('l6',150,439);
   [[58,300,0],[150,292,1],[90,244,0],[117,252,1],[30,276,1],[178,280,0],[60,396,0],[147,396,0],[84,392,1],[123,392,1],[103.5,402,0],[76,292,1],[130,300,0],[20,150,1],[186,150,1],[103.5,186,0]]
     .forEach(function(q,n){smd(q[0],q[1],q[2],n%3?C(0xc87820):C(0x2a2a34));});
   // silkscreen part labels
   var silk=C(0x6f8f96);text('U1',141,318,silk,1);text('U7',114,166,silk,1);text('VIA',58,240,silk,1);textC('MAG',MAG[0].x,MAG[0].y+10,silk,1);textC('MAG',MAG[1].x,MAG[1].y+10,silk,1);text('C14',139,232,silk,1);text('HS1',14,312,silk,1);text('U9',176,310,silk,1);
-  text('R9',64,297,silk,1);text('C7',52,350,silk,1);text('D2',150,349,silk,1);textC('HACK',103.5,243,silk,1);
+  text('R9',64,297,silk,1);text('C7',52,350,silk,1);text('D2',150,349,silk,1);textC('HACK',123,287,silk,1);
   // lane arrows
   line(16,274,16,264,K.dim2,1);line(13,267,16,264,K.dim2,1);line(19,267,16,264,K.dim2,1);
   line(191,274,191,264,K.dim2,1);line(188,267,191,264,K.dim2,1);line(194,267,191,264,K.dim2,1);
@@ -882,10 +989,10 @@ function drawDMD(){var t=S.t,blink=(t*4|0)&1,i,j,q,sc;dmd.fill(0);
   else if(S.mode==='over'){dtextC('GAME OVER',1,2,blink?2:1);dtextC(String(S.score),13,2,2);}
   else if(S.mode==='bonus'){dtextC('BONUS '+S.bonus+' X '+S.mult+' X 100',2,1,1);dtextC('+'+S.bonusVal,10,2,2);}
   else{var m=scoreMult(),ss=String(S.score);dtext(ss,1,1,2,2);dtextR('X'+m,DC-1,1,2,m>1&&blink?2:1);
-    if(ss.length<10){dtext('BALL '+Math.min(3,S.ball),78,1,1,1);dtext('BONUS X'+S.mult,78,7,1,1);}
+    if(ss.length<10){dtext('BALL '+Math.min(3,S.ball)+(S.extra?' +'+S.extra:''),78,1,1,1);dtext('BONUS X'+S.mult,78,7,1,1);}
     if(charging){dtext('POWER',1,15,1,1);dfill(24,14,116,7,1);dfill(25,15,114,5,0);dfill(25,15,Math.round(114*charge),5,2);}
     else if(t<S.msgT){q=S.msg;sc=dtw(q,2)<=DC?2:1;dtextC(q,sc===2?13:15,sc,blink?2:1);}
-    else{dtext(S.kind==='ape'?'PONG':'SONR',1,15,1,1);if(S.kind==='ape'){for(i=0;i<4;i++){var ax2=20+i*13;dfill(ax2,14,11,7,1);dfill(ax2+1,15,9,5,0);if(S.boss!=='alive'||i<APE.stage){dmd[17*DC+ax2+4]=1;dmd[17*DC+ax2+6]=1;}else if(i===APE.stage)dfill(ax2+1,15,Math.max(1,Math.round(9*APE.hp/APE.max)),5,2);else dfill(ax2+3,16,5,3,1);}}else for(i=0;i<5;i++){var L=S.limbs[i],bx=20+i*13;dfill(bx,14,11,7,1);dfill(bx+1,15,9,5,0);if(L&&!L.dead)dfill(bx+1,15,Math.max(1,Math.round(9*L.hp/L.max)),5,2);else{dmd[17*DC+bx+4]=1;dmd[17*DC+bx+6]=1;}}
+    else{dtext(S.kind==='ape'?'PONG':S.kind==='rat'?'RAT':'SONR',1,15,1,1);if(S.kind!=='dolphin'){var BO=S.kind==='ape'?APE:RAT;for(i=0;i<4;i++){var ax2=20+i*13;dfill(ax2,14,11,7,1);dfill(ax2+1,15,9,5,0);if(S.boss!=='alive'||i<BO.stage){dmd[17*DC+ax2+4]=1;dmd[17*DC+ax2+6]=1;}else if(i===BO.stage)dfill(ax2+1,15,Math.max(1,Math.round(9*(BO.max?BO.hp/BO.max:1))),5,2);else dfill(ax2+3,16,5,3,1);}}else for(i=0;i<5;i++){var L=S.limbs[i],bx=20+i*13;dfill(bx,14,11,7,1);dfill(bx+1,15,9,5,0);if(L&&!L.dead)dfill(bx+1,15,Math.max(1,Math.round(9*L.hp/L.max)),5,2);else{dmd[17*DC+bx+4]=1;dmd[17*DC+bx+6]=1;}}
       q=t<S.surgeT?'SURGE '+Math.ceil(S.surgeT-t):t<S.delugeT?'DELUGE '+Math.ceil(S.delugeT-t):t<S.cyberT?'CYBER '+Math.ceil(S.cyberT-t):S.combo>1?'COMBO X'+S.combo:S.multiball?S.mbSize+' BALL':'M'+S.mission+' HI '+S.hi;
       dtextR(q,DC-1,15,1,(t<S.surgeT||S.combo>1)&&blink?2:1);}}
   // panel, then the dots with a little bloom between lit neighbours
@@ -930,26 +1037,30 @@ function render(){
   lamp(16.5,246,2,t<S.orbitT[0],K.grn);lamp(190.5,246,2,t<S.orbitT[1],K.grn);
   for(i=0;i<5;i++){var mv=(i+1)*2,mo=S.mult>=mv||(crazy&&Math.random()<0.5);if(mo)glow(72+i*15.7,374,7,crazy?rc():K.yel,0.4);textC(mv+'X',72+i*15.7,372,mo?K.yel:K.dim2,1);}
   if(S.mode==='play'&&(t<S.saveT||!S.launched)&&blink){glow(103.5,440,12,K.grn,0.35);textC('SAVE',103.5,438,K.grn,1);}
+  if(S.extra>0){glow(103.5,447,16,K.yel,0.3+0.2*Math.sin(t*8));textC('SHOOT AGAIN',103.5,445,blink?K.yel:K.org,1);}
+  // blue-loop spinner and its extra-ball progress lamps
+  var s2=Math.abs(Math.sin(S.spin2))*3.5;rect(57,262-s2,14,Math.max(1,s2*2),S.spin2V>1?K.white:K.cyan);rect(57,261.75,14,0.5,K.white);disc(56.5,262,1.2,K.metalL);disc(71.5,262,1.2,K.metalL);if(S.spin2V>1)glow(64,262,12,K.cyan,0.5);
+  for(i=0;i<S.ebNeed&&i<20;i++){var lx=50-(i>=10?3:0),ly=277-(i%10)*2.1,lo2=i<S.loops||(crazy&&Math.random()<0.5);rect(lx-0.9,ly-0.9,1.8,1.8,K.ink);rect(lx-0.6,ly-0.6,1.2,1.2,lo2?K.yel:C(0x3a3410));if(lo2)glow(lx,ly,3,K.yel,0.5);}
   // shot arrows fanning out from the flippers (chase lights; ramps flash during multiball)
-  var AR=[[36,293,-2.2,K.grn],[65,287,-1.57,K.cyan],[86,247,-1.1,K.amb],[121,247,-2.04,K.amb],[142,287,-1.57,K.grn],[171,293,-0.94,K.grn]];
+  var AR=[[36,293,-2.2,K.grn],[65,287,-1.57,K.cyan],[86,247,-1.1,K.amb],[108,244,-1.75,K.amb],[142,287,-1.57,K.grn],[171,293,-0.94,K.grn]];
   for(i=0;i<6;i++){var A=AR[i],on=S.mode==='play'&&(((t*5|0)%6)===i||(S.multiball&&(i===1||i===4)&&blink)||(crazy&&Math.random()<0.6)),ca2=Math.cos(A[2]),sa2=Math.sin(A[2]);
     if(on)glow(A[0],A[1],9,A[3],0.5);
     poly([[A[0]+ca2*5.6,A[1]+sa2*5.6],[A[0]-ca2*3.4-sa2*4.6,A[1]-sa2*3.4+ca2*4.6],[A[0]-ca2*3.4+sa2*4.6,A[1]-sa2*3.4-ca2*4.6]],K.ink);
     poly([[A[0]+ca2*4.6,A[1]+sa2*4.6],[A[0]-ca2*2.8-sa2*3.6,A[1]-sa2*2.8+ca2*3.6],[A[0]-ca2*2.8+sa2*3.6,A[1]-sa2*2.8-ca2*3.6]],on?A[3]:scl(A[3],0.22));}
   // CRT status panel
   var nl=(S.lock[0]?1:0)+(S.lock[1]?1:0);
-  textC('MISSION '+S.mission,103.5,323,K.amb,1);textC(S.kind==='ape'?'STAGE '+(APE.stage+1)+'/4 '+STG[APE.stage].nm:'LIMBS LEFT '+(S.limbs.length?limbsLeft():5),103.5,332,K.org,1);
-  textC(S.multiball?'MULTIBALL X2':S.lockLit?'LOCK LIT '+nl+'/2':'HIT 3 TARGETS',103.5,341,S.multiball&&blink?K.white:K.amb,1);
-  textC(S.multiball?'RAMPS=JACKPOT':'BONUS '+S.bonus,103.5,350,K.org,1);
+  textC('MISSION '+S.mission,103.5,323,K.amb,1);textC(S.kind==='rat'?(RAT.stage===3?'NEED MULTIBALL':'STAGE '+(RAT.stage+1)+'/4'):S.kind==='ape'?'STAGE '+(APE.stage+1)+'/4 '+STG[APE.stage].nm:'LIMBS LEFT '+(S.limbs.length?limbsLeft():5),103.5,332,K.org,1);
+  textC(S.multiball?'MULTIBALL X2':S.lockLit?'LOCK LIT '+nl+'/2':S.relightAt?'LOCKS IN '+Math.max(0,Math.ceil(S.relightAt-S.t))+'S':'HIT 3 TARGETS',103.5,341,S.multiball&&blink?K.white:K.amb,1);
+  textC(S.multiball?'RAMPS=JACKPOT':'XBALL: LOOP '+S.loops+'/'+S.ebNeed,103.5,350,S.extra?K.yel:K.org,1);
   // HACK target lamp
-  rect(100.5,253.5,6,4,K.ink);rect(101,254,5,3,t<S.hackFlash?K.white:K.amb);glow(103.5,255.5,t<S.hackFlash?14:6,K.amb,0.5);
+  rect(HACKP.x-3,HACKP.y-2,6,4,K.ink);rect(HACKP.x-2.5,HACKP.y-1.5,5,3,t<S.hackFlash?K.white:K.amb);glow(HACKP.x,HACKP.y,t<S.hackFlash?14:6,K.amb,0.5);
   // spinner
   var sh=Math.abs(Math.sin(S.spin))*4;rect(10,225-sh,13,Math.max(1,sh*2),S.spinV>1?K.yel:K.org);rect(10,224.75,13,0.5,K.white);if(S.spinV>1)glow(16.5,225,10,K.yel,0.4);
   // lock saucers
   for(k=0;k<2;k++)if(S.lockLit&&!S.lock[k]){var pu=0.5+0.5*Math.sin(t*8);ring(SAUC[k].x,SAUC[k].y,7.2,K.grn,1);glow(SAUC[k].x,SAUC[k].y,14,K.grn,0.25+0.3*pu);}
   // psi orbs
   for(i=0;i<orbs.length;i++){var o=orbs[i],op=0.6+0.4*Math.sin(t*12+i);glow(o.x,o.y,6,K.mag,0.7*op);disc(o.x,o.y,2,K.mag);disc(o.x,o.y,1,K.white);}
-  if(S.kind==='ape')drawApe();else{
+  if(S.kind==='ape')drawApe();else if(S.kind==='rat')drawRat();else{
   // boss: destroyed limbs vanish from the sprite, fall away as wreckage and leave cable stumps
   var flee=S.boss==='flee',ft=t-S.bossT,casting=S.psi===1,mood=casting?1:t<S.hurtT?2:0,wreck=flee&&ft>1.3,sxk=-cam.x*1.1,syk=Math.sin(t*2)*0.6-cam.y*1.1;
   if(flee&&ft<1.3){sxk+=((t*40|0)%3)-1;syk+=((t*33|0)%3)-1;if(Math.random()<0.6)boom(BOSS.x+(Math.random()-0.5)*50,BOSS.y+(Math.random()-0.5)*60,4);}
@@ -1019,11 +1130,14 @@ function render(){
   for(i=0;i<pops.length;i++){p=pops[i];textG(p.s,p.x,p.y,K.white,p.c,1);}
   // screen shake
   if(S.shake>0.4){var off=Math.round((Math.random()-0.5)*S.shake*2)+Math.round((Math.random()-0.5)*S.shake*2)*W;if(off>0)fb.copyWithin(off,0,fb.length-off);else if(off<0)fb.copyWithin(0,-off);}
+  // Hackrat's red alert: the whole table is pushed into the red channel, with torn scanlines
+  if(t<S.redT&&S.kind==='rat'){var k0=HUD*SC*W;for(i=k0;i<FL;i++){var v=fb[i],r0=v&255,g0=v>>8&255,b0=v>>16&255,l0=(r0*77+g0*150+b0*29)>>8;r0=l0+(r0>>1);if(r0>255)r0=255;fb[i]=((255<<24)|((b0>>3)<<16)|((g0>>3)<<8)|r0)>>>0;}
+    for(k=0;k<3;k++){var gy=((hash(k,(t*12)|0)%(TH*SC-8))+HUD*SC)*W,gs=(hash(k+9,(t*12)|0)%13)-6;if(gs>0)fb.copyWithin(gy+gs,gy,gy+W*3-gs);else if(gs<0)fb.copyWithin(gy,gy-gs,gy+W*3);}}
   // dot-matrix display
   drawDMD();
   // overlays
   oy=HUD;
-  if(S.mode==='attract'){var pg=(t/9|0)%3,ln,LY;box(10,138,204,182,pg===2?K.org:K.mag);
+  if(S.mode==='attract'){var pg=(t/9|0)%4,ln,LY;box(10,138,204,182,pg===3?K.red:pg===2?K.org:K.mag);
     if(pg===0){textG('DOUBLE FLIPPER',112,146,K.white,K.cyan,3);
       textG('SHOWDOWN',112,166,K.yel,K.red,4);
       rect(40,194,144,50,K.crt);for(i=0;i<50;i++)rect(40,194+i,144,0.5,C(0x341a08));
@@ -1033,7 +1147,7 @@ function render(){
       textC('YOU ARE THE BALL: A CLEAN-UP PROBE FIRED',112,268,K.grn,1);textC('INTO A HAUNTED MOTHERBOARD.',112,276,K.grn,1);
       textC('FLIPPERS: TAP LEFT / RIGHT SIDE',112,289,K.steelL,1);
       textC('KEYS: Z OR <   / OR >   SPACE',112,298,K.steelL,1);
-      textC('HOLD + RELEASE TO LAUNCH',112,307,K.steelL,1);}
+      textC('10 BLUE LOOP SHOTS = EXTRA BALL',112,307,K.yel,1);}
     else if(pg===1){textC('BOSS FILE 01',112,145,K.steelL,1);textG('BARON SONAR',112,154,K.white,K.cyan,3);
       drawBossCrop(15,178,54,10,134,90);
       ln=['TEST SUBJECT 07 AT SONAR LABS.','A NAVY DOLPHIN WIRED INTO THE','MAINFRAME TO STUDY PSYCHIC','ECHOLOCATION. ONE NIGHT THE WHOLE','NETWORK SANG BACK. HE UPLOADED','HIMSELF, BUILT A MECH FROM','SERVER PARTS AND CROWNED','HIMSELF BARON OF THE BOARD.'];
@@ -1041,13 +1155,20 @@ function render(){
       textC("HE IS CUTE. HE IS NOT YOUR FRIEND.",112,252,K.mag,1);
       textC('WEAKNESS: THE SUIT. BLOW OFF BOTH ARMS,',112,266,K.grn,1);textC('BOTH LEGS AND THE SHOULDER CANNON.',112,274,K.grn,1);
       textC('EACH LIMB HE LOSES MAKES HIM ANGRIER:',112,286,K.steelL,1);textC('SURGE, DELUGE, CABLES, MISSILES.',112,294,K.steelL,1);}
-    else{textC('BOSS FILE 02',112,145,K.steelL,1);textG('PONGO THE SERENE',112,155,K.yel,K.org,2);
+    else if(pg===2){textC('BOSS FILE 02',112,145,K.steelL,1);textG('PONGO THE SERENE',112,155,K.yel,K.org,2);
       glow(34,206,26,K.mag,0.4);apeSpr('s3',34,206,false);
       ln=['PONGO SAPIENS. THE OLDEST PROGRAM','ON THE BOARD: A FIREWALL THAT','LEARNED TO MEDITATE. HE MEANS','YOU NO HARM. HE SIMPLY WILL NOT','LET YOU PASS UNTIL YOU HAVE','EARNED IT. EVERY BUBBLE YOU POP','AGES HIM A LIFETIME.'];
       for(i=0;i<ln.length;i++)text(ln[i],60,178+i*8,K.amb,1);
       textC('BABY: FAST.  CHILD: HOLDS THE BALL.',112,244,K.mag,1);textC('TEEN: BANANA SHIELD.  ADULT: THROWS ROCKS.',112,252,K.mag,1);
       textC('POP ALL FOUR BUBBLES AND HE FINDS',112,266,K.grn,1);textC('INNER PEACE. THEN SONAR COMES BACK.',112,274,K.grn,1);
       textC('THE HACK BALL REACHES HIM THROUGH',112,286,K.steelL,1);textC('ANY SHIELD.',112,294,K.steelL,1);}
+    else{textC('BOSS FILE 03',112,145,K.steelL,1);textG('HACKRAT',112,153,K.white,K.red,3);
+      glow(36,206,28,K.red,0.3);ratSpr('stand',36,232,RPC,0,0);
+      ln=['RATTUS NORVEGICUS. A LAB RAT WHO','CHEWED THROUGH A LIVE NETWORK CABLE','AND CAME OUT FLUENT IN MACHINE CODE.','CUNNING, ARROGANT AND FOR HIRE.','HE SOLD THE BARON HIS BACKDOOR','AND KEPT A COPY OF THE KEYS.'];
+      for(i=0;i<ln.length;i++)text(ln[i],62,178+i*8,C(0xff9a9a),1);
+      textC('RED ALERT. PIPE SWING. FLIPPER HACK.',112,240,K.mag,1);textC('THEN THE VIRUS SWARM.',112,248,K.mag,1);
+      textC('ONE BALL CANNOT FINISH HIM. START A',112,262,K.grn,1);textC('MULTIBALL TO CLOSE THE FIREWALL.',112,270,K.grn,1);
+      textC('FAST BALLS SQUASH VIRUSES.',112,284,K.steelL,1);textC('SLOW BALLS GET SWARMED.',112,292,K.steelL,1);}
     if(blink)textG('TAP OR PRESS SPACE',112,pg===0?252:306,K.white,K.grn,pg===0?2:1);}
   else if(S.mode==='bonus'){box(40,214,144,52,K.amb);textG('BALL BONUS',112,222,K.white,K.cyan,2);
     textC(S.bonus+' X '+S.mult+' X 100',112,238,K.steelL,1);textG('+'+S.bonusVal,112,249,K.yel,K.org,2);}
@@ -1095,9 +1216,9 @@ balls=[mkBall(CAP_HOME.x,CAP_HOME.y,'captive')];
 buildBg();
 var last=0;
 function frame(ts){var dt=(ts-last)/1000;last=ts;if(!(dt>0)||dt>0.1)dt=1/60;update(dt);render();requestAnimationFrame(frame);}
-window.__pin={audioTest:function(which){var keep=sndMode,m=S.mode,i;sndMode=0;mkAudio(new OfflineAudioContext(1,44100*3,44100));var o=ac;S.mode='play';
-  if(which==='music')for(i=0;i<24;i++)musStep(i,i*0.113);else{var names=['dclick','dwhistle','dlaugh','dsqueal','dangry','dbye','aooh','aah','ayelp','agrow','along','agrunt','aom','flip','bump','sling','target','orbit','launch','rail','lock','boom','psi','blast','zap','squeak','fanfare','drain','spin','lane','start','tick'];lastS={};for(i=0;i<names.length;i++)snd(names[i]);}
-  S.mode=m;sndMode=keep;ac=null;return o.startRendering().then(function(b){var d=b.getChannelData(0),mx=0,nz=0;for(i=0;i<d.length;i++){var a=Math.abs(d[i]);if(a>mx)mx=a;if(a>0.001)nz++;}return{peak:+mx.toFixed(3),audibleFraction:+(nz/d.length).toFixed(2)};});},dbg:function(){return{missiles:missiles,cables:cables,APE:APE,audio:ac?ac.state:"none",t:ac?ac.currentTime:0};},S:S,getBalls:function(){return balls;},kb:kb,update:update,render:render,fb:fb,W:W,H:H,press:press,laneBall:laneBall,parts:parts};
+window.__pin={eb:function(a,b,c,d){if(a!=null){EB_FIRST=a;EB_STEP=b;MB_DELAY=c;MB_GROW=d;}return[EB_FIRST,EB_STEP,MB_DELAY,MB_GROW];},audioTest:function(which){var keep=sndMode,m=S.mode,i;sndMode=0;mkAudio(new OfflineAudioContext(1,44100*3,44100));var o=ac;S.mode='play';
+  if(which==='music')for(i=0;i<24;i++)musStep(i,i*0.113);else{var names=['ratsq','ratlaugh','rathack','ratdie','dclick','dwhistle','dlaugh','dsqueal','dangry','dbye','aooh','aah','ayelp','agrow','along','agrunt','aom','flip','bump','sling','target','orbit','launch','rail','lock','boom','psi','blast','zap','squeak','fanfare','drain','spin','lane','start','tick'];lastS={};for(i=0;i<names.length;i++)snd(names[i]);}
+  S.mode=m;sndMode=keep;ac=null;return o.startRendering().then(function(b){var d=b.getChannelData(0),mx=0,nz=0;for(i=0;i<d.length;i++){var a=Math.abs(d[i]);if(a>mx)mx=a;if(a>0.001)nz++;}return{peak:+mx.toFixed(3),audibleFraction:+(nz/d.length).toFixed(2)};});},dbg:function(){return{missiles:missiles,cables:cables,APE:APE,RAT:RAT,vir:vir,audio:ac?ac.state:"none",t:ac?ac.currentTime:0};},S:S,getBalls:function(){return balls;},kb:kb,update:update,render:render,fb:fb,W:W,H:H,press:press,laneBall:laneBall,parts:parts};
 requestAnimationFrame(frame);
 })();
 </script>
