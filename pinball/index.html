@@ -78,7 +78,7 @@ D:[6,5,5,5,6],E:[7,4,7,4,7],F:[7,4,7,4,4],G:[7,4,5,5,7],H:[5,5,7,5,5],I:[7,2,2,2
 L:[4,4,4,4,7],M:[5,7,7,5,5],N:[6,5,5,5,5],O:[7,5,5,5,7],P:[7,5,7,4,4],Q:[7,5,5,7,1],R:[7,5,6,5,5],S:[7,4,7,1,7],
 T:[7,2,2,2,2],U:[5,5,5,5,7],V:[5,5,5,5,2],W:[5,5,7,7,5],X:[5,5,2,5,5],Y:[5,5,2,2,2],Z:[7,1,2,4,7],
 '!':[2,2,2,0,2],'-':[0,0,7,0,0],'.':[0,0,0,0,2],':':[0,2,0,2,0],'+':[0,2,7,2,0],'/':[1,1,2,4,4],
-'<':[1,2,4,2,1],'>':[4,2,1,2,4],'=':[0,7,0,7,0]};
+'<':[1,2,4,2,1],'>':[4,2,1,2,4],'=':[0,7,0,7,0],',':[0,0,0,2,4],"'":[2,2,0,0,0],'?':[7,1,2,0,2]};
 function text(s,x,y,c,sc,c2){sc=sc||1;for(var n=0;n<s.length;n++){var g=FONT[s.charAt(n)];
   if(g)for(var r=0;r<5;r++){var cc=c2==null?c:mix(c,c2,r/4);for(var k=0;k<3;k++)if(g[r]&(4>>k))rect(x+k*sc,y+r*sc,sc,sc,cc);}x+=4*sc;}}
 function tw(s,sc){return s.length*4*(sc||1)-(sc||1);}
@@ -143,7 +143,7 @@ var S={mode:'attract',score:0,hi:0,ball:1,mult:1,bonus:0,bonusVal:0,targets:[0,0
   orbitT:[0,0],spin:0,spinV:0,spinAcc:0,skyT:0,
   mission:1,boss:'alive',bossT:0,limbs:[],psi:0,psiT0:0,psiNext:12,psiBlast:-9,hurtT:0,
   dmgT:0,lock:[null,null],lockLit:true,saucerT:[0,0],multiball:false,mbSave:0,autoQ:0,hackT:0,hackFlash:0,
-  shake:0,zap:null,flipFx:[0,0],bodyFlash:0,drops:[1,1,1],viaOpen:false,viaT:0,kind:'dolphin',mbLevel:0,mbSize:3,combo:1,comboT:0,surgeT:0,delugeT:0,delNext:0,del:null,cyberT:0,cyberT0:0,missNext:1e9,banner:null,animT0:-9};
+  shake:0,zap:null,flipFx:[0,0],bodyFlash:0,drops:[1,1,1],viaOpen:false,viaT:0,vocT:6,kind:'dolphin',mbLevel:0,mbSize:3,combo:1,comboT:0,surgeT:0,delugeT:0,delNext:0,del:null,cyberT:0,cyberT0:0,missNext:1e9,banner:null,animT0:-9};
 var balls=[],parts=[],rings=[],pops=[],orbs=[],cables=[],missiles=[];
 // level 2 boss state
 var STG=[{n:'s1',r:11,hp:1,spd:135,nm:'BABY'},{n:'s2',r:14,hp:3,spd:48,nm:'CHILD'},{n:'s3',r:17,hp:4,spd:30,nm:'ADOLESCENT'},{n:'s4',r:22,hp:6,spd:18,nm:'ADULT'}];
@@ -172,7 +172,28 @@ var ac=null,sndMode=0,lastS={},master=null;   // sndMode 0 all, 1 effects only, 
 function tone(f,d,type,vol,slide,delay){if(!ac||sndMode===2)return;try{var t=ac.currentTime+(delay||0),o=ac.createOscillator(),g=ac.createGain();
   o.type=type||'square';o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,f*slide),t+d);
   g.gain.setValueAtTime(vol||0.04,t);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.connect(g);g.connect(master);o.start(t);o.stop(t+d+0.02);}catch(e){}}
+// crude animal voice: a gliding pitch pushed through a formant band (oo ~ 400-700Hz, ah ~ 1000-1300Hz)
+function vox(f0,f1,d,form,vol,delay,type){if(!ac||sndMode===2)return;try{var t=ac.currentTime+(delay||0),o=ac.createOscillator(),g=ac.createGain(),bp=ac.createBiquadFilter();
+  o.type=type||'sawtooth';o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+d);bp.type='bandpass';bp.frequency.value=form;bp.Q.value=3.5;
+  g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+Math.min(0.03,d*0.3));g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.connect(bp);bp.connect(g);g.connect(master);o.start(t);o.stop(t+d+0.03);}catch(e){}}
+function voice(n){var i,k=[1.9,1.45,1.1,0.78][APE.stage]||1;
+  // Baron Sonar: echolocation clicks, signature whistle, ek-ek-ek laugh, squeal, angry chatter, goodbye
+  if(n==='dclick'){for(i=0;i<7;i++)tone(2600+Math.random()*1800,0.008,'square',0.05,1,i*0.028+Math.random()*0.01);}
+  else if(n==='dwhistle'){tone(2100,0.22,'sine',0.07,2.0);tone(4200,0.2,'sine',0.07,0.62,0.22);tone(2600,0.16,'sine',0.06,1.5,0.42);}
+  else if(n==='dlaugh'){for(i=0;i<6;i++)tone(1500+i*130,0.05,'square',0.045,1.5,i*0.085);}
+  else if(n==='dsqueal'){tone(3900,0.3,'sine',0.08,0.38);tone(3950,0.3,'triangle',0.03,0.36);}
+  else if(n==='dangry'){for(i=0;i<10;i++)tone(2400-i*120,0.035,'square',0.05,0.7,i*0.05);tone(900,0.25,'sawtooth',0.04,0.5,0.5);}
+  else if(n==='dbye'){tone(1800,0.14,'sine',0.07,1.9,1.2);tone(3400,0.14,'sine',0.07,0.6,1.36);tone(2100,0.3,'sine',0.07,2.1,1.52);for(i=0;i<3;i++)tone(2000+i*300,0.04,'square',0.04,1.4,1.95+i*0.08);}
+  // Pongo: hoots, ooh-ooh-ah-ah, yelp, growth roar, long call, grunt, and a closing om
+  else if(n==='aooh'){vox(250*k,330*k,0.15,620,0.5);vox(260*k,350*k,0.16,620,0.5,0.2);}
+  else if(n==='aah'){vox(240*k,320*k,0.13,560,0.5);vox(250*k,330*k,0.13,560,0.5,0.17);vox(300*k,380*k,0.14,1150,0.45,0.36);vox(310*k,400*k,0.16,1150,0.45,0.53);}
+  else if(n==='ayelp'){vox(420*k,760*k,0.1,1250,0.5);vox(700*k,460*k,0.12,1100,0.35,0.09);}
+  else if(n==='agrow'){vox(260*k,90*k,0.9,480,0.6);for(i=0;i<5;i++)vox(200*k*(1-i*0.1),260*k*(1-i*0.1),0.12,600,0.45,0.25+i*0.15);}
+  else if(n==='along'){for(i=0;i<7;i++)vox(120-i*4,84,0.17,380,0.6,i*0.2);vox(95,60,0.7,330,0.5,1.4);}
+  else if(n==='agrunt'){vox(150*k,95*k,0.16,420,0.55);}
+  else if(n==='aom'){for(i=0;i<3;i++){tone([110,165,220][i],3,'sine',0.07,1,0.3);vox([110,165,220][i],[110,165,220][i]*1.001,3,500,0.25,0.3,'sawtooth');}}}
 function snd(n){var now=S.t,i;if(lastS[n]&&now-lastS[n]<0.04)return;lastS[n]=now;
+  if(n.length>3&&(n.charAt(0)==='d'||n.charAt(0)==='a')&&n!=='drain'){voice(n);return;}
   if(n==='flip')tone(150,0.05,'square',0.04,0.5);
   else if(n==='bump'){tone(440,0.07,'square',0.05,2);}
   else if(n==='sling')tone(260,0.06,'triangle',0.09,1.6);
@@ -264,17 +285,17 @@ function apeSetup(){var i;S.kind=S.mission%2===1?'dolphin':'ape';apeC.off=true;f
   if(S.kind!=='ape')return;
   for(i=0;i<5;i++){S.limbs[i].dead=true;S.limbs[i].hp=0;LIMBS[i].cs.forEach(function(c){c.off=true;});}bossCs.forEach(function(c){c.off=true;});
   APE.x=103.5;APE.y=62;APE.vx=APE.vy=0;APE.stage=0;APE.evoT=S.t-0.4;APE.wT=0;apeC.off=false;apeStage();
-  S.banner={s:'ORANGUTAN!',sub:'LEVEL 2 BOSS - POP HIS BUBBLE',t:S.t+3};}
+  S.banner={s:'PONGO',sub:'PONGO THE SERENE - POP HIS BUBBLE',t:S.t+3.2};snd('aah');S.vocT=S.t+6;}
 function apeDrop(){var b=APE.hold;if(b&&b.state==='held'&&b.k===5)b.held=0;APE.hold=null;}
-function hitApe(n,x,y){var A=APE;if(S.boss!=='alive'||S.kind!=='ape')return;A.hp-=n;A.flash=S.t+0.15;shot(x,y);add(1500);S.bonus+=2;snd('squeak');snd('bump');
+function hitApe(n,x,y){var A=APE;if(S.boss!=='alive'||S.kind!=='ape')return;A.hp-=n;A.flash=S.t+0.15;shot(x,y);add(1500);S.bonus+=2;snd('ayelp');snd('bump');
   spark(x,y,26,K.mag,200,0.6);spark(x,y,12,K.white,260,0.35);shock(A.x,A.y,STG[A.stage].r+8,K.mag,0.3);popup(S.multiball?'X2 POP':'HIT',x,y-10,K.mag);
   if(A.hp>0)return;
   // the bubble bursts
   var r=STG[A.stage].r,i;for(i=0;i<60;i++){var a=i/60*6.283;parts.push({x:A.x+Math.cos(a)*r,y:A.y+Math.sin(a)*r,vx:Math.cos(a)*(120+Math.random()*160),vy:Math.sin(a)*(120+Math.random()*160),life:0.9,max:0.9,r:255,g:90+Math.random()*120,b:220,s:2,gr:120,k:0});}
-  spark(A.x,A.y,80,K.white,300,0.7);shock(A.x,A.y,r+30,K.white,0.4);shock(A.x,A.y,r+50,K.mag,0.6);shake(7);snd('boom');snd('fanfare');add(15000);popup('POP! 15000',A.x,A.y-r-6,K.white);
+  spark(A.x,A.y,80,K.white,300,0.7);shock(A.x,A.y,r+30,K.white,0.4);shock(A.x,A.y,r+50,K.mag,0.6);shake(7);snd('boom');snd('fanfare');snd(A.stage===3?'aom':'agrow');add(15000);popup('POP! 15000',A.x,A.y-r-6,K.white);
   apeDrop();for(i=0;i<6;i++)orbC[i].off=true;A.orb=[];
   if(A.stage===3){S.boss='flee';S.bossT=S.t;apeC.off=true;add(100000*S.mission);popup(String(100000*S.mission),A.x,A.y+20,K.yel);say('MISSION '+S.mission+' COMPLETE!',4.2);
-    S.banner={s:'INNER PEACE',sub:'THE ORANGUTAN ASCENDS',t:S.t+3.2};return;}
+    S.banner={s:'INNER PEACE',sub:'PONGO THE SERENE ASCENDS',t:S.t+3.2};return;}
   A.stage++;A.evoT=S.t;apeStage();
   S.banner={s:['','STAGE 2: CHILD','STAGE 3: TEEN','FINAL FORM'][A.stage],sub:['','HE CAN HOLD THE BALL WITH HIS MIND','BANANA SHIELD - KNOCK ONE OUT','ADULT - HE THROWS PSYCHIC ROCKS'][A.stage],t:S.t+3};}
 function apeCb(b,t,imp,nx,ny){if(imp<30)return;b.vx+=nx*220;b.vy+=ny*220;if(S.t<APE.cd||S.t<APE.evoT+1.2)return;APE.cd=S.t+0.35;hitApe(S.multiball?2:1,b.x-nx*R,b.y-ny*R);}
@@ -292,7 +313,7 @@ function stepApe(dt){var A=APE,st=STG[A.stage],i,b,dx,dy,d,t=S.t,play=S.mode==='
   if(A.stage===0&&Math.random()<0.5)spark(A.x,A.y+st.r,1,K.mag,40,0.5);
   // stage 2: telekinesis - a ball coming at him is frozen in mid-air, then shoved away
   if(A.stage===1&&play&&!A.hold&&t>A.holdCd&&t>A.evoT+1.2)for(i=0;i<balls.length;i++){b=balls[i];if(b.state!=='free')continue;dx=A.x-b.x;dy=A.y-b.y;d=Math.sqrt(dx*dx+dy*dy);
-    if(d<st.r+32&&d>st.r+R+3&&b.vx*dx+b.vy*dy>0){b.state='held';b.k=5;b.held=1.2;b.hx=b.x;b.hy=b.y;b.vx=b.vy=0;A.hold=b;snd('psi');say('MIND HOLD!',1);spark(b.x,b.y,24,K.mag,120,0.5);shock(b.x,b.y,16,K.mag,0.3);break;}}
+    if(d<st.r+32&&d>st.r+R+3&&b.vx*dx+b.vy*dy>0){b.state='held';b.k=5;b.held=1.2;b.hx=b.x;b.hy=b.y;b.vx=b.vy=0;A.hold=b;snd('psi');snd('aooh');say('MIND HOLD!',1);spark(b.x,b.y,24,K.mag,120,0.5);shock(b.x,b.y,16,K.mag,0.3);break;}}
   // stage 3: a ring of bananas; knocked-out bananas grow back after five seconds
   // stage 4: rock chunks orbit as cover and are hurled at the ball
   var n=A.orb.length,base=t*(A.stage===2?1.3:0.8),rad=st.r+(A.stage===2?9:13);
@@ -304,7 +325,7 @@ function stepApe(dt){var A=APE,st=STG[A.stage],i,b,dx,dy,d,t=S.t,play=S.mode==='
       if(hit){o.st='gone';o.back=t+1.6;spark(o.x,o.y,30,K.mag,200,0.6);spark(o.x,o.y,16,C(0xb090a0),120,1,null,0,260,3);shock(o.x,o.y,18,K.mag,0.3);}}}
   if(A.stage===3&&play&&t>A.throwT&&t>A.evoT+1.5){var fr=freeBalls(),cand=[];for(i=0;i<n;i++)if(A.orb[i].st==='orbit')cand.push(A.orb[i]);
     if(fr.length&&cand.length){var tg=fr[(Math.random()*fr.length)|0],ro=cand[(Math.random()*cand.length)|0];dx=tg.x+tg.vx*0.3-ro.x;dy=tg.y+tg.vy*0.3-ro.y;d=Math.sqrt(dx*dx+dy*dy)||1;
-      ro.st='fly';ro.vx=dx/d*270;ro.vy=dy/d*270;ro.t=t;A.flash=t+0.08;snd('launch');spark(ro.x,ro.y,16,K.mag,160,0.4);}
+      ro.st='fly';ro.vx=dx/d*270;ro.vy=dy/d*270;ro.t=t;A.flash=t+0.08;snd('launch');snd('agrunt');spark(ro.x,ro.y,16,K.mag,160,0.4);}
     A.throwT=t+2.3;}
   for(i=fruit.length-1;i>=0;i--){var f=fruit[i];f.x+=f.vx*dt;f.y+=f.vy*dt;f.vy+=420*dt;f.a+=dt*9;if(t-f.t>1.4)fruit.splice(i,1);}}
 function banana(x,y,a,alpha){var i,p=[],c=alpha?K.yel:C(0x8a7a20);for(i=0;i<=4;i++){var u=a-0.9+i*0.45;p.push([x+Math.cos(u)*4.6-Math.cos(a)*3.4,y+Math.sin(u)*4.6-Math.sin(a)*3.4]);}
@@ -331,7 +352,7 @@ function drawApe(){var t=S.t,A=APE,st=STG[A.stage],flee=S.boss==='flee',ft=t-S.b
     else{if(o.st==='fly')glow(ox,oy3,12,K.mag,0.7);else{line(x,y,ox,oy3,scl(K.mag,0.25),0.5);}shadow(ox+1.5,oy3+3,4,0.6);apeSpr('rk'+(i%3),ox,oy3,o.st==='fly'&&((t*20|0)&1));}}
   for(i=0;i<fruit.length;i++)banana(fruit[i].x,fruit[i].y,fruit[i].a,false);}
 function damage(i,n){var L=S.limbs[i],Lm=LIMBS[i],c=Lm.cs[0];if(L.dead||S.boss!=='alive')return;L.hp-=n;L.flash=S.t+0.14;S.hurtT=S.t+0.5;
-  spark(c.x,c.y,18,K.yel,170,0.5);shock(c.x,c.y,16,K.yel,0.25);snd('squeak');
+  spark(c.x,c.y,18,K.yel,170,0.5);shock(c.x,c.y,16,K.yel,0.25);snd('dsqueal');
   if(L.hp>0){snd('bump');return;}
   // the limb tears off: it drops as wreckage and leaves a sparking stump of cables
   L.dead=true;Lm.cs.forEach(function(q){q.off=true;boom(q.x,q.y,36,0);});boom(Lm.j.x,Lm.j.y,60,7);
@@ -339,8 +360,8 @@ function damage(i,n){var L=S.limbs[i],Lm=LIMBS[i],c=Lm.cs[0];if(L.dead||S.boss!=
   debris.push({lab:Lm.lab,x:0,y:0,vx:Math.cos(Lm.ang)*70,vy:-150,t:S.t});
   add(10000);popup('10000',c.x,c.y-6,K.white);S.bonus+=5;var left=limbsLeft();
   if(left===0){S.boss='flee';S.bossT=S.t;bossCs.forEach(function(q){q.off=true;});S.psi=0;orbs.length=0;add(100000*S.mission);boom(BOSS.x,BOSS.y,120,10);
-    popup(String(100000*S.mission),BOSS.x,BOSS.y+30,K.yel);say('MISSION '+S.mission+' COMPLETE!',4.2);snd('boom');snd('fanfare');}
-  else{say(Lm.n+' DESTROYED',2);snd('boom');phase(5-left);}}
+    popup(String(100000*S.mission),BOSS.x,BOSS.y+30,K.yel);say('MISSION '+S.mission+' COMPLETE!',4.2);snd('boom');snd('fanfare');snd('dbye');}
+  else{say(Lm.n+' DESTROYED',2);snd('boom');snd('dangry');phase(5-left);}}
 function limbCb(i){return function(b,t,imp,nx,ny){if(imp<30)return;b.vx+=nx*330;b.vy+=ny*330;var L=S.limbs[i];
   if(!L||S.t<L.cd)return;L.cd=S.t+0.15;add(1000);S.bonus+=1;spark(b.x-nx*R,b.y-ny*R,8,K.cyan,150,0.35);
   if(S.t<S.dmgT){L.flash=S.t+0.06;snd('tick');return;}S.dmgT=S.t+0.6;shot(b.x,b.y);popup(S.multiball?'X2 HIT':'HIT',b.x,b.y-8,K.cyan);damage(i,S.multiball?2:1);};}
@@ -389,7 +410,7 @@ function launchMissiles(){var o=S.limbs[4]&&!S.limbs[4].dead?LIMBS[4].cs[0]:{x:D
   snd('launch');spark(o.x,o.y,40,K.org,220,0.7,-1.57,1.6);}
 function phase(n){var i;S.banner={s:['','POWER SURGE','PSYCHIC DELUGE','CYBER ATTACK','MISSILE STRIKE'][n],
     sub:['','BALL SPEED X1.3 - SCORES X2','HE IS HUNTING YOUR BALL','CABLES SNAP AT THE BALL','INCOMING! TAKE COVER'][n],t:S.t+2.8};
-  snd('psi');shake(8);for(i=0;i<10;i++)spark(BOSS.x,BOSS.y,14,NEONS[i%6],300,1);shock(BOSS.x,BOSS.y,90,K.mag,0.6);shock(BOSS.x,BOSS.y,60,K.white,0.4);
+  snd('psi');snd('dlaugh');shake(8);for(i=0;i<10;i++)spark(BOSS.x,BOSS.y,14,NEONS[i%6],300,1);shock(BOSS.x,BOSS.y,90,K.mag,0.6);shock(BOSS.x,BOSS.y,60,K.white,0.4);
   if(n===1)S.surgeT=S.t+20;
   else if(n===2){S.delugeT=S.t+18;S.delNext=S.t+1.5;}
   else if(n===3){S.cyberT0=S.t;S.cyberT=S.t+25;cables.length=0;for(i=0;i<5;i++)cables.push({a0:i*1.257+0.4,ph:i*2.1,x:BOSS.x,y:BOSS.y,hx:BOSS.x,hy:BOSS.y,cd:S.t+1.6,snapT:-9,sx:0,sy:0,ty:i%2});}
@@ -469,7 +490,7 @@ function stepRail(b,h){var r=b.rail;railAt(r,b.rs);
   seg(40,322,40,368,{draw:'none',e:0.6});seg(40,368,59,384,{draw:'none',e:0.6});seg(40,322,59,384,{draw:'none',e:0.6,cb:slingCb(0)});
   seg(M(40),322,M(40),368,{draw:'none',e:0.6});seg(M(40),368,M(59),384,{draw:'none',e:0.6});seg(M(40),322,M(59),384,{draw:'none',e:0.6,cb:slingCb(1)});
   // boss: a humanoid mech. The dome and torso are shielded; arms, legs and the shoulder cannon are the five breakable limbs
-  var bodyCb=function(b,t,imp,nx,ny){if(imp<30)return;b.vx+=nx*160;b.vy+=ny*160;add(100);snd('tick');S.bodyFlash=S.t+0.07;
+  var bodyCb=function(b,t,imp,nx,ny){if(imp<30)return;b.vx+=nx*160;b.vy+=ny*160;add(100);snd('tick');snd('dclick');S.bodyFlash=S.t+0.07;
     spark(b.x-nx*R,b.y-ny*R,10,K.cyan,140,0.35);shock(b.x,b.y,12,K.cyan,0.2);};
   bossCs.push(circ(DOME.x,DOME.y,17,{kind:'boss',e:0.5,cb:bodyCb}),circ(TORSO.x,TORSO.y+1,13,{kind:'boss',e:0.5,cb:bodyCb}));
   [['LEFT ARM',1,'jL',2.55,[['fistL',9.5],['padL',8.5]]],['RIGHT ARM',2,'jR',0.6,[['fistR',9.5],['padR',8.5]]],
@@ -570,7 +591,7 @@ function spawn(){var b=mkBall(207,447-R-0.2);balls.push(b);armed=false;charging=
 function canCharge(){var b=laneBall();return S.mode==='play'&&b&&!b.auto&&b.y>425&&Math.abs(b.vy)<40?b:null;}
 function newGame(){S.mode='play';S.score=0;S.ball=1;S.mult=1;S.bonus=0;S.targets=[0,0,0];S.launched=false;S.newHi=false;S.saveT=0;
   S.mbLevel=0;S.combo=1;S.banner=null;S.mission=1;S.lock=[null,null];S.lockLit=true;S.multiball=false;S.autoQ=0;parts.length=0;resetDrops();MAG[0].cd=MAG[1].cd=0;MAG[0].hold=MAG[1].hold=0;
-  balls=[mkBall(CAP_HOME.x,CAP_HOME.y,'captive')];resetBoss();say('STOP BARON SONAR!',2.6);snd('start');spawn();}
+  balls=[mkBall(CAP_HOME.x,CAP_HOME.y,'captive')];resetBoss();S.banner={s:'BARON SONAR',sub:'TEST SUBJECT 07 HAS THE MAINFRAME',t:S.t+3};say('STOP BARON SONAR!',2.6);snd('start');snd('dlaugh');S.vocT=S.t+6;spawn();}
 function drain(b){b.dead=true;spark(Math.max(12,Math.min(196,b.x)),TH-4,40,K.red,260,0.8,-1.57,1.6);shake(4);
   if(S.multiball){if(S.t<S.mbSave)S.autoQ++;
     if(freeCount()+S.autoQ<=1){S.multiball=false;say('MULTIBALL OVER',1.6);}}
@@ -590,7 +611,7 @@ function update(dt){
     if(S.autoQ>0&&!laneBall()){S.autoQ--;spawn().auto=S.t+0.5;}
     // boss psychic attack: telegraph, then shove every ball on the upper deck away and scatter psi orbs
     if(S.boss==='alive'){
-      if(S.kind==='ape'){}else if(!S.psi&&S.t>S.psiNext){for(i=0;i<balls.length;i++){b=balls[i];if(b.state==='free'&&b.y<190&&b.x<199){S.psi=1;S.psiT0=S.t;S.animT0=S.t;snd('psi');break;}}}
+      if(S.kind==='ape'){}else if(!S.psi&&S.t>S.psiNext){for(i=0;i<balls.length;i++){b=balls[i];if(b.state==='free'&&b.y<190&&b.x<199){S.psi=1;S.psiT0=S.t;S.animT0=S.t;snd('psi');snd('dwhistle');break;}}}
       else if(S.psi&&S.t-S.psiT0>0.9){S.psi=0;S.psiBlast=S.t;S.psiNext=S.t+9+Math.random()*5;snd('blast');say('PSYCHIC BLAST!',1);shake(5);
         spark(DOME.x,DOME.y,70,K.mag,260,0.7);shock(DOME.x,DOME.y,110,K.mag,0.45);shock(DOME.x,DOME.y,80,K.pur,0.6);
         var no=10+Math.min(8,S.mission*2);for(i=0;i<no;i++){var oa=i/no*6.283+Math.random()*0.2;orbs.push({x:DOME.x+Math.cos(oa)*24,y:DOME.y+Math.sin(oa)*24,vx:Math.cos(oa)*26,vy:Math.sin(oa)*26+10,life:7});}
@@ -602,9 +623,11 @@ function update(dt){
     else{S.mode='play';S.bonus=0;S.mult=1;S.launched=false;say('BALL '+S.ball,1.5);spawn();}}
   if(S.boss==='flee'){var ft=S.t-S.bossT;
     if(Math.random()<dt*9)spark(20+Math.random()*170,20+Math.random()*150,26,NEONS[(Math.random()*6)|0],170,0.9);   // fireworks
-    if(ft>4.6){S.mission++;resetBoss();spark(BOSS.x,BOSS.y,60,K.mag,200,0.8);shock(BOSS.x,BOSS.y,50,K.mag,0.5);if(S.mode==='play')say('MISSION '+S.mission+(S.kind==='ape'?': THE ORANGUTAN':': HE IS BACK!'),2.5);}}
+    if(ft>4.6){S.mission++;resetBoss();spark(BOSS.x,BOSS.y,60,K.mag,200,0.8);shock(BOSS.x,BOSS.y,50,K.mag,0.5);if(S.mode==='play')say('MISSION '+S.mission+(S.kind==='ape'?': PONGO':': SONAR RETURNS'),2.5);}}
   for(i=debris.length-1;i>=0;i--){var db=debris[i];db.x+=db.vx*dt;db.y+=db.vy*dt;db.vy+=520*dt;if(S.t-db.t>1.9)debris.splice(i,1);}
-  stepPhases(dt);if(S.kind==='ape'&&S.boss==='alive')stepApe(dt);if(S.t>S.comboT)S.combo=1;
+  stepPhases(dt);if(S.kind==='ape'&&S.boss==='alive')stepApe(dt);
+  // the bosses chatter to themselves
+  if(S.mode==='play'&&S.boss==='alive'&&S.t>S.vocT){S.vocT=S.t+6+Math.random()*7;var vr=Math.random();snd(S.kind==='ape'?(APE.stage===3&&vr<0.4?'along':vr<0.7?'aooh':'aah'):(vr<0.45?'dclick':vr<0.8?'dwhistle':'dlaugh'));}if(S.t>S.comboT)S.combo=1;
   // camera drifts toward the action; raised layers shift against it for parallax
   var cx=0,cy=0,cn=0;for(i=0;i<balls.length;i++){b=balls[i];if((b.state==='free'||b.state==='rail')&&!(b.x>199)){cx+=b.x;cy+=b.y;cn++;}}
   var ctx2=cn?(cx/cn-103.5)/95:Math.sin(S.t*0.5)*0.7,cty=cn?(cy/cn-228)/228:Math.cos(S.t*0.37)*0.6;cam.x+=(ctx2-cam.x)*Math.min(1,dt*2.5);cam.y+=(cty-cam.y)*Math.min(1,dt*2.5);
@@ -831,17 +854,16 @@ function drawHalo(casting){var h=BU('halo'),t=S.t,k,i,pu=casting?1.45:1;
   glow(h.x,h.y,casting?24:15,K.mag,casting?0.6:0.3);line(h.x,h.y,h.x,DOME.y-17,C(0xff9ae0),0.5);
   for(k=0;k<3;k++){var rx=(5.5+k*5.5+Math.sin(t*4-k)*0.7)*pu,ry=rx*0.27,n=Math.ceil(rx*9);
     for(i=0;i<n;i++){var a=i/n*6.2832,x=h.x+Math.cos(a)*rx,y=h.y+Math.sin(a)*ry;hp(x,y+0.5,K.magD);hp(x,y,k===1||casting?C(0xffc0f0):K.mag);}}}
-// the getaway: a round, happy dolphin swimming off
-function drawDolphin(x,y,ph){var i,t,skin=C(0x7c92dc),skinD=C(0x4a5cae),bel=C(0xf2f2ff),wob=function(t){return Math.sin(ph+t*3)*1.6;};
-  var ty=y+wob(0)+2;poly([[x-13,ty],[x-19,ty-5],[x-16.5,ty]],skinD);poly([[x-13,ty],[x-19,ty+5],[x-16.5,ty]],skinD);
-  for(i=0;i<=16;i++){t=i/16;disc(x-13+t*24,y+wob(t)+(1-t)*2,1.6+Math.sin(Math.pow(t,0.8)*3.14)*5.2+0.6,K.ink);}
-  for(i=0;i<=16;i++){t=i/16;disc(x-13+t*24,y+wob(t)+(1-t)*2,1.6+Math.sin(Math.pow(t,0.8)*3.14)*5.2,i<3?skinD:skin);}
-  for(i=4;i<=15;i++){t=i/16;disc(x-13+t*24,y+wob(t)+(1-t)*2+2.4,Math.sin(Math.pow(t,0.8)*3.14)*3.4,bel);}
-  var hy=y+wob(0.85);poly([[x-3,hy-4],[x-7,hy-11],[x+3,hy-5]],skinD);poly([[x+1,hy+3],[x-3,hy+8+Math.sin(ph*1.3)*1.5],[x+5,hy+4]],skinD);
-  disc(x+12.5,hy+1.6,2.2,bel);disc(x+14,hy+1.8,1.5,K.white);
-  disc(x+7.5,hy-1.4,2.3,K.ink);disc(x+7.9,hy-1,1.3,C(0x2a2a6a));disc(x+6.9,hy-2.2,0.9,K.white);hp(x+8.6,hy-0.4,K.white);
-  disc(x+9.5,hy+2,1.2,C(0xff8fbe));line(x+10.5,hy+3.2,x+13,hy+3.6,K.ink,0.5);
-  disc(x+3,hy-5.6,1,K.mag);glow(x+3,hy-5.6,4,K.mag,0.7);}
+// the getaway: the cockpit itself, straight from the mech art, lifts off as an escape pod
+function drawPod(dx,dy){var bb=LBB[7],X0=Math.round((BX0+dx)*SC),Y0=Math.round((BY0+dy+oy)*SC),i,j,cx=DOME.x+dx,cy=DOME.y+dy,t=S.t;
+  glow(cx,cy+19,12,K.org,0.8);glow(cx,cy,26,K.cyan,0.25);
+  poly([[cx-5,cy+16],[cx+5,cy+16],[cx+(Math.random()-0.5)*3,cy+24+Math.random()*6]],K.org);poly([[cx-2.5,cy+16],[cx+2.5,cy+16],[cx,cy+21+Math.random()*3]],K.yel);
+  disc(cx,cy,19.6,K.ink);disc(cx,cy,18.9,C(0x16185e));
+  for(j=bb[1];j<=bb[3];j++)for(i=bb[0];i<=bb[2];i++){if(BLAB[j*BW+i]!==7)continue;var v=BPIX[j*BW+i];if(v===255)continue;var X=X0+i,Y=Y0+j;if(X>=0&&X<W&&Y>=0&&Y<H)buf[Y*W+X]=BPAL[v];}
+  ring(cx,cy,19,C(0x3a4ae0),1);ring(cx,cy,18.2,C(0x8fa8ff),0.5);
+  for(i=0;i<12;i++){var a=3.6+i*0.07;hp(cx+Math.cos(a)*16.5,cy+Math.sin(a)*16.5,K.white);}
+  rect(cx-7,cy+15.5,14,2.5,K.ink);rect(cx-6.5,cy+16,13,1.5,C(0x8a8aa8));rect(cx-6.5,cy+16,13,0.5,K.white);
+  if(Math.random()<0.9)spark(cx+(Math.random()-0.5)*6,cy+22,2,Math.random()<0.5?K.org:K.yel,70,0.5,1.57,0.8,60);}
 // classic orange dot-matrix display: 144 x 24 dots above the playfield
 var DC=144,DR=24,dmd=new Uint8Array(DC*DR);
 function dtext(q,x,y,sc,v){for(var n=0;n<q.length;n++){var g=FONT[q.charAt(n)];if(g)for(var r=0;r<5;r++)for(var k=0;k<3;k++)if(g[r]&(4>>k))for(var a=0;a<sc;a++)for(var b=0;b<sc;b++){
@@ -863,7 +885,7 @@ function drawDMD(){var t=S.t,blink=(t*4|0)&1,i,j,q,sc;dmd.fill(0);
     if(ss.length<10){dtext('BALL '+Math.min(3,S.ball),78,1,1,1);dtext('BONUS X'+S.mult,78,7,1,1);}
     if(charging){dtext('POWER',1,15,1,1);dfill(24,14,116,7,1);dfill(25,15,114,5,0);dfill(25,15,Math.round(114*charge),5,2);}
     else if(t<S.msgT){q=S.msg;sc=dtw(q,2)<=DC?2:1;dtextC(q,sc===2?13:15,sc,blink?2:1);}
-    else{dtext(S.kind==='ape'?'APE':'BOSS',1,15,1,1);if(S.kind==='ape'){for(i=0;i<4;i++){var ax2=20+i*13;dfill(ax2,14,11,7,1);dfill(ax2+1,15,9,5,0);if(S.boss!=='alive'||i<APE.stage){dmd[17*DC+ax2+4]=1;dmd[17*DC+ax2+6]=1;}else if(i===APE.stage)dfill(ax2+1,15,Math.max(1,Math.round(9*APE.hp/APE.max)),5,2);else dfill(ax2+3,16,5,3,1);}}else for(i=0;i<5;i++){var L=S.limbs[i],bx=20+i*13;dfill(bx,14,11,7,1);dfill(bx+1,15,9,5,0);if(L&&!L.dead)dfill(bx+1,15,Math.max(1,Math.round(9*L.hp/L.max)),5,2);else{dmd[17*DC+bx+4]=1;dmd[17*DC+bx+6]=1;}}
+    else{dtext(S.kind==='ape'?'PONG':'SONR',1,15,1,1);if(S.kind==='ape'){for(i=0;i<4;i++){var ax2=20+i*13;dfill(ax2,14,11,7,1);dfill(ax2+1,15,9,5,0);if(S.boss!=='alive'||i<APE.stage){dmd[17*DC+ax2+4]=1;dmd[17*DC+ax2+6]=1;}else if(i===APE.stage)dfill(ax2+1,15,Math.max(1,Math.round(9*APE.hp/APE.max)),5,2);else dfill(ax2+3,16,5,3,1);}}else for(i=0;i<5;i++){var L=S.limbs[i],bx=20+i*13;dfill(bx,14,11,7,1);dfill(bx+1,15,9,5,0);if(L&&!L.dead)dfill(bx+1,15,Math.max(1,Math.round(9*L.hp/L.max)),5,2);else{dmd[17*DC+bx+4]=1;dmd[17*DC+bx+6]=1;}}
       q=t<S.surgeT?'SURGE '+Math.ceil(S.surgeT-t):t<S.delugeT?'DELUGE '+Math.ceil(S.delugeT-t):t<S.cyberT?'CYBER '+Math.ceil(S.cyberT-t):S.combo>1?'COMBO X'+S.combo:S.multiball?S.mbSize+' BALL':'M'+S.mission+' HI '+S.hi;
       dtextR(q,DC-1,15,1,(t<S.surgeT||S.combo>1)&&blink?2:1);}}
   // panel, then the dots with a little bloom between lit neighbours
@@ -943,9 +965,9 @@ function render(){
     if(Math.random()<0.7)spark(BX0+(bb[0]+bb[2])/4+db.x/2,BY0+(bb[1]+bb[3])/4+db.y/2,1,K.org,50,0.5,-1.57,2,-20);}
   if(casting){var pr=(1-(t-S.psiT0)/0.9);ring(DOME.x,DOME.y,22+pr*40,K.mag,1);ring(DOME.x,DOME.y,22+pr*22,K.pur,0.5);ring(DOME.x,DOME.y,22+pr*58,K.magD,0.5);
     if(parts.length<PMAX){var sa=Math.random()*6.283;parts.push({x:DOME.x+Math.cos(sa)*60,y:DOME.y+Math.sin(sa)*60,vx:-Math.cos(sa)*90,vy:-Math.sin(sa)*90,life:0.5,max:0.5,r:255,g:60,b:160,s:2,gr:0,k:1});}}
-  if(flee&&ft>1.1){var sw=ft-1.1,dxp=DOME.x+sw*30,dyp=DOME.y-6-sw*20+Math.sin(sw*5)*6;drawDolphin(dxp,dyp,sw*12);
+  if(flee&&ft>1.1){var sw=ft-1.1,dxp=DOME.x+sw*30,dyp=DOME.y-6-sw*20+Math.sin(sw*5)*6;drawPod(sw*sw*9+sw*8,-sw*sw*12-sw*6+Math.sin(sw*6)*2);dxp=DOME.x+sw*sw*9+sw*8;dyp=DOME.y-sw*sw*12-sw*6;
     if(Math.random()<0.6)spark(dxp-18,dyp+2,1,K.cyan,30,0.9,3.14,1.5,-50);if(Math.random()<0.3)spark(dxp,dyp,1,K.white,60,0.5);
-    if(sw<1.2)textG('BYE!',dxp+4,dyp-20,K.white,K.cyan,1);}
+    if(sw<1.6)textG('BYE!',dxp+4,dyp-27,K.white,K.cyan,1);}
   }
   // psychic deluge: a reticle closes on the hunted ball
   if(S.del){var dl=S.del,dq=Math.min(1,(t-dl.t0)),drr=26-dq*16;ring(dl.b.x,dl.b.y,drr,K.mag,1);ring(dl.b.x,dl.b.y,drr+3,K.magD,0.5);glow(dl.b.x,dl.b.y,drr+6,K.mag,0.4+0.4*dq);
@@ -1001,19 +1023,32 @@ function render(){
   drawDMD();
   // overlays
   oy=HUD;
-  if(S.mode==='attract'){box(10,138,204,182,K.mag);
-    textG('DOUBLE FLIPPER',112,146,K.white,K.cyan,3);
-    textG('SHOWDOWN',112,166,K.yel,K.red,4);
-    rect(40,194,144,50,K.crt);for(i=0;i<50;i++)rect(40,194+i,144,0.5,C(0x341a08));
-    line(40,194,184,194,K.org,0.5);line(40,244,184,244,K.org,0.5);line(40,194,40,244,K.org,0.5);line(184,194,184,244,K.org,0.5);
-    drawBossCrop(47,200,54,10,134,90);
-    text('WANTED',92,199,K.yel,2,K.org);text('BARON SONAR',92,213,K.org,1);text('PSYCHIC DOLPHIN',92,221,K.org,1);text('IN A MECH SUIT',92,229,K.org,1);text('REWARD 100000',92,237,K.yel,1);
-    if(blink)textG('TAP OR PRESS SPACE',112,252,K.white,K.grn,2);
-    textC('BLOW OFF BOTH ARMS, BOTH LEGS + CANNON',112,270,K.grn,1);
-    textC('LOCK 2 BALLS = MULTIBALL X2 DAMAGE',112,279,K.grn,1);
-    textC('FLIPPERS: TAP LEFT / RIGHT SIDE',112,291,K.steelL,1);
-    textC('KEYS: Z OR <   / OR >   SPACE',112,300,K.steelL,1);
-    textC('HOLD + RELEASE TO LAUNCH',112,309,K.steelL,1);}
+  if(S.mode==='attract'){var pg=(t/9|0)%3,ln,LY;box(10,138,204,182,pg===2?K.org:K.mag);
+    if(pg===0){textG('DOUBLE FLIPPER',112,146,K.white,K.cyan,3);
+      textG('SHOWDOWN',112,166,K.yel,K.red,4);
+      rect(40,194,144,50,K.crt);for(i=0;i<50;i++)rect(40,194+i,144,0.5,C(0x341a08));
+      line(40,194,184,194,K.org,0.5);line(40,244,184,244,K.org,0.5);line(40,194,40,244,K.org,0.5);line(184,194,184,244,K.org,0.5);
+      drawBossCrop(47,200,54,10,134,90);
+      text('WANTED',92,199,K.yel,2,K.org);text('BARON SONAR',92,213,K.org,1);text('PSYCHIC DOLPHIN',92,221,K.org,1);text('IN A MECH SUIT',92,229,K.org,1);text('REWARD 100000',92,237,K.yel,1);
+      textC('YOU ARE THE BALL: A CLEAN-UP PROBE FIRED',112,268,K.grn,1);textC('INTO A HAUNTED MOTHERBOARD.',112,276,K.grn,1);
+      textC('FLIPPERS: TAP LEFT / RIGHT SIDE',112,289,K.steelL,1);
+      textC('KEYS: Z OR <   / OR >   SPACE',112,298,K.steelL,1);
+      textC('HOLD + RELEASE TO LAUNCH',112,307,K.steelL,1);}
+    else if(pg===1){textC('BOSS FILE 01',112,145,K.steelL,1);textG('BARON SONAR',112,154,K.white,K.cyan,3);
+      drawBossCrop(15,178,54,10,134,90);
+      ln=['TEST SUBJECT 07 AT SONAR LABS.','A NAVY DOLPHIN WIRED INTO THE','MAINFRAME TO STUDY PSYCHIC','ECHOLOCATION. ONE NIGHT THE WHOLE','NETWORK SANG BACK. HE UPLOADED','HIMSELF, BUILT A MECH FROM','SERVER PARTS AND CROWNED','HIMSELF BARON OF THE BOARD.'];
+      for(i=0;i<ln.length;i++)text(ln[i],60,180+i*8,K.cyan,1);
+      textC("HE IS CUTE. HE IS NOT YOUR FRIEND.",112,252,K.mag,1);
+      textC('WEAKNESS: THE SUIT. BLOW OFF BOTH ARMS,',112,266,K.grn,1);textC('BOTH LEGS AND THE SHOULDER CANNON.',112,274,K.grn,1);
+      textC('EACH LIMB HE LOSES MAKES HIM ANGRIER:',112,286,K.steelL,1);textC('SURGE, DELUGE, CABLES, MISSILES.',112,294,K.steelL,1);}
+    else{textC('BOSS FILE 02',112,145,K.steelL,1);textG('PONGO THE SERENE',112,155,K.yel,K.org,2);
+      glow(34,206,26,K.mag,0.4);apeSpr('s3',34,206,false);
+      ln=['PONGO SAPIENS. THE OLDEST PROGRAM','ON THE BOARD: A FIREWALL THAT','LEARNED TO MEDITATE. HE MEANS','YOU NO HARM. HE SIMPLY WILL NOT','LET YOU PASS UNTIL YOU HAVE','EARNED IT. EVERY BUBBLE YOU POP','AGES HIM A LIFETIME.'];
+      for(i=0;i<ln.length;i++)text(ln[i],60,178+i*8,K.amb,1);
+      textC('BABY: FAST.  CHILD: HOLDS THE BALL.',112,244,K.mag,1);textC('TEEN: BANANA SHIELD.  ADULT: THROWS ROCKS.',112,252,K.mag,1);
+      textC('POP ALL FOUR BUBBLES AND HE FINDS',112,266,K.grn,1);textC('INNER PEACE. THEN SONAR COMES BACK.',112,274,K.grn,1);
+      textC('THE HACK BALL REACHES HIM THROUGH',112,286,K.steelL,1);textC('ANY SHIELD.',112,294,K.steelL,1);}
+    if(blink)textG('TAP OR PRESS SPACE',112,pg===0?252:306,K.white,K.grn,pg===0?2:1);}
   else if(S.mode==='bonus'){box(40,214,144,52,K.amb);textG('BALL BONUS',112,222,K.white,K.cyan,2);
     textC(S.bonus+' X '+S.mult+' X 100',112,238,K.steelL,1);textG('+'+S.bonusVal,112,249,K.yel,K.org,2);}
   else if(S.mode==='over'){box(24,190,176,96,K.red);textG('GAME OVER',112,200,K.red,K.redD,3);
@@ -1061,7 +1096,7 @@ buildBg();
 var last=0;
 function frame(ts){var dt=(ts-last)/1000;last=ts;if(!(dt>0)||dt>0.1)dt=1/60;update(dt);render();requestAnimationFrame(frame);}
 window.__pin={audioTest:function(which){var keep=sndMode,m=S.mode,i;sndMode=0;mkAudio(new OfflineAudioContext(1,44100*3,44100));var o=ac;S.mode='play';
-  if(which==='music')for(i=0;i<24;i++)musStep(i,i*0.113);else{var names=['flip','bump','sling','target','orbit','launch','rail','lock','boom','psi','blast','zap','squeak','fanfare','drain','spin','lane','start','tick'];lastS={};for(i=0;i<names.length;i++)snd(names[i]);}
+  if(which==='music')for(i=0;i<24;i++)musStep(i,i*0.113);else{var names=['dclick','dwhistle','dlaugh','dsqueal','dangry','dbye','aooh','aah','ayelp','agrow','along','agrunt','aom','flip','bump','sling','target','orbit','launch','rail','lock','boom','psi','blast','zap','squeak','fanfare','drain','spin','lane','start','tick'];lastS={};for(i=0;i<names.length;i++)snd(names[i]);}
   S.mode=m;sndMode=keep;ac=null;return o.startRendering().then(function(b){var d=b.getChannelData(0),mx=0,nz=0;for(i=0;i<d.length;i++){var a=Math.abs(d[i]);if(a>mx)mx=a;if(a>0.001)nz++;}return{peak:+mx.toFixed(3),audibleFraction:+(nz/d.length).toFixed(2)};});},dbg:function(){return{missiles:missiles,cables:cables,APE:APE,audio:ac?ac.state:"none",t:ac?ac.currentTime:0};},S:S,getBalls:function(){return balls;},kb:kb,update:update,render:render,fb:fb,W:W,H:H,press:press,laneBall:laneBall,parts:parts};
 requestAnimationFrame(frame);
 })();
