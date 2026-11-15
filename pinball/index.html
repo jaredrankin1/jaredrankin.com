@@ -667,9 +667,9 @@ function pigCount(k){var n=0;for(var i=0;i<7;i++)if(pcs[i]&&pcs[i].k===k&&!pcs[i
 // he reads the ball's path ahead and plays where it is going to be
 function pigAim(){var fb=freeBalls(),b,T=0.6,px,py;if(!fb.length)return null;b=fb[(Math.random()*fb.length)|0];px=b.x+b.vx*T;py=b.y+b.vy*T+0.5*339*T*T;return{x:Math.max(30,Math.min(178,px)),y:Math.max(180,Math.min(372,py))};}
 function pigBoard(){var A=PIG,i;A.br=[];for(i=0;i<32;i++)A.br.push(1);A.brT=S.t+3.5;A.rebuild=0;}
-function pigStage(){var A=PIG,t=S.t,i;pigBoard();A.max=A.hp=PSTG[A.stage].hp+lvl();for(i=0;i<8;i++)killPiece(i);A.rk=null;A.bs=null;A.pawnT=t+2.2;A.knT=t+4.5;A.rkT=t+5;A.bsT=t+7.5;
+function pigStage(){var A=PIG,t=S.t,i;A.max=A.hp=PSTG[A.stage].hp+lvl();for(i=0;i<8;i++)killPiece(i);A.rk=null;A.bs=null;A.pawnT=t+2.2;A.knT=t+4.5;A.rkT=t+5;A.bsT=t+7.5;
   if(A.stage===3)for(i=0;i<4;i++){A.gb[i]=t+1.2+i*0.3;}}
-function pigSetup(){var A=PIG;A.stage=0;A.x=103.5;A.cd=0;A.hitT=0;A.flash=0;A.evoT=S.t+0.6;pigStage();A.st='drop';A.stT=S.t+0.5;
+function pigSetup(){var A=PIG;pigBoard();A.stage=0;A.x=103.5;A.cd=0;A.hitT=0;A.flash=0;A.evoT=S.t+0.6;pigStage();A.st='drop';A.stT=S.t+0.5;
   S.banner={s:'THE GRAND CHESS PIG',sub:'HE KNOWS WHERE YOUR BALL WILL BE',t:S.t+3.2};S.vocT=S.t+6;}
 function hitPig(n,x,y){var A=PIG,i;if(S.boss!=='alive'||S.kind!=='pig')return;A.hp-=n;A.flash=S.t+0.15;A.hitT=S.t+0.35;shot(x,y);add(1500);S.bonus+=2;snd('chit');snd('coink');snd('bump');
   spark(x,y,26,PINKC,200,0.6);spark(x,y,12,K.white,260,0.35);shock(x,y,18,PINKC,0.3);popup(n>1?'X'+n+' HIT':'HIT',x,y-10,K.yel);
@@ -681,7 +681,7 @@ function hitPig(n,x,y){var A=PIG,i;if(S.boss!=='alive'||S.kind!=='pig')return;A.
   S.banner={s:['','STAGE 2: KNIGHT','STAGE 3: ROOK + BISHOP','FINAL: CHECKMATE'][A.stage],sub:['','HIS KNIGHT JUMPS YOUR BALL AN L','ROOKS CHARGE A RANK, BISHOPS FIRE DIAGONALS','HE HIDES BEHIND HIS GUARDS'][A.stage],t:S.t+3};}
 function brkCb(i){return function(b,t,imp,nx,ny){var A=PIG,j,n=0,k;if(S.boss!=='alive'||A.st==='drop')return;b.vx+=nx*150;b.vy+=ny*150;if(imp<25)return;
   j=A.br[i]?0:A.br[16+i]?1:-1;if(j<0)return;A.br[j*16+i]=0;add(100);S.bonus+=0.2;snd('tick');if(Math.random()<0.6)snd('coink');var bx=A.x-45+i*6,by=PGY-3.75+j*5.5;spark(bx,by,12,((i+j)&1)?C(0x8a4ab0):C(0xf3e3b0),170,0.5);spark(bx,by,5,K.white,140,0.3);popup('100',bx,by-8,K.yel);
-  for(k=0;k<32;k++)n+=A.br[k];if(!n&&!A.rebuild){add(5000);shake(5);snd('boom');spark(A.x,PGY-4,60,K.yel,260,0.8);shock(A.x,PGY-4,60,K.yel,0.5);popup('BOARD CLEARED!',A.x,PGY-18,K.white);say('CHECKERBOARD SMASHED!',1.8);A.rebuild=S.t+2;hitPig(1,A.x,PGY-30);}};}
+  for(k=0;k<32;k++)n+=A.br[k];if(!n&&!A.rebuild){add(5000);shake(5);snd('boom');spark(A.x,PGY-4,60,K.yel,260,0.8);shock(A.x,PGY-4,60,K.yel,0.5);popup('BOARD CLEARED!',A.x,PGY-18,K.white);say('CHECKERBOARD SMASHED!',1.8);A.rebuild=1;hitPig(1,A.x,PGY-30);}};}
 function pigCb(b,t,imp,nx,ny){if(imp<30)return;b.vx+=nx*220;b.vy+=ny*220;var A=PIG;if(S.t<A.cd||S.t<A.evoT+1.2||A.st==='drop')return;A.cd=S.t+0.35;hitPig(S.multiball?2:1,b.x-nx*R,b.y-ny*R);}
 function pieceCb(i){return function(b,t,imp,nx,ny){if(imp<30)return;var p=pcs[i];if(!p||!p.solid)return;b.vx+=nx*190;b.vy+=ny*190;p.fl=S.t+0.12;p.hp--;snd('bump');
   if(p.hp>0){popup('CRACK',p.x,p.y-10,K.white);spark(p.x,p.y,10,PINKC,140,0.4);return;}
@@ -701,8 +701,6 @@ function stepPig(dt){var A=PIG,t=S.t,i,n,b,dx,dy,d,p,play=S.mode==='play',el=t-A
   pigC[2].off=true;pigC[3].off=true;pigC[4].off=true;
   if(play&&t>(A.oinkT||0)){A.oinkT=t+1.6+Math.random()*1.8;snd(Math.random()<0.25?'csnort':'coink');}
   for(i=0;i<16;i++){var bj=A.br[i]?0:A.br[16+i]?1:-1,bc=brkC[i];if(bj<0)bc.off=true;else{bc.off=false;bc.x=A.x-45+i*6;bc.y=PGY-3.75+bj*5.5;}}
-  if(A.rebuild&&t>A.rebuild){pigBoard();spark(A.x,PGY-4,40,K.white,200,0.6);snd('cchime');}
-  else if(t>A.brT&&!A.rebuild){A.brT=t+3.5;var dead=[];for(i=0;i<32;i++)if(!A.br[i])dead.push(i);if(dead.length){var di=dead[dead.length-1],bx2=A.x-45+(di%16)*6,by2=PGY-3.75+((di/16)|0)*5.5,ok=true;for(n=0;n<balls.length;n++)if(Math.abs(balls[n].x-bx2)<14&&Math.abs(balls[n].y-by2)<14)ok=false;if(ok){A.br[di]=1;}}}
   var ready=play&&A.st==='idle'&&t>A.evoT+1.3,sp;
   if(ready){
     if(A.stage<=2&&t>A.pawnT&&pigCount('pawn')<(A.stage===0?3:2)){A.pawnT=t+(A.stage===0?2.8:4.2);sp=pigAim();if(sp){pigPiece('pawn',sp.x,sp.y,0.55,5.5);A.st='cast';A.stT=t;A.cdir=sp.x<A.x?-1:1;snd('coink');}}
