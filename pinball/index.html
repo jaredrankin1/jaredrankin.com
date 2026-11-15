@@ -209,7 +209,7 @@ var LEM={x:103.5,tx:103.5,dir:1,rd:1,stage:0,hp:5,max:5,evoT:-9,flash:0,hitT:0,c
 var LJB=[[-8.5,-37.5],[29,-52]];
 var PGY=134,PINKC=C(0xff3aa8),PRED=C(0xff2430),PSTG=[{hp:5,nm:'PAWNS'},{hp:5,nm:'KNIGHT'},{hp:6,nm:'ROOK + BISHOP'},{hp:7,nm:'CHECKMATE'}];
 var GUARDS=[[62,160,'rook'],[145,160,'rook'],[88,171,'pawn'],[119,171,'pawn']];
-var PIG={x:103.5,stage:0,hp:5,max:5,evoT:-9,flash:0,hitT:0,cd:0,st:'drop',stT:0,pawnT:0,knT:0,rkT:0,bsT:0,cast:0,cdir:1,rk:null,bs:null,gb:[0,0,0,0],bid:0},pigC=[],pcs=[null,null,null,null,null,null,null,null],pcC=[];
+var PIG={x:103.5,stage:0,hp:5,max:5,evoT:-9,flash:0,hitT:0,cd:0,st:'drop',stT:0,pawnT:0,knT:0,rkT:0,bsT:0,cast:0,cdir:1,rk:null,bs:null,gb:[0,0,0,0],bid:0},pigC=[],pcs=[null,null,null,null,null,null,null,null],pcC=[],brkC=[];
 var PCP={pawn:[[-0.6,0.9],[0.6,0.9],[0.36,0.25],[0.24,0.05],[-0.24,0.05],[-0.36,0.25]],
  rook:[[-0.7,0.9],[0.7,0.9],[0.5,0.4],[0.5,-0.4],[0.7,-0.4],[0.7,-0.9],[0.4,-0.9],[0.4,-0.65],[0.15,-0.65],[0.15,-0.9],[-0.15,-0.9],[-0.15,-0.65],[-0.4,-0.65],[-0.4,-0.9],[-0.7,-0.9],[-0.7,-0.4],[-0.5,-0.4],[-0.5,0.4]],
  bishop:[[-0.6,0.9],[0.6,0.9],[0.3,0.3],[0.2,0.0],[0.45,-0.35],[0,-0.9],[-0.45,-0.35],[-0.2,0.0],[-0.3,0.3]],
@@ -660,13 +660,14 @@ function drawLem(){var t=S.t,A=LEM,flee=S.boss==='flee',ft=t-S.bossT,evo=t-A.evo
 /* ---------- boss 6: the Grand Chess Pig. He predicts your shot and puts a piece where the ball is going.
    Pawns, then a knight, then rook and bishop, then checkmate behind a wall of guards ---------- */
 function killPiece(i){var p=pcs[i];if(!p)return;pcs[i]=null;pcC[i].off=true;}
-function pigOff(){pigC.forEach(function(c){c.off=true;});for(var i=0;i<8;i++)killPiece(i);PIG.rk=null;PIG.bs=null;}
+function pigOff(){pigC.forEach(function(c){c.off=true;});brkC.forEach(function(c){c.off=true;});for(var i=0;i<8;i++)killPiece(i);PIG.rk=null;PIG.bs=null;}
 function pigMk(k,x,y,tele,life,gi){return{k:k,x:x,y:y,t0:S.t,tele:tele,life:life,solid:false,guard:gi!=null,gi:gi,hp:k==='rook'?2:1,r:k==='rook'?11:9.5,fl:0};}
 function pigPiece(k,x,y,tele,life){for(var i=4;i<7;i++)if(!pcs[i]){pcs[i]=pigMk(k,x,y,tele,life);return i;}return -1;}
 function pigCount(k){var n=0;for(var i=0;i<7;i++)if(pcs[i]&&pcs[i].k===k&&!pcs[i].guard)n++;return n;}
 // he reads the ball's path ahead and plays where it is going to be
 function pigAim(){var fb=freeBalls(),b,T=0.6,px,py;if(!fb.length)return null;b=fb[(Math.random()*fb.length)|0];px=b.x+b.vx*T;py=b.y+b.vy*T+0.5*339*T*T;return{x:Math.max(30,Math.min(178,px)),y:Math.max(180,Math.min(372,py))};}
-function pigStage(){var A=PIG,t=S.t,i;A.max=A.hp=PSTG[A.stage].hp+lvl();for(i=0;i<8;i++)killPiece(i);A.rk=null;A.bs=null;A.pawnT=t+2.2;A.knT=t+4.5;A.rkT=t+5;A.bsT=t+7.5;
+function pigBoard(){var A=PIG,i;A.br=[];for(i=0;i<32;i++)A.br.push(1);A.brT=S.t+3.5;A.rebuild=0;}
+function pigStage(){var A=PIG,t=S.t,i;pigBoard();A.max=A.hp=PSTG[A.stage].hp+lvl();for(i=0;i<8;i++)killPiece(i);A.rk=null;A.bs=null;A.pawnT=t+2.2;A.knT=t+4.5;A.rkT=t+5;A.bsT=t+7.5;
   if(A.stage===3)for(i=0;i<4;i++){A.gb[i]=t+1.2+i*0.3;}}
 function pigSetup(){var A=PIG;A.stage=0;A.x=103.5;A.cd=0;A.hitT=0;A.flash=0;A.evoT=S.t+0.6;pigStage();A.st='drop';A.stT=S.t+0.5;
   S.banner={s:'THE GRAND CHESS PIG',sub:'HE KNOWS WHERE YOUR BALL WILL BE',t:S.t+3.2};S.vocT=S.t+6;}
@@ -678,6 +679,9 @@ function hitPig(n,x,y){var A=PIG,i;if(S.boss!=='alive'||S.kind!=='pig')return;A.
     S.banner={s:'CHECKMATE',sub:'THE GRAND CHESS PIG TIPS HIS KING',t:S.t+3.2};snd('fanfare');snd('cdie');return;}
   A.stage++;A.evoT=S.t;pigStage();A.st='laugh';A.stT=S.t;snd('claugh');
   S.banner={s:['','STAGE 2: KNIGHT','STAGE 3: ROOK + BISHOP','FINAL: CHECKMATE'][A.stage],sub:['','HIS KNIGHT JUMPS YOUR BALL AN L','ROOKS CHARGE A RANK, BISHOPS FIRE DIAGONALS','HE HIDES BEHIND HIS GUARDS'][A.stage],t:S.t+3};}
+function brkCb(i){return function(b,t,imp,nx,ny){var A=PIG,j,n=0,k;if(S.boss!=='alive'||A.st==='drop')return;b.vx+=nx*150;b.vy+=ny*150;if(imp<25)return;
+  j=A.br[i]?0:A.br[16+i]?1:-1;if(j<0)return;A.br[j*16+i]=0;add(100);S.bonus+=0.2;snd('tick');snd('cchime');var bx=A.x-45+i*6,by=PGY-3.75+j*5.5;spark(bx,by,12,((i+j)&1)?C(0x8a4ab0):C(0xf3e3b0),170,0.5);spark(bx,by,5,K.white,140,0.3);popup('100',bx,by-8,K.yel);
+  for(k=0;k<32;k++)n+=A.br[k];if(!n&&!A.rebuild){add(5000);shake(5);snd('boom');spark(A.x,PGY-4,60,K.yel,260,0.8);shock(A.x,PGY-4,60,K.yel,0.5);popup('BOARD CLEARED!',A.x,PGY-18,K.white);say('CHECKERBOARD SMASHED!',1.8);A.rebuild=S.t+2;hitPig(1,A.x,PGY-30);}};}
 function pigCb(b,t,imp,nx,ny){if(imp<30)return;b.vx+=nx*220;b.vy+=ny*220;var A=PIG;if(S.t<A.cd||S.t<A.evoT+1.2||A.st==='drop')return;A.cd=S.t+0.35;hitPig(S.multiball?2:1,b.x-nx*R,b.y-ny*R);}
 function pieceCb(i){return function(b,t,imp,nx,ny){if(imp<30)return;var p=pcs[i];if(!p||!p.solid)return;b.vx+=nx*190;b.vy+=ny*190;p.fl=S.t+0.12;p.hp--;snd('bump');
   if(p.hp>0){popup('CRACK',p.x,p.y-10,K.white);spark(p.x,p.y,10,PINKC,140,0.4);return;}
@@ -694,6 +698,10 @@ function stepPig(dt){var A=PIG,t=S.t,i,n,b,dx,dy,d,p,play=S.mode==='play',el=t-A
     for(i=0;i<balls.length;i++){b=balls[i];if(b.state!=='free'||b.y>200||b.x>199)continue;dx=b.x-A.x;dy=b.y-(PGY-36);d=Math.sqrt(dx*dx+dy*dy)||1;b.vx+=dx/d*520;b.vy+=dy/d*520+120;}
     if(play)popup('CHECK!',A.x,PGY-88,K.white);}
   if(A.st==='laugh'){if(el>1.1)A.st='idle';}else if(A.st==='cast'){if(el>0.55)A.st='idle';}
+  pigC[2].off=true;pigC[3].off=true;pigC[4].off=true;
+  for(i=0;i<16;i++){var bj=A.br[i]?0:A.br[16+i]?1:-1,bc=brkC[i];if(bj<0)bc.off=true;else{bc.off=false;bc.x=A.x-45+i*6;bc.y=PGY-3.75+bj*5.5;}}
+  if(A.rebuild&&t>A.rebuild){pigBoard();spark(A.x,PGY-4,40,K.white,200,0.6);snd('cchime');}
+  else if(t>A.brT&&!A.rebuild){A.brT=t+3.5;var dead=[];for(i=0;i<32;i++)if(!A.br[i])dead.push(i);if(dead.length){var di=dead[dead.length-1],bx2=A.x-45+(di%16)*6,by2=PGY-3.75+((di/16)|0)*5.5,ok=true;for(n=0;n<balls.length;n++)if(Math.abs(balls[n].x-bx2)<14&&Math.abs(balls[n].y-by2)<14)ok=false;if(ok){A.br[di]=1;}}}
   var ready=play&&A.st==='idle'&&t>A.evoT+1.3,sp;
   if(ready){
     if(A.stage<=2&&t>A.pawnT&&pigCount('pawn')<(A.stage===0?3:2)){A.pawnT=t+(A.stage===0?2.8:4.2);sp=pigAim();if(sp){pigPiece('pawn',sp.x,sp.y,0.55,5.5);A.st='cast';A.stT=t;A.cdir=sp.x<A.x?-1:1;snd('coink');}}
@@ -716,8 +724,9 @@ function pigDraw(x,y,pal,pose,k,fl){var t=S.t,ox=[0,0,0,0,0,0],od=[0,0,0,0,0,0];
   if(pose==='idle'){od[0]=Math.round(Math.sin(t*1.6)*0.8);od[5]=od[0]+Math.round(Math.sin(t*2.1+0.5)*1.3);ox[5]=Math.round(Math.sin(t*1.2)*1.4);od[3]=od[0]+Math.round(Math.sin(t*1.6+1)*1);od[4]=od[0]+Math.round(Math.sin(t*1.6+2)*1);
     zSpr(PZ,'idle',x,y,pal,false,k,null,null,null);zSpr(PZ,'idle',x,y,pal,false,k,ox,od,null,0);}
   else zSpr(PZ,pose,x+(pose==='laugh'?Math.sin(t*22)*0.5:0),y-(pose==='laugh'?Math.abs(Math.sin(t*14))*0.8:0),pal,fl,k,null,null,null);}
-function pigTable(x,y){var w=96,i,j;rect(x-w/2-1,y-10,w+2,21,K.ink);rect(x-w/2,y-9.5,w,2.5,C(0xffd070));rect(x-w/2,y-7.5,w,1,C(0xb07a20));
-  for(j=0;j<2;j++)for(i=0;i<16;i++)rect(x-w/2+i*6,y-6.5+j*5.5,6,5.5,((i+j)&1)?C(0x2a1236):C(0xf3e3b0));
+function pigTable(x,y){var w=96,i,j,br=PIG.br;rect(x-w/2-1,y-10,w+2,21,K.ink);rect(x-w/2,y-9.5,w,2.5,C(0xffd070));rect(x-w/2,y-7.5,w,1,C(0xb07a20));
+  rect(x-w/2,y-6.5,w,11,C(0x120818));
+  for(j=0;j<2;j++)for(i=0;i<16;i++)if(!br||br[j*16+i]){var c=((i+j)&1)?C(0x2a1236):C(0xf3e3b0);rect(x-w/2+i*6,y-6.5+j*5.5,6,5.5,c);rect(x-w/2+i*6,y-6.5+j*5.5,6,0.6,scl(K.white,0.35));rect(x-w/2+i*6+5.4,y-6.5+j*5.5,0.6,5.5,scl(K.ink,0.6));}
   rect(x-w/2,y+4.5,w,2,C(0xb07a20));rect(x-w/2,y+6.5,w,1,C(0x6a4a10));rect(x-w/2-1,y-10,w+2,0.6,K.white);}
 function drawPiece(k,x,y,s,col,a){var P2=PCP[k],i,n=P2.length,p0,p1,c=scl(col,a),fp=[];glow(x,y,s*1.9,col,0.4*a);for(i=0;i<n;i++)fp.push([x+P2[i][0]*s,y+P2[i][1]*s]);poly(fp,scl(col,0.38*a));
   for(i=0;i<n;i++){p0=P2[i];p1=P2[(i+1)%n];line(x+p0[0]*s,y+p0[1]*s,x+p1[0]*s,y+p1[1]*s,c,0.9);}
@@ -1011,6 +1020,7 @@ function stepRail(b,h){var r=b.rail;railAt(r,b.rs);
   for(i=0;i<3;i++){var lc=circ(0,0,8,{kind:'lemc',e:0.6,cb:lcupCb(i)});lc.off=true;lemCupC.push(lc);}
   for(i=0;i<5;i++){var lo=circ(0,0,5,{kind:'lemo',e:0.7,cb:lorbCb});lo.off=true;lemOrbC.push(lo);}
   [[14,pigCb],[17,pigCb],[11,null],[11,null],[11,null]].forEach(function(q){var c=circ(103.5,90,q[0],{kind:q[1]?'pig':'pigd',e:0.55,cb:q[1]});c.off=true;pigC.push(c);});
+  for(i=0;i<16;i++){var kc=circ(0,0,4.4,{kind:'pigb',e:0.5,cb:brkCb(i)});kc.off=true;brkC.push(kc);}
   for(i=0;i<8;i++){var pc=circ(0,0,6.5,{kind:'pigp',e:0.6,cb:i===7?rookCb:pieceCb(i)});pc.off=true;pcC.push(pc);}
   [[74,150],[93,159],[114,159],[133,150]].forEach(function(q,i){var c=circ(q[0],q[1],7,{kind:'gat',e:0.6,cb:crateCb(i)});c.off=true;crateC.push(c);});
   // flippers: lower pair + upper-deck pair
