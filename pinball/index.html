@@ -266,7 +266,7 @@ function lemVoice(n){var i;
   else if(n==='jhit'){vox(900,1500,0.1,2400,0.5);}
   else if(n==='jdie'){tone(1400,0.9,'sine',0.12,0.15,0);for(i=0;i<8;i++)tone(500+Math.random()*1200,0.06,'triangle',0.03,0.6,0.2+i*0.09);}}
 function pigVoice(n){var i;
-  if(n==='coink'){vox(160,230,0.12,900,0.6);vox(230,150,0.14,1000,0.5,0.1);}
+  if(n==='coink'){var pf=0.85+Math.random()*0.5;vox(160*pf,230*pf,0.12,900,0.7);vox(230*pf,150*pf,0.14,1000,0.6,0.1);if(Math.random()<0.4){vox(200*pf,280*pf,0.1,900,0.5,0.28);vox(280*pf,170*pf,0.12,1000,0.45,0.36);}}
   else if(n==='csnort'){for(i=0;i<4;i++)vox(90,60,0.05,500,0.5,i*0.06);}
   else if(n==='claugh'){for(i=0;i<4;i++)vox(210-i*14,170-i*10,0.1,700,0.5,i*0.14);vox(380,240,0.12,1200,0.4,0.6);}
   else if(n==='chit'){vox(520,1100,0.18,1800,0.55);}
@@ -671,7 +671,7 @@ function pigStage(){var A=PIG,t=S.t,i;pigBoard();A.max=A.hp=PSTG[A.stage].hp+lvl
   if(A.stage===3)for(i=0;i<4;i++){A.gb[i]=t+1.2+i*0.3;}}
 function pigSetup(){var A=PIG;A.stage=0;A.x=103.5;A.cd=0;A.hitT=0;A.flash=0;A.evoT=S.t+0.6;pigStage();A.st='drop';A.stT=S.t+0.5;
   S.banner={s:'THE GRAND CHESS PIG',sub:'HE KNOWS WHERE YOUR BALL WILL BE',t:S.t+3.2};S.vocT=S.t+6;}
-function hitPig(n,x,y){var A=PIG,i;if(S.boss!=='alive'||S.kind!=='pig')return;A.hp-=n;A.flash=S.t+0.15;A.hitT=S.t+0.35;shot(x,y);add(1500);S.bonus+=2;snd('chit');snd('bump');
+function hitPig(n,x,y){var A=PIG,i;if(S.boss!=='alive'||S.kind!=='pig')return;A.hp-=n;A.flash=S.t+0.15;A.hitT=S.t+0.35;shot(x,y);add(1500);S.bonus+=2;snd('chit');snd('coink');snd('bump');
   spark(x,y,26,PINKC,200,0.6);spark(x,y,12,K.white,260,0.35);shock(x,y,18,PINKC,0.3);popup(n>1?'X'+n+' HIT':'HIT',x,y-10,K.yel);
   if(A.hp>0)return;
   spark(A.x,PGY-40,90,PINKC,300,0.8);spark(A.x,PGY-40,40,K.white,340,0.5);shock(A.x,PGY-40,70,PINKC,0.5);shock(A.x,PGY-40,46,K.white,0.35);shake(7);snd('boom');add(15000);popup('15000',A.x,PGY-82,K.white);
@@ -680,7 +680,7 @@ function hitPig(n,x,y){var A=PIG,i;if(S.boss!=='alive'||S.kind!=='pig')return;A.
   A.stage++;A.evoT=S.t;pigStage();A.st='laugh';A.stT=S.t;snd('claugh');
   S.banner={s:['','STAGE 2: KNIGHT','STAGE 3: ROOK + BISHOP','FINAL: CHECKMATE'][A.stage],sub:['','HIS KNIGHT JUMPS YOUR BALL AN L','ROOKS CHARGE A RANK, BISHOPS FIRE DIAGONALS','HE HIDES BEHIND HIS GUARDS'][A.stage],t:S.t+3};}
 function brkCb(i){return function(b,t,imp,nx,ny){var A=PIG,j,n=0,k;if(S.boss!=='alive'||A.st==='drop')return;b.vx+=nx*150;b.vy+=ny*150;if(imp<25)return;
-  j=A.br[i]?0:A.br[16+i]?1:-1;if(j<0)return;A.br[j*16+i]=0;add(100);S.bonus+=0.2;snd('tick');snd('cchime');var bx=A.x-45+i*6,by=PGY-3.75+j*5.5;spark(bx,by,12,((i+j)&1)?C(0x8a4ab0):C(0xf3e3b0),170,0.5);spark(bx,by,5,K.white,140,0.3);popup('100',bx,by-8,K.yel);
+  j=A.br[i]?0:A.br[16+i]?1:-1;if(j<0)return;A.br[j*16+i]=0;add(100);S.bonus+=0.2;snd('tick');if(Math.random()<0.6)snd('coink');var bx=A.x-45+i*6,by=PGY-3.75+j*5.5;spark(bx,by,12,((i+j)&1)?C(0x8a4ab0):C(0xf3e3b0),170,0.5);spark(bx,by,5,K.white,140,0.3);popup('100',bx,by-8,K.yel);
   for(k=0;k<32;k++)n+=A.br[k];if(!n&&!A.rebuild){add(5000);shake(5);snd('boom');spark(A.x,PGY-4,60,K.yel,260,0.8);shock(A.x,PGY-4,60,K.yel,0.5);popup('BOARD CLEARED!',A.x,PGY-18,K.white);say('CHECKERBOARD SMASHED!',1.8);A.rebuild=S.t+2;hitPig(1,A.x,PGY-30);}};}
 function pigCb(b,t,imp,nx,ny){if(imp<30)return;b.vx+=nx*220;b.vy+=ny*220;var A=PIG;if(S.t<A.cd||S.t<A.evoT+1.2||A.st==='drop')return;A.cd=S.t+0.35;hitPig(S.multiball?2:1,b.x-nx*R,b.y-ny*R);}
 function pieceCb(i){return function(b,t,imp,nx,ny){if(imp<30)return;var p=pcs[i];if(!p||!p.solid)return;b.vx+=nx*190;b.vy+=ny*190;p.fl=S.t+0.12;p.hp--;snd('bump');
@@ -699,6 +699,7 @@ function stepPig(dt){var A=PIG,t=S.t,i,n,b,dx,dy,d,p,play=S.mode==='play',el=t-A
     if(play)popup('CHECK!',A.x,PGY-88,K.white);}
   if(A.st==='laugh'){if(el>1.1)A.st='idle';}else if(A.st==='cast'){if(el>0.55)A.st='idle';}
   pigC[2].off=true;pigC[3].off=true;pigC[4].off=true;
+  if(play&&t>(A.oinkT||0)){A.oinkT=t+1.6+Math.random()*1.8;snd(Math.random()<0.25?'csnort':'coink');}
   for(i=0;i<16;i++){var bj=A.br[i]?0:A.br[16+i]?1:-1,bc=brkC[i];if(bj<0)bc.off=true;else{bc.off=false;bc.x=A.x-45+i*6;bc.y=PGY-3.75+bj*5.5;}}
   if(A.rebuild&&t>A.rebuild){pigBoard();spark(A.x,PGY-4,40,K.white,200,0.6);snd('cchime');}
   else if(t>A.brT&&!A.rebuild){A.brT=t+3.5;var dead=[];for(i=0;i<32;i++)if(!A.br[i])dead.push(i);if(dead.length){var di=dead[dead.length-1],bx2=A.x-45+(di%16)*6,by2=PGY-3.75+((di/16)|0)*5.5,ok=true;for(n=0;n<balls.length;n++)if(Math.abs(balls[n].x-bx2)<14&&Math.abs(balls[n].y-by2)<14)ok=false;if(ok){A.br[di]=1;}}}
@@ -709,7 +710,7 @@ function stepPig(dt){var A=PIG,t=S.t,i,n,b,dx,dy,d,p,play=S.mode==='play',el=t-A
     if(A.stage>=2&&t>A.rkT&&!A.rk){A.rkT=t+(A.stage===3?8:6.5);sp=pigAim();if(sp){var rd=Math.random()<0.5?1:-1;A.rk={y:Math.max(190,Math.min(360,sp.y)),dir:rd,x:rd>0?18:190,t0:t,on:false,hitT:0};A.st='cast';A.stT=t;snd('csnort');}}
     if(A.stage>=2&&t>A.bsT&&!A.bs){A.bsT=t+(A.stage===3?7.5:6);sp=pigAim();if(sp){A.bs={x:sp.x,y:sp.y,t0:t,id:++A.bid};A.st='cast';A.stT=t;snd('coink');}}}
   for(i=0;i<8;i++){p=pcs[i];if(!p)continue;
-    if(!p.solid){if(t>=p.t0+p.tele){if(p.guard||gatClear(p.x,p.y,17)){p.solid=true;pcC[i].x=p.x;pcC[i].y=p.y;pcC[i].r=p.r;pcC[i].off=false;spark(p.x,p.y,30,PRED,230,0.6);spark(p.x,p.y,12,K.white,200,0.35);shock(p.x,p.y,26,PRED,0.4);shock(p.x,p.y,16,K.white,0.25);shake(3);snd('cchime');snd('bump');
+    if(!p.solid){if(t>=p.t0+p.tele){if(p.guard||gatClear(p.x,p.y,17)){p.solid=true;pcC[i].x=p.x;pcC[i].y=p.y;pcC[i].r=p.r;pcC[i].off=false;spark(p.x,p.y,30,PRED,230,0.6);spark(p.x,p.y,12,K.white,200,0.35);shock(p.x,p.y,26,PRED,0.4);shock(p.x,p.y,16,K.white,0.25);shake(3);snd('cchime');snd('bump');if(Math.random()<0.5)snd('coink');
           if(p.k==='knight'){var mv=[[2,1],[2,-1],[-2,1],[-2,-1],[1,2],[-1,2],[1,-2],[-1,-2]];for(n=0;n<balls.length;n++){b=balls[n];if(b.state!=='free'||b.x>199)continue;dx=b.x-p.x;dy=b.y-p.y;if(dx*dx+dy*dy<30*30){var m=mv[(Math.random()*8)|0],ml=Math.sqrt(m[0]*m[0]+m[1]*m[1]);b.vx=m[0]/ml*500;b.vy=m[1]/ml*500;add(300);popup('L-JUMP!',b.x,b.y-10,K.yel);spark(b.x,b.y,18,K.white,200,0.4);snd('boom');}}}}
         else if(t>p.t0+p.tele+1.5)killPiece(i);}}
     else if(!p.guard&&t>p.t0+p.tele+p.life){spark(p.x,p.y,14,PINKC,140,0.4);killPiece(i);}}
