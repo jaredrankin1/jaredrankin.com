@@ -207,7 +207,7 @@ var GAT={x:103.5,tx:103.5,dir:1,stage:0,hp:4,max:4,evoT:-9,flash:0,hitT:0,cd:0,s
 var LGY=134,SLOT=[70,103.5,137],CUPY=161,LSTG=[{hp:5,nm:'TAIL TRICK'},{hp:5,nm:'SHELL GAME'},{hp:5,nm:'TIGHTROPE'},{hp:6,nm:'GRAND FINALE'}];
 var LEM={x:103.5,tx:103.5,dir:1,rd:1,stage:0,hp:5,max:5,evoT:-9,flash:0,hitT:0,cd:0,st:'drop',stT:0,wT:0,tailCd:0,gift:0,jy:0,cups:[],ph:'show',phT:0,real:0,swaps:0,orbOn:false,barT:0,recT:0,proj:[],mb:null},lemC=[],lemCupC=[],lemOrbC=[];
 var LJB=[[-8.5,-37.5],[29,-52]];
-var PGY=134,PINKC=C(0xff3aa8),PSTG=[{hp:5,nm:'PAWNS'},{hp:5,nm:'KNIGHT'},{hp:6,nm:'ROOK + BISHOP'},{hp:7,nm:'CHECKMATE'}];
+var PGY=134,PINKC=C(0xff3aa8),PRED=C(0xff2430),PSTG=[{hp:5,nm:'PAWNS'},{hp:5,nm:'KNIGHT'},{hp:6,nm:'ROOK + BISHOP'},{hp:7,nm:'CHECKMATE'}];
 var GUARDS=[[62,160,'rook'],[145,160,'rook'],[88,171,'pawn'],[119,171,'pawn']];
 var PIG={x:103.5,stage:0,hp:5,max:5,evoT:-9,flash:0,hitT:0,cd:0,st:'drop',stT:0,pawnT:0,knT:0,rkT:0,bsT:0,cast:0,cdir:1,rk:null,bs:null,gb:[0,0,0,0],bid:0},pigC=[],pcs=[null,null,null,null,null,null,null,null],pcC=[];
 var PCP={pawn:[[-0.6,0.9],[0.6,0.9],[0.36,0.25],[0.24,0.05],[-0.24,0.05],[-0.36,0.25]],
@@ -565,7 +565,7 @@ function drawGat(){var t=S.t,A=GAT,flee=S.boss==='flee',ft=t-S.bossT,evo=t-A.evo
 /* ---------- boss 5: Jester Lemur, the multiball maverick. Four acts: tail trick, shell game, tightrope, grand finale ---------- */
 function lemOff(){lemC.forEach(function(c){c.off=true;});lemCupC.forEach(function(c){c.off=true;});lemOrbC.forEach(function(c){c.off=true;});LEM.cups=[];LEM.proj.length=0;LEM.orbOn=false;LEM.mb=null;}
 function confetti(x,y,n,spread){for(var i=0;i<n;i++){var c=NEONS[i%6],a=-1.57+(Math.random()-0.5)*(spread||3.4),v=70+Math.random()*230;parts.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:1.2+Math.random()*0.8,max:1.8,r:c&255,g:c>>8&255,b:c>>16&255,s:2,gr:260,k:0});}}
-function lemStage(){var A=LEM,t=S.t,i;A.max=A.hp=LSTG[A.stage].hp+lvl();A.tailCd=t+3;A.gift=0;A.proj.length=0;A.mb=null;A.orbOn=A.stage===3;A.barT=t+7;A.recT=0;A.jy=0;
+function lemStage(){var A=LEM,t=S.t,i;A.max=A.hp=LSTG[A.stage].hp+lvl();A.tailCd=t+3;A.mbT=t+8;A.gift=0;A.proj.length=0;A.mb=null;A.orbOn=A.stage===3;A.barT=t+7;A.recT=0;A.jy=0;
   lemCupC.forEach(function(c){c.off=true;});lemOrbC.forEach(function(c){c.off=true;});
   if(A.stage===1){A.cups=[];for(i=0;i<3;i++)A.cups.push({x:SLOT[i],tx:SLOT[i],lift:0});A.real=(Math.random()*3)|0;A.ph='show';A.phT=t+2.2;A.swaps=0;}else A.cups=[];}
 function lemSetup(){var A=LEM;A.stage=0;A.x=103.5;A.tx=103.5;A.dir=1;A.rd=1;A.cd=0;A.hitT=0;A.flash=0;A.evoT=S.t+0.6;lemStage();A.st='drop';A.stT=S.t+0.5;
@@ -601,6 +601,7 @@ function stepLem(dt){var A=LEM,t=S.t,i,n,b,dx,dy,d,play=S.mode==='play',el=t-A.s
     if(A.stage===2){A.x+=A.rd*(32+lvl()*3)*dt;if(A.x>148){A.x=148;A.rd=-1;}if(A.x<60){A.x=60;A.rd=1;}A.dir=A.rd;A.jy=Math.abs(Math.sin(t*9))*1.2;}
     else{if(A.stage===3)A.tx=103.5;else if(t>A.wT||Math.abs(A.tx-A.x)<1){A.tx=76+Math.random()*56;A.wT=t+2.2+Math.random()*2;}
       dx=A.tx-A.x;if(Math.abs(dx)>1){A.x+=(dx>0?1:-1)*15*dt;A.dir=dx>0?1:-1;A.jy=Math.abs(Math.sin(t*7))*2;}else A.jy=0;}
+    if(play&&A.stage!==1&&!S.multiball&&t>A.mbT&&t>A.evoT+1.5){var fb0=freeBalls();if(fb0.length){A.mb=fb0[0];A.st='multi';A.stT=t;A.dir=fb0[0].x>=A.x?1:-1;snd('jtail');say('HE SNATCHED YOUR BALL!',1.2);}else A.mbT=t+2;}
     // tail trick: a ball drifting into reach gets caught by the tail and flicked down a new lane. Once an act he juggles it into a 3-ball multiball instead
     if(play&&A.stage!==1&&t>A.tailCd&&t>A.evoT+1.4)for(i=0;i<balls.length;i++){b=balls[i];if(b.state!=='free'||b.x>199)continue;dx=b.x-A.x;dy=b.y-(LGY-30);d=Math.sqrt(dx*dx+dy*dy);
       if(d<50&&(b.vx*dx+b.vy*dy<0||d<34)){var gift=A.gift===0&&!S.multiball&&(A.stage===0||A.stage===2)&&freeBalls().length===1;A.st=gift?'multi':'tail';A.mb=gift?b:null;A.stT=t;A.dir=dx>=0?1:-1;snd('jtail');break;}}
@@ -611,8 +612,8 @@ function stepLem(dt){var A=LEM,t=S.t,i,n,b,dx,dy,d,play=S.mode==='play',el=t-A.s
   else if(A.st==='flicked'){if(el>0.35)A.st='idle';}
   else if(A.st==='multi'){var m=A.mb;
     if(!m||m.dead||m.state!=='free'){A.st='idle';A.mb=null;A.tailCd=t+2;}
-    else{m.vx=0;m.vy=0;m.x=A.x+s*20+Math.sin(t*14)*3;m.y=LGY-76+Math.cos(t*14)*3;m.py=m.y;
-      if(el>1.1){A.st='flicked';A.stT=t;A.gift=1;A.tailCd=t+3;var ang=[1.2,1.57,1.95],q,nb;
+    else{m.vx=0;m.vy=0;var qq=Math.min(1,dt*12);m.x+=(A.x+s*20+Math.sin(t*14)*3-m.x)*qq;m.y+=(LGY-76+Math.cos(t*14)*3-m.y)*qq;m.py=m.y;
+      if(el>1.1){A.st='flicked';A.stT=t;A.gift=1;A.mbT=t+14;A.tailCd=t+3;var ang=[1.2,1.57,1.95],q,nb;
         for(q=0;q<3;q++){nb=q===0?m:mkBall(m.x,m.y);nb.vx=Math.cos(ang[q])*480;nb.vy=Math.sin(ang[q])*480;if(q>0)balls.push(nb);}
         S.multiball=true;S.mbSize=3;S.mbSave=t+7;A.mb=null;shake(6);snd('boom');snd('fanfare');confetti(m.x,m.y,50,6.28);shock(m.x,m.y,40,K.mag,0.5);
         S.banner={s:'LEMUR MULTIBALL',sub:'HE JUGGLED YOU TWO MORE - X2 DAMAGE X2 SCORE',t:t+2.6};say('3 BALLS IN PLAY',2.4);}}}
@@ -660,7 +661,7 @@ function drawLem(){var t=S.t,A=LEM,flee=S.boss==='flee',ft=t-S.bossT,evo=t-A.evo
    Pawns, then a knight, then rook and bishop, then checkmate behind a wall of guards ---------- */
 function killPiece(i){var p=pcs[i];if(!p)return;pcs[i]=null;pcC[i].off=true;}
 function pigOff(){pigC.forEach(function(c){c.off=true;});for(var i=0;i<8;i++)killPiece(i);PIG.rk=null;PIG.bs=null;}
-function pigMk(k,x,y,tele,life,gi){return{k:k,x:x,y:y,t0:S.t,tele:tele,life:life,solid:false,guard:gi!=null,gi:gi,hp:k==='rook'?2:1,r:k==='rook'?7.5:6.5,fl:0};}
+function pigMk(k,x,y,tele,life,gi){return{k:k,x:x,y:y,t0:S.t,tele:tele,life:life,solid:false,guard:gi!=null,gi:gi,hp:k==='rook'?2:1,r:k==='rook'?11:9.5,fl:0};}
 function pigPiece(k,x,y,tele,life){for(var i=4;i<7;i++)if(!pcs[i]){pcs[i]=pigMk(k,x,y,tele,life);return i;}return -1;}
 function pigCount(k){var n=0;for(var i=0;i<7;i++)if(pcs[i]&&pcs[i].k===k&&!pcs[i].guard)n++;return n;}
 // he reads the ball's path ahead and plays where it is going to be
@@ -700,12 +701,12 @@ function stepPig(dt){var A=PIG,t=S.t,i,n,b,dx,dy,d,p,play=S.mode==='play',el=t-A
     if(A.stage>=2&&t>A.rkT&&!A.rk){A.rkT=t+(A.stage===3?8:6.5);sp=pigAim();if(sp){var rd=Math.random()<0.5?1:-1;A.rk={y:Math.max(190,Math.min(360,sp.y)),dir:rd,x:rd>0?18:190,t0:t,on:false,hitT:0};A.st='cast';A.stT=t;snd('csnort');}}
     if(A.stage>=2&&t>A.bsT&&!A.bs){A.bsT=t+(A.stage===3?7.5:6);sp=pigAim();if(sp){A.bs={x:sp.x,y:sp.y,t0:t,id:++A.bid};A.st='cast';A.stT=t;snd('coink');}}}
   for(i=0;i<8;i++){p=pcs[i];if(!p)continue;
-    if(!p.solid){if(t>=p.t0+p.tele){if(p.guard||gatClear(p.x,p.y,13)){p.solid=true;pcC[i].x=p.x;pcC[i].y=p.y;pcC[i].r=p.r;pcC[i].off=false;spark(p.x,p.y,16,PINKC,160,0.5);shock(p.x,p.y,14,PINKC,0.3);snd('cchime');
+    if(!p.solid){if(t>=p.t0+p.tele){if(p.guard||gatClear(p.x,p.y,17)){p.solid=true;pcC[i].x=p.x;pcC[i].y=p.y;pcC[i].r=p.r;pcC[i].off=false;spark(p.x,p.y,30,PRED,230,0.6);spark(p.x,p.y,12,K.white,200,0.35);shock(p.x,p.y,26,PRED,0.4);shock(p.x,p.y,16,K.white,0.25);shake(3);snd('cchime');snd('bump');
           if(p.k==='knight'){var mv=[[2,1],[2,-1],[-2,1],[-2,-1],[1,2],[-1,2],[1,-2],[-1,-2]];for(n=0;n<balls.length;n++){b=balls[n];if(b.state!=='free'||b.x>199)continue;dx=b.x-p.x;dy=b.y-p.y;if(dx*dx+dy*dy<30*30){var m=mv[(Math.random()*8)|0],ml=Math.sqrt(m[0]*m[0]+m[1]*m[1]);b.vx=m[0]/ml*500;b.vy=m[1]/ml*500;add(300);popup('L-JUMP!',b.x,b.y-10,K.yel);spark(b.x,b.y,18,K.white,200,0.4);snd('boom');}}}}
         else if(t>p.t0+p.tele+1.5)killPiece(i);}}
     else if(!p.guard&&t>p.t0+p.tele+p.life){spark(p.x,p.y,14,PINKC,140,0.4);killPiece(i);}}
   if(A.stage===3)for(i=0;i<4;i++){if(!pcs[i]&&t>A.gb[i]&&gatClear(GUARDS[i][0],GUARDS[i][1],16)){pcs[i]=pigMk(GUARDS[i][2],GUARDS[i][0],GUARDS[i][1],0.4,0,i);A.gb[i]=1e9;}}
-  if(A.rk){var r=A.rk;if(!r.on){if(t>r.t0+0.9){r.on=true;pcC[7].x=r.x;pcC[7].y=r.y;pcC[7].r=8;pcC[7].off=false;snd('boom');}}
+  if(A.rk){var r=A.rk;if(!r.on){if(t>r.t0+0.9){r.on=true;pcC[7].x=r.x;pcC[7].y=r.y;pcC[7].r=11;pcC[7].off=false;snd('boom');}}
     else{r.x+=r.dir*270*dt;pcC[7].x=r.x;pcC[7].y=r.y;if(r.x<12||r.x>196){pcC[7].off=true;A.rk=null;}}}
   if(A.bs){var bq=A.bs,tt=t-bq.t0;if(tt>0.9&&tt<1.3){if(!bq.fired){bq.fired=true;snd('zap');shake(3);}
       for(n=0;n<balls.length;n++){b=balls[n];if(b.state!=='free'||b.x>199||b.bsId===bq.id)continue;var u=b.x-bq.x,v=b.y-bq.y,d1=Math.abs(u-v)*0.7071,d2=Math.abs(u+v)*0.7071;
@@ -718,7 +719,7 @@ function pigDraw(x,y,pal,pose,k,fl){var t=S.t,ox=[0,0,0,0,0,0],od=[0,0,0,0,0,0];
 function pigTable(x,y){var w=96,i,j;rect(x-w/2-1,y-10,w+2,21,K.ink);rect(x-w/2,y-9.5,w,2.5,C(0xffd070));rect(x-w/2,y-7.5,w,1,C(0xb07a20));
   for(j=0;j<2;j++)for(i=0;i<16;i++)rect(x-w/2+i*6,y-6.5+j*5.5,6,5.5,((i+j)&1)?C(0x2a1236):C(0xf3e3b0));
   rect(x-w/2,y+4.5,w,2,C(0xb07a20));rect(x-w/2,y+6.5,w,1,C(0x6a4a10));rect(x-w/2-1,y-10,w+2,0.6,K.white);}
-function drawPiece(k,x,y,s,col,a){var P2=PCP[k],i,n=P2.length,p0,p1,c=scl(col,a);glow(x,y,s*1.7,col,0.3*a);
+function drawPiece(k,x,y,s,col,a){var P2=PCP[k],i,n=P2.length,p0,p1,c=scl(col,a),fp=[];glow(x,y,s*1.9,col,0.4*a);for(i=0;i<n;i++)fp.push([x+P2[i][0]*s,y+P2[i][1]*s]);poly(fp,scl(col,0.38*a));
   for(i=0;i<n;i++){p0=P2[i];p1=P2[(i+1)%n];line(x+p0[0]*s,y+p0[1]*s,x+p1[0]*s,y+p1[1]*s,c,0.9);}
   if(k==='pawn')ring(x,y-0.5*s,0.34*s,c,0.8);if(k==='king'){line(x,y-0.55*s,x,y-1.1*s,c,0.9);line(x-0.28*s,y-0.85*s,x+0.28*s,y-0.85*s,c,0.9);}
   for(i=0;i<n;i+=2){p0=P2[i];p1=P2[(i+1)%n];line(x+p0[0]*s*0.92,y+p0[1]*s*0.92,x+p1[0]*s*0.92,y+p1[1]*s*0.92,scl(K.white,a*0.55),0.3);}}
@@ -733,14 +734,15 @@ function drawPig(){var t=S.t,A=PIG,flee=S.boss==='flee',ft=t-S.bossT,evo=t-A.evo
   if(A.st==='laugh')pigDraw(x,y,pal,'laugh',1,false);else if(A.st==='cast')pigDraw(x,y,pal,'cast',1,A.cdir<0);else if(t<A.hitT)pigDraw(x+((t*50|0)%3)-1,y,pal,'idle',1,false);else pigDraw(x,y,pal,'idle',1,false);
   pigTable(x,y);
   for(i=0;i<A.max;i++)disc(A.x-(A.max-1)*1.5+i*3,PGY+13,1.1,i<A.hp?K.yel:C(0x5a4010));
-  if(A.rk){var r=A.rk;if(!r.on){var bl=((t*10|0)&1)?0.5:0.25;rect(22+px0,r.y-5.5+py0,168,11,scl(PINKC,bl*0.5));line(22+px0,r.y-5.5+py0,190+px0,r.y-5.5+py0,scl(PINKC,bl*2),0.5);line(22+px0,r.y+5.5+py0,190+px0,r.y+5.5+py0,scl(PINKC,bl*2),0.5);drawPiece('rook',(r.dir>0?18:190)+px0,r.y+py0,8,PINKC,0.5+bl);}
-    else{for(k=1;k<6;k++)drawPiece('rook',r.x-r.dir*k*7+px0,r.y+py0,8,PINKC,0.5-k*0.08);drawPiece('rook',r.x+px0,r.y+py0,8,PINKC,1);}}
+  if(A.rk){var r=A.rk;if(!r.on){var bl=((t*10|0)&1)?0.5:0.25;rect(22+px0,r.y-5.5+py0,168,11,scl(PINKC,bl*0.5));line(22+px0,r.y-5.5+py0,190+px0,r.y-5.5+py0,scl(PINKC,bl*2),0.5);line(22+px0,r.y+5.5+py0,190+px0,r.y+5.5+py0,scl(PINKC,bl*2),0.5);drawPiece('rook',(r.dir>0?18:190)+px0,r.y+py0,13,PRED,0.5+bl);}
+    else{for(k=1;k<6;k++)drawPiece('rook',r.x-r.dir*k*7+px0,r.y+py0,13,PRED,0.5-k*0.08);drawPiece('rook',r.x+px0,r.y+py0,13,PRED,1);}}
   if(A.bs){var bq=A.bs,tt=t-bq.t0,on=tt>0.9&&tt<1.3,al=on?1:(((t*10|0)&1)?0.55:0.25);
     for(k=-1;k<=1;k+=2){line(bq.x-130+px0,bq.y-130*k+py0,bq.x+130+px0,bq.y+130*k+py0,scl(on?K.white:PINKC,al),on?2:0.6);if(on)line(bq.x-130+px0,bq.y-130*k+py0,bq.x+130+px0,bq.y+130*k+py0,scl(PINKC,0.6),4);}
-    drawPiece('bishop',bq.x+px0,bq.y+py0,8,PINKC,on?1:0.6);}
-  for(i=0;i<8;i++){p=pcs[i];if(!p)continue;var a=p.solid?(t<p.fl?1.6:1):((t*14|0)&1?0.7:0.3);
-    if(!p.solid){var q2=(t-p.t0)/p.tele;ring(p.x+px0,p.y+py0,14-q2*8,scl(PINKC,0.3+q2*0.5),0.4);}
-    drawPiece(p.k,p.x+px0,p.y+py0,p.k==='rook'?8:7,PINKC,a);if(p.solid&&p.k==='rook'&&p.hp===1){line(p.x-4+px0,p.y-4+py0,p.x+px0,p.y+py0,K.white,0.5);line(p.x+px0,p.y+py0,p.x-2+px0,p.y+5+py0,K.white,0.5);}}}
+    drawPiece('bishop',bq.x+px0,bq.y+py0,13,PRED,on?1:0.6);}
+  for(i=0;i<8;i++){p=pcs[i];if(!p)continue;var a=p.solid?(t<p.fl?1.6:1):((t*14|0)&1?0.8:0.5),bs0=p.k==='rook'?15:13,py2=p.y+py0,sc2=bs0;
+    if(!p.solid){var q2=Math.min(1,(t-p.t0)/p.tele);ring(p.x+px0,p.y+py0,22-q2*10,scl(PRED,0.4+q2*0.5),0.5);ring(p.x+px0,p.y+py0,12,scl(PRED,0.3),0.4);py2-=(1-q2)*(1-q2)*90;sc2=bs0*(0.7+0.3*q2);a=0.5+0.5*q2;}
+    else{var ls=t-(p.t0+p.tele);if(ls<0.35){sc2=bs0*(1+0.5*Math.exp(-ls*10)*Math.cos(ls*30));}shadow(p.x+px0+1,p.y+py0+bs0*0.9,bs0*0.8,0.5);a*=0.85+0.15*Math.sin(t*8+i);}
+    drawPiece(p.k,p.x+px0,py2,sc2,PRED,a);if(p.solid&&p.k==='rook'&&p.hp===1){line(p.x-6+px0,p.y-6+py0,p.x+px0,p.y+py0,K.white,0.6);line(p.x+px0,p.y+py0,p.x-3+px0,p.y+8+py0,K.white,0.6);}}}
 /* ---------- level 3 boss: Hackrat. Three stages you can hit, then a fourth you can only end with a multiball firewall ---------- */
 function ratFinal(){return S.kind==='rat'&&S.boss==='alive'&&RAT.stage===3&&!RAT.fw;}
 function magBad(){return S.kind==='rat'&&S.boss==='alive'&&RAT.stage===0;}
