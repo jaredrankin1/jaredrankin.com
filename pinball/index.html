@@ -505,7 +505,7 @@ function stepGat(dt){var A=GAT,t=S.t,i,b,dx,dy,d,play=S.mode==='play',el=t-A.stT
     else if(t>A.wT||Math.abs(A.tx-A.x)<1){A.tx=80+Math.random()*48;A.wT=t+2.5+Math.random()*2.5;}
     dx=A.tx-A.x;if(Math.abs(dx)>1){A.x+=(dx>0?1:-1)*Math.min(Math.abs(dx),spd*dt);A.dir=dx>0?1:-1;A.mv=1;if(A.stage===1&&Math.random()<dt*14)spark(A.x-A.dir*8,GY,3,C(0xd8c090),70,0.5,-1.57+A.dir*-0.6,0.8,200,2);}else A.mv=0;
     // standing still he breaks into a big belly laugh every few seconds
-    if(!A.mv&&t>A.lgT&&t>A.hitT){A.lg=t+1.3;A.lgT=t+4.5+Math.random()*3;snd('klaugh');}
+    if(!A.mv&&t>A.lgT&&t>A.hitT){var lg1=A.stage===0;A.lg=t+(lg1?1.8:1.3);A.lgT=t+(lg1?2.4+Math.random()*1.4:4.5+Math.random()*3);snd('klaugh');}
     // cyber-arm swing: a ball drifting into reach makes him wind up. A fast shot gets there before the arm does
     if(play&&t>A.swCd&&t>A.evoT+1.2)for(i=0;i<balls.length;i++){b=balls[i];if(b.state!=='free')continue;dx=b.x-A.x;dy=b.y-(GY-40);d=Math.sqrt(dx*dx+dy*dy);
       if(d<56&&(b.vx*dx+b.vy*dy<0||d<38)){A.st='wind';A.stT=t;A.dir=dx>=0?1:-1;snd('kgrowl');break;}}
@@ -559,7 +559,7 @@ function drawGat(){var t=S.t,A=GAT,flee=S.boss==='flee',ft=t-S.bossT,evo=t-A.evo
   else if(A.st==='jump'){gSpr('taunt',x,y-jy,pal,f);ring(A.x+s*26,GY,12+((t*30)%12),K.red,0.5);}
   else if(A.st==='slam'){gSpr('slam',x,y,pal,f);if(el>0.3&&((t*6|0)&1))textG('OPEN!',x,y-64,K.white,K.yel,1);}
   else if(A.st==='roar'){gSpr('taunt',x+((t*40|0)%3)-1,y,pal,f);for(k=0;k<3;k++){var r2=((el*90+k*22)%66);ring(x+s*11,y-66,6+r2,scl(K.white,1-r2/66),1);}}
-  else if(t<A.hitT)gSpr('hit',x,y,pal,f);
+  else if(t<A.hitT)gIdle(x+((t*50|0)%3)-1,y,pal,f);
   else if(!A.mv&&t<A.lg)gSpr('taunt',x+((t*30|0)%2?0.5:-0.5),y-Math.abs(Math.sin(t*16))*1.2,pal,f);
   else if(A.mv)gSpr('r'+(((t*(A.stage===1?14:9))|0)%5),x,y-(A.stage===1?Math.abs(Math.sin(t*22))*1.2:0),pal,f);
   else{gIdle(x,y,pal,f);var pu=0.35+0.3*Math.sin(t*5);
