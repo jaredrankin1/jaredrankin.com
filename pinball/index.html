@@ -420,7 +420,7 @@ function apeSetup(){var i;if(!S.bag||!S.bag.length){var bg=['dolphin','ape','rat
   if(S.kind==='rat'){for(i=0;i<5;i++){S.limbs[i].dead=true;S.limbs[i].hp=0;LIMBS[i].cs.forEach(function(c){c.off=true;});}bossCs.forEach(function(c){c.off=true;});ratSetup();return;}
   for(i=0;i<5;i++){S.limbs[i].dead=true;S.limbs[i].hp=0;LIMBS[i].cs.forEach(function(c){c.off=true;});}bossCs.forEach(function(c){c.off=true;});
   APE.x=103.5;APE.y=62;APE.vx=APE.vy=0;APE.stage=0;APE.evoT=S.t-0.4;APE.wT=0;apeC.off=false;apeStage();
-  S.banner={s:'PONGO',sub:'PONGO THE SERENE - POP HIS BUBBLE',t:S.t+3.2};snd('aah');S.vocT=S.t+6;}
+  S.banner={s:'PONGO',sub:'PONGO THE SERENE',t:S.t+3.2};snd('aah');S.vocT=S.t+6;}
 function apeDrop(){var b=APE.hold;if(b&&b.state==='held'&&b.k===5)b.held=0;APE.hold=null;}
 function hitApe(n,x,y){var A=APE;if(S.boss!=='alive'||S.kind!=='ape')return;A.hp-=n;A.flash=S.t+0.15;shot(x,y);add(1500);S.bonus+=2;snd('ayelp');snd('bump');
   spark(x,y,26,K.mag,200,0.6);spark(x,y,12,K.white,260,0.35);shock(A.x,A.y,STG[A.stage].r+8,K.mag,0.3);popup(S.multiball?'X2 POP':'HIT',x,y-10,K.mag);
@@ -432,7 +432,7 @@ function hitApe(n,x,y){var A=APE;if(S.boss!=='alive'||S.kind!=='ape')return;A.hp
   if(A.stage===3){S.boss='flee';S.bossT=S.t;apeC.off=true;add(100000*S.mission);popup(String(100000*S.mission),A.x,A.y+20,K.yel);say('MISSION '+S.mission+' COMPLETE!',4.2);
     S.banner={s:'INNER PEACE',sub:'PONGO THE SERENE ASCENDS',t:S.t+3.2};return;}
   A.stage++;A.evoT=S.t;apeStage();
-  S.banner={s:['','STAGE 2: CHILD','STAGE 3: TEEN','FINAL FORM'][A.stage],sub:['','HE CAN HOLD THE BALL WITH HIS MIND','BANANA SHIELD - KNOCK ONE OUT','ADULT - HE THROWS PSYCHIC ROCKS'][A.stage],t:S.t+3};}
+  S.banner={s:['','STAGE 2: CHILD','STAGE 3: TEEN','FINAL FORM'][A.stage],sub:['','MIND OVER MATTER','GOING BANANAS','FULL GROWN'][A.stage],t:S.t+3};}
 function apeCb(b,t,imp,nx,ny){if(imp<30)return;b.vx+=nx*220;b.vy+=ny*220;if(S.t<APE.cd||S.t<APE.evoT+1.2)return;APE.cd=S.t+0.35;hitApe(S.multiball?2:1,b.x-nx*R,b.y-ny*R);}
 function orbCb(i){return function(b,t,imp,nx,ny){if(imp<30)return;var o=APE.orb[i],c=orbC[i];if(!o)return;
   if(APE.stage===2){o.st='gone';o.back=S.t+5;c.off=true;add(250);snd('tick');spark(c.x,c.y,14,K.yel,170,0.5);fruit.push({x:c.x,y:c.y,vx:-nx*130+b.vx*0.2,vy:-ny*130-90,a:Math.random()*6,t:S.t});popup('250',c.x,c.y-6,K.yel);}
@@ -507,7 +507,7 @@ function hitGat(n,x,y){var A=GAT,i;if(S.boss!=='alive'||S.kind!=='gator')return;
     // the gold teeth go flying
     for(i=0;i<14;i++)parts.push({x:A.x+A.dir*11,y:GY-60,vx:(Math.random()-0.3)*A.dir*220,vy:-80-Math.random()*160,life:1.2,max:1.2,r:255,g:210,b:40,s:2,gr:420,k:0});return;}
   A.stage++;A.evoT=S.t;gatStage();A.st='taunt';A.stT=S.t;snd('klaugh');
-  S.banner={s:['','STAGE 2: DOCKS CREW','STAGE 3: BRUTE FORCE','FINAL: HIS TERRITORY'][A.stage],sub:['','HIS GOONS WALK THE BEAT - KNOCK THEM OUT','GROUND SLAM - HIT HIM WHILE HE IS DOWN','CONTRABAND CRATES AND A ROAR THAT SHOVES'][A.stage],t:S.t+3};}
+  S.banner={s:['','STAGE 2: DOCKS CREW','STAGE 3: BRUTE FORCE','FINAL: HIS TERRITORY'][A.stage],sub:['','THE CREW','HEAVYWEIGHT','CONTRABAND'][A.stage],t:S.t+3};}
 function gatCb(b,t,imp,nx,ny){if(imp<30)return;b.vx+=nx*220;b.vy+=ny*220;var A=GAT;if(S.t<A.cd||S.t<A.evoT+1.2||A.st==='drop')return;A.cd=S.t+0.35;
   hitGat((S.multiball?2:1)+(A.st==='slam'?1:0),b.x-nx*R,b.y-ny*R);}
 function crewCb(i){return function(b,t,imp,nx,ny){if(imp<30)return;var c=crew[i],q=crewC[i];if(!c||c.st!=='walk')return;b.vx+=nx*160;b.vy+=ny*160;c.st='ko';c.back=S.t+6;q.off=true;add(250);S.bonus+=1;snd('khit');snd('tick');
@@ -618,7 +618,7 @@ function hitLem(n,x,y){var A=LEM,i;if(S.boss!=='alive'||S.kind!=='lemur')return;
   if(A.stage===3){S.boss='flee';S.bossT=S.t;lemOff();add(100000*S.mission);popup(String(100000*S.mission),A.x,LGY+14,K.yel);say('MISSION '+S.mission+' COMPLETE!',4.2);
     S.banner={s:'SHOW OVER',sub:'THE LEMUR TAKES HIS FINAL BOW',t:S.t+3.2};snd('fanfare');snd('jdie');return;}
   A.stage++;A.evoT=S.t;lemStage();A.st='taunt';A.stT=S.t;snd('jcackle');
-  S.banner={s:['','ACT 2: SHELL GAME','ACT 3: TIGHTROPE','FINALE: FIVE BALLS'][A.stage],sub:['','FOLLOW THE REAL BALL - HIT THE CUP','HE WALKS THE WIRE - HIT HIM FOR JACKPOT','HE JUGGLES FIVE AND LETS THEM FLY'][A.stage],t:S.t+3};}
+  S.banner={s:['','ACT 2: SHELL GAME','ACT 3: TIGHTROPE','FINALE: FIVE BALLS'][A.stage],sub:['','NOW YOU SEE IT','THE HIGH WIRE','FOR MY NEXT TRICK'][A.stage],t:S.t+3};}
 function lemCb(b,t,imp,nx,ny){if(imp<30)return;b.vx+=nx*220;b.vy+=ny*220;var A=LEM;if(S.t<A.cd||S.t<A.evoT+1.2||A.st==='drop')return;A.cd=S.t+0.35;
   hitLem((S.multiball?2:1)+(A.stage===3&&!A.orbOn?1:0),b.x-nx*R,b.y-ny*R);}
 function lcupCb(i){return function(b,t,imp,nx,ny){if(imp<30)return;var A=LEM,c=A.cups[i];b.vx+=nx*200;b.vy+=ny*200;snd('bump');if(!c||A.ph!=='pick'||S.t<A.cd)return;A.cd=S.t+0.5;
@@ -642,7 +642,7 @@ function stepLem(dt){var A=LEM,t=S.t,i,n,b,dx,dy,d,play=S.mode==='play',el=t-A.s
     if(A.stage===2){A.x+=A.rd*(32+lvl()*3)*dt;if(A.x>148){A.x=148;A.rd=-1;}if(A.x<60){A.x=60;A.rd=1;}A.dir=A.rd;A.jy=Math.abs(Math.sin(t*9))*1.2;}
     else{if(A.stage===3)A.tx=103.5;else if(t>A.wT||Math.abs(A.tx-A.x)<1){A.tx=76+Math.random()*56;A.wT=t+2.2+Math.random()*2;}
       dx=A.tx-A.x;if(Math.abs(dx)>1){A.x+=(dx>0?1:-1)*15*dt;A.dir=dx>0?1:-1;A.jy=Math.abs(Math.sin(t*7))*2;}else A.jy=0;}
-    if(play&&A.stage!==1&&!S.multiball&&t>A.mbT&&t>A.evoT+1.5){var fb0=freeBalls();if(fb0.length){A.mb=fb0[0];A.st='multi';A.stT=t;A.dir=fb0[0].x>=A.x?1:-1;snd('jtail');say('HE SNATCHED YOUR BALL!',1.2);}else A.mbT=t+2;}
+    if(play&&A.stage!==1&&!S.multiball&&t>A.mbT&&t>A.evoT+1.5){var fb0=freeBalls();if(fb0.length){A.mb=fb0[0];A.st='multi';A.stT=t;A.dir=fb0[0].x>=A.x?1:-1;snd('jtail');say('SNATCHED!',1.2);}else A.mbT=t+2;}
     // tail trick: a ball drifting into reach gets caught by the tail and flicked down a new lane. Once an act he juggles it into a 3-ball multiball instead
     if(play&&A.stage!==1&&t>A.tailCd&&t>A.evoT+1.4)for(i=0;i<balls.length;i++){b=balls[i];if(b.state!=='free'||b.x>199)continue;dx=b.x-A.x;dy=b.y-(LGY-30);d=Math.sqrt(dx*dx+dy*dy);
       if(d<50&&(b.vx*dx+b.vy*dy<0||d<34)){var gift=A.gift===0&&!S.multiball&&(A.stage===0||A.stage===2)&&freeBalls().length===1;A.st=gift?'multi':'tail';A.mb=gift?b:null;A.stT=t;A.dir=dx>=0?1:-1;snd('jtail');break;}}
@@ -657,7 +657,7 @@ function stepLem(dt){var A=LEM,t=S.t,i,n,b,dx,dy,d,play=S.mode==='play',el=t-A.s
       if(el>1.1){A.st='flicked';A.stT=t;A.gift=1;A.mbT=t+14;A.tailCd=t+3;var ang=[1.2,1.57,1.95],q,nb;
         for(q=0;q<3;q++){nb=q===0?m:mkBall(m.x,m.y);nb.vx=Math.cos(ang[q])*480;nb.vy=Math.sin(ang[q])*480;if(q>0)balls.push(nb);}
         S.multiball=true;S.mbSize=3;S.mbSave=t+7;A.mb=null;shake(6);snd('boom');snd('fanfare');confetti(m.x,m.y,50,6.28);shock(m.x,m.y,40,K.mag,0.5);
-        S.banner={s:'LEMUR MULTIBALL',sub:'HE JUGGLED YOU TWO MORE - X2 DAMAGE X2 SCORE',t:t+2.6};say('3 BALLS IN PLAY',2.4);}}}
+        S.banner={s:'LEMUR MULTIBALL',sub:'X2 DAMAGE X2 SCORE',t:t+2.6};say('3 BALLS IN PLAY',2.4);}}}
   else if(A.st==='release'){if(el>0.8){var q2,cxx=A.x,cyy=LGY-38;
       for(q2=0;q2<5;q2++){var an2=t*5+q2*1.2566,ox2=cxx+Math.cos(an2)*34,oy2=cyy+Math.sin(an2)*28,tx=26+Math.random()*150,vx=tx-ox2,vy=330-oy2,dd=Math.sqrt(vx*vx+vy*vy);A.proj.push({x:ox2,y:oy2,vx:vx/dd*190,vy:vy/dd*190,t0:t});}
       A.orbOn=false;A.recT=t+3.6;A.barT=t+10;A.st='idle';shake(5);snd('boom');snd('jboing');confetti(cxx,cyy,40);popup('OPEN!',A.x,LGY-84,K.white);}}
@@ -697,7 +697,7 @@ function drawLem(){var t=S.t,A=LEM,flee=S.boss==='flee',ft=t-S.bossT,evo=t-A.evo
     shadow(cx2+1,CUPY+py0+7,8,0.5);poly([[cx2-8,cy2+7],[cx2+8,cy2+7],[cx2+5.5,cy2-8],[cx2-5.5,cy2-8]],K.ink);poly([[cx2-7,cy2+6],[cx2+7,cy2+6],[cx2+5,cy2-7],[cx2-5,cy2-7]],A.ph==='pick'?C(0x6a7cf0):C(0x4a50b8));
     rect(cx2-7,cy2+3.5,14,1.5,C(0xb8c8ff));rect(cx2-5,cy2-7,3,12,C(0x8a9cff));rect(cx2-5.5,cy2-8,11,1.4,C(0xb8c8ff));
     if(A.ph==='pick')textG('?',cx2,cy2-6,K.white,K.red,2);}
-  if(A.stage===1&&A.ph==='show'&&((t*5|0)&1))textG('WATCH THE BALL',103.5,CUPY-30,K.white,K.mag,1);}
+  }
 /* ---------- boss 6: the Grand Chess Pig. He predicts your shot and puts a piece where the ball is going.
    Pawns, then a knight, then rook and bishop, then checkmate behind a wall of guards ---------- */
 function killPiece(i){var p=pcs[i];if(!p)return;pcs[i]=null;pcC[i].off=true;}
@@ -711,7 +711,7 @@ function pigBoard(){var A=PIG,i;A.br=[];for(i=0;i<32;i++)A.br.push(1);A.brT=S.t+
 function pigStage(){var A=PIG,t=S.t,i;A.max=A.hp=PSTG[A.stage].hp+lvl();for(i=0;i<8;i++)killPiece(i);A.rk=null;A.bs=null;A.pawnT=t+2.2;A.knT=t+4.5;A.rkT=t+5;A.bsT=t+7.5;
   if(A.stage===3)for(i=0;i<4;i++){A.gb[i]=t+1.2+i*0.3;}}
 function pigSetup(){var A=PIG;pigBoard();A.stage=0;A.x=103.5;A.cd=0;A.hitT=0;A.flash=0;A.evoT=S.t+0.6;pigStage();A.st='drop';A.stT=S.t+0.5;
-  S.banner={s:'THE GRAND CHESS PIG',sub:'HE KNOWS WHERE YOUR BALL WILL BE',t:S.t+3.2};S.vocT=S.t+6;}
+  S.banner={s:'THE GRAND CHESS PIG',sub:'GRANDMASTER',t:S.t+3.2};S.vocT=S.t+6;}
 function hitPig(n,x,y){var A=PIG,i;if(S.boss!=='alive'||S.kind!=='pig')return;A.hp-=n;A.flash=S.t+0.15;A.hitT=S.t+0.35;shot(x,y);add(1500);S.bonus+=2;snd('chit');snd('coink');snd('bump');
   spark(x,y,26,PINKC,200,0.6);spark(x,y,12,K.white,260,0.35);shock(x,y,18,PINKC,0.3);popup(n>1?'X'+n+' HIT':'HIT',x,y-10,K.yel);
   if(A.hp>0)return;
@@ -719,7 +719,7 @@ function hitPig(n,x,y){var A=PIG,i;if(S.boss!=='alive'||S.kind!=='pig')return;A.
   if(A.stage===3){S.boss='flee';S.bossT=S.t;pigOff();add(100000*S.mission);popup(String(100000*S.mission),A.x,PGY+14,K.yel);say('MISSION '+S.mission+' COMPLETE!',4.2);
     S.banner={s:'CHECKMATE',sub:'THE GRAND CHESS PIG TIPS HIS KING',t:S.t+3.2};snd('fanfare');snd('cdie');return;}
   A.stage++;A.evoT=S.t;pigStage();A.st='laugh';A.stT=S.t;snd('claugh');
-  S.banner={s:['','STAGE 2: KNIGHT','STAGE 3: ROOK + BISHOP','FINAL: CHECKMATE'][A.stage],sub:['','HIS KNIGHT JUMPS YOUR BALL AN L','ROOKS CHARGE A RANK, BISHOPS FIRE DIAGONALS','HE HIDES BEHIND HIS GUARDS'][A.stage],t:S.t+3};}
+  S.banner={s:['','STAGE 2: KNIGHT','STAGE 3: ROOK + BISHOP','FINAL: CHECKMATE'][A.stage],sub:['','YOUR MOVE','THINKING AHEAD','NO WAY OUT'][A.stage],t:S.t+3};}
 function brkCb(i){return function(b,t,imp,nx,ny){var A=PIG,j,n=0,k;if(S.boss!=='alive'||A.st==='drop')return;b.vx+=nx*150;b.vy+=ny*150;if(imp<25)return;
   j=A.br[i]?0:A.br[16+i]?1:-1;if(j<0)return;A.br[j*16+i]=0;add(100);S.bonus+=0.2;snd('tick');if(Math.random()<0.6)snd('coink');var bx=A.x-45+i*6,by=PGY-3.75+j*5.5;spark(bx,by,12,((i+j)&1)?C(0x8a4ab0):C(0xf3e3b0),170,0.5);spark(bx,by,5,K.white,140,0.3);popup('100',bx,by-8,K.yel);
   for(k=0;k<32;k++)n+=A.br[k];if(!n&&!A.rebuild){add(5000);shake(5);snd('boom');spark(A.x,PGY-4,60,K.yel,260,0.8);shock(A.x,PGY-4,60,K.yel,0.5);popup('BOARD CLEARED!',A.x,PGY-18,K.white);say('CHECKERBOARD SMASHED!',1.8);A.rebuild=1;hitPig(1,A.x,PGY-30);}};}
@@ -799,7 +799,7 @@ function gekArmsReset(){var A=GEK;for(var i=0;i<2;i++)A.arm[i]={hp:2,off:0,rt:0,
 function gekStage(){var A=GEK,t=S.t;A.max=A.hp=GKSTG[A.stage].hp+lvl();A.proj.length=0;A.whipCd=t+2.5;A.shotT=t+4;A.cl=[1,1];A.clT=t+6;A.slot=1;A.k=A.stage===2?0.8:1;A.regT=t+6;A.mbT=t+2;A.orbOn=A.stage===3;
   gekClC.forEach(function(c){c.off=true;});gekOrbC.forEach(function(c){c.off=true;});gekArmsReset();if(A.stage===2){A.tx=103.5;}}
 function gekSetup(){var A=GEK;A.stage=0;A.x=103.5;A.tx=103.5;A.cd=0;A.hitT=0;A.flash=0;A.lastHit=S.t;A.evoT=S.t+0.6;gekStage();A.st='drop';A.stT=S.t+0.5;
-  S.banner={s:'GECK-01',sub:'BIOMOD CYBORG - RAPID REGENERATION',t:S.t+3.2};S.vocT=S.t+6;}
+  S.banner={s:'GECK-01',sub:'BIOMOD CYBORG',t:S.t+3.2};S.vocT=S.t+6;}
 function hitGek(n,x,y){var A=GEK;if(S.boss!=='alive'||S.kind!=='gecko')return;A.hp-=n;A.flash=S.t+0.1;A.hitT=S.t+0.3;A.lastHit=S.t;shot(x,y);add(1500);S.bonus+=2;snd('xhit');snd('bump');
   spark(x,y,26,GKP,200,0.6);spark(x,y,12,K.white,260,0.35);shock(x,y,18,GKP,0.3);popup(n>1?'X'+n+' HIT':'HIT',x,y-10,K.yel);
   if(A.hp>0)return;
@@ -807,7 +807,7 @@ function hitGek(n,x,y){var A=GEK;if(S.boss!=='alive'||S.kind!=='gecko')return;A.
   if(A.stage===3){S.boss='flee';S.bossT=S.t;gekOff();add(100000*S.mission);popup(String(100000*S.mission),A.x,GKY+14,K.yel);say('MISSION '+S.mission+' COMPLETE!',4.2);
     S.banner={s:'GECK-01 OFFLINE',sub:'REGENERATION FAILED',t:S.t+3.2};snd('fanfare');snd('xdie');return;}
   A.stage++;A.evoT=S.t;gekStage();A.st='roar';A.stT=S.t;snd('xscreech');
-  S.banner={s:['','STAGE 2: TAIL LAUNCH','STAGE 3: SPLIT REPLICAS','FINAL: OVERCLOCK'][A.stage],sub:['','HIS TAIL FLINGS YOUR BALL AT HIGH SPEED','TWO DECOYS. ONLY ONE IS REAL','GECKO MULTIBALL - HE HEALS IF YOU STOP HITTING'][A.stage],t:S.t+3};}
+  S.banner={s:['','STAGE 2: TAIL LAUNCH','STAGE 3: SPLIT REPLICAS','FINAL: OVERCLOCK'][A.stage],sub:['','LAUNCH SEQUENCE','SEEING TRIPLE','OVERCLOCKED'][A.stage],t:S.t+3};}
 function gekCb(b,t,imp,nx,ny){if(imp<30)return;b.vx+=nx*220;b.vy+=ny*220;var A=GEK;if(S.t<A.cd||S.t<A.evoT+1.2||A.st==='drop')return;A.cd=S.t+0.35;hitGek(S.multiball?2:1,b.x-nx*R,b.y-ny*R);}
 function gekArmCb(i){return function(b,t,imp,nx,ny){if(imp<30)return;var A=GEK,a=A.arm[i];b.vx+=nx*200;b.vy+=ny*200;if(a.off||S.t<A.cd||S.t<A.evoT+1.2||A.st==='drop')return;A.cd=S.t+0.3;a.hp--;snd('bump');
   var px=b.x-nx*R,py=b.y-ny*R;if(a.hp>0){popup('CRACK',px,py-10,K.white);spark(px,py,14,K.white,180,0.4);snd('tick');add(500);return;}
@@ -897,19 +897,19 @@ function hitShb(n,x,y){var A=SHB;if(S.boss!=='alive'||S.kind!=='shoe')return;if(
   if(A.stage===3){S.boss='flee';S.bossT=S.t;shbOff();add(100000*S.mission);popup(String(100000*S.mission),A.x,SBY+14,K.yel);say('MISSION '+S.mission+' COMPLETE!',4.2);
     S.banner={s:'BANKRUPT',sub:'THE SHOEBILLIONAIRE FLIES THE COOP',t:S.t+3.2};snd('fanfare');snd('hdie');return;}
   A.stage++;A.evoT=S.t;shbStage();A.st='smug';A.stT=S.t;snd('hclack');
-  S.banner={s:['','Q2: HOSTILE TAKEOVER','Q3: GOLDEN PARACHUTE','Q4: MARKET CRASH'][A.stage],sub:['','HIS WINGS BLOW YOUR BALL AWAY - HIT HIM AFTER A GUST','GRAB 3 GOLD COINS FOR A X3 DIVIDEND HIT','EVERYTHING AT ONCE - BULL RUN MULTIBALL'][A.stage],t:S.t+3};}
+  S.banner={s:['','Q2: HOSTILE TAKEOVER','Q3: GOLDEN PARACHUTE','Q4: MARKET CRASH'][A.stage],sub:['','TAKEOVER BID','PAYDAY','SELL SELL SELL'][A.stage],t:S.t+3};}
 function shbCb(b,t,imp,nx,ny){if(imp<30)return;b.vx+=nx*220;b.vy+=ny*220;var A=SHB;if(S.t<A.cd||S.t<A.evoT+1.2||A.st==='drop')return;A.cd=S.t+0.35;hitShb((S.multiball?2:1)+(S.t<A.expT?1:0),b.x-nx*R,b.y-ny*R);}
 function shbWCb(b,t,imp,nx,ny){if(imp<30)return;b.vx+=nx*200;b.vy+=ny*200;snd('bump');add(100);spark(b.x,b.y,8,C(0xb0a0ff),140,0.3);}
 function shbShCb(b,t,imp,nx,ny){var A=SHB,sh=A.sh;b.vx+=nx*240;b.vy+=ny*240;if(imp<25||!sh.on||S.t<A.shCd)return;A.shCd=S.t+0.25;sh.hp--;add(200);snd('tick');spark(b.x,b.y,14,SBP,180,0.4);
   if(sh.hp>0){popup('BLOCKED',shbShC.x,shbShC.y-10,K.white);return;}
-  sh.on=false;sh.rt=S.t+7;shbShC.off=true;spark(shbShC.x,shbShC.y,40,SBP,240,0.6);spark(shbShC.x,shbShC.y,16,K.white,200,0.4);shock(shbShC.x,shbShC.y,24,SBP,0.4);snd('boom');add(2000);popup('PITCH DECK SHREDDED',shbShC.x,shbShC.y-12,K.yel);}
+  sh.on=false;sh.rt=S.t+7;shbShC.off=true;spark(shbShC.x,shbShC.y,40,SBP,240,0.6);spark(shbShC.x,shbShC.y,16,K.white,200,0.4);shock(shbShC.x,shbShC.y,24,SBP,0.4);snd('boom');add(2000);popup('SHREDDED!',shbShC.x,shbShC.y-12,K.yel);}
 function shbPos(){var A=SHB,cy=SBY-A.jy,s=A.dir,w=A.pose==='wings';
   shbC[0].x=A.x+s*5;shbC[0].y=cy-62;shbC[1].x=A.x+s*2;shbC[1].y=cy-40;shbC[2].x=A.x-10;shbC[2].y=cy-10;shbC[3].x=A.x+10;shbC[3].y=cy-10;
   shbWC[0].x=A.x-28;shbWC[0].y=cy-44;shbWC[1].x=A.x+30;shbWC[1].y=cy-44;shbWC[0].off=shbWC[1].off=!w||A.st==='drop';}
 function stepShb(dt){var A=SHB,t=S.t,i,n,b,dx,dy,d,play=S.mode==='play',el=t-A.stT;
   for(i=A.coins.length-1;i>=0;i--){var c=A.coins[i];if(!c.land){c.vy+=300*dt;c.x+=c.vx*dt;c.y+=c.vy*dt;if(c.vy>0&&c.y>=c.ty){c.y=c.ty;c.land=1;c.t1=t;snd('tick');}}
     else{for(n=0;n<balls.length;n++){b=balls[n];if(b.state!=='free')continue;dx=b.x-c.x;dy=b.y-c.y;if(dx*dx+dy*dy<11*11){c.dead=1;A.div++;add(2500);snd('hcoin');spark(c.x,c.y,20,SBG,200,0.5);popup('+2500',c.x,c.y-8,K.yel);
-          if(A.div>=3){A.div=0;A.divOn=1;say('DIVIDEND READY - X3 NEXT HIT',2);snd('fanfare');}break;}}
+          if(A.div>=3){A.div=0;A.divOn=1;say('DIVIDEND!',1.6);snd('fanfare');}break;}}
       if(t-c.t1>7)c.dead=1;}
     if(c.dead)A.coins.splice(i,1);}
   if(S.boss!=='alive')return;
@@ -981,7 +981,7 @@ function hitRat(n,x,y){var A=RAT;if(S.boss!=='alive'||S.kind!=='rat'||A.stage>2)
   if(A.hp>0)return;
   spark(A.cx,A.cy,90,K.red,300,0.8);spark(A.cx,A.cy,40,K.white,340,0.5);shock(A.cx,A.cy,60,K.red,0.5);shock(A.cx,A.cy,40,K.white,0.35);shake(7);snd('boom');snd('ratlaugh');add(15000);popup('15000',A.cx,A.cy-30,K.white);
   A.stage++;A.evoT=S.t;ratStage();
-  S.banner={s:['','STAGE 2','STAGE 3','VIRUS SWARM'][A.stage],sub:['','HACKRAT TAKES TO THE PIPES','HE IS HACKING THE TOP FLIPPERS','START A MULTIBALL TO FIREWALL HIM'][A.stage],t:S.t+3};}
+  S.banner={s:['','STAGE 2','STAGE 3','VIRUS SWARM'][A.stage],sub:['','INTO THE PIPES','ACCESS GRANTED','ROOT ACCESS'][A.stage],t:S.t+3};}
 // the force field: an angular red shell that has to be cracked at every stage before he can be hurt
 function shieldCb(b,t,imp,nx,ny){if(imp<30)return;b.vx+=nx*260;b.vy+=ny*260;var A=RAT,x=b.x-nx*R,y=b.y-ny*R;spark(x,y,12,K.red,170,0.4,Math.atan2(ny,nx),1.6);
   if(S.t<A.cd||S.t<A.evoT+1.2||A.fw)return;A.cd=S.t+0.3;
@@ -1019,7 +1019,7 @@ function stepRat(dt){var A=RAT,t=S.t,i,j,b,dx,dy,d,play=S.mode==='play';
     if(best&&bd<(R+3.4)*(R+3.4)){var bs=Math.abs(best.vx)+Math.abs(best.vy);
       if(bs>260){vir.splice(i,1);add(100);S.bonus+=1;snd('tick');spark(v.x,v.y,12,C(0xb48aff),160,0.5);popup('100',v.x,v.y-5,C(0xc8a0ff));}
       else{if(best.vt!==t){best.vt=t;best.vn=0;}v.vx=best.vx;v.vy=best.vy;
-        if(++best.vn>=3&&best.state==='free'&&!A.fw&&S.boss==='alive'&&play){best.state='held';best.k=7;best.held=99;best.cp=0;best.vx=best.vy=0;snd('ratlaugh');say('THE SWARM HAS YOUR BALL!',1.8);popup('GOTCHA!',best.x,best.y-10,C(0xc8a0ff));spark(best.x,best.y,20,C(0xb48aff),140,0.5);}}}}}
+        if(++best.vn>=3&&best.state==='free'&&!A.fw&&S.boss==='alive'&&play){best.state='held';best.k=7;best.held=99;best.cp=0;best.vx=best.vy=0;snd('ratlaugh');say('SWARMED!',1.8);popup('GOTCHA!',best.x,best.y-10,C(0xc8a0ff));spark(best.x,best.y,20,C(0xb48aff),140,0.5);}}}}}
 function drawVirus(v,t){var x=v.x,y=v.y,ph=t*22+v.ph*5,lean=Math.max(-1,Math.min(1,v.vx/90)),i,pu=C(0xb48aff),pd=C(0x6a3ad0),pl=C(0xe0ccff),hx=x+lean*1.2,hy=y-4.2;
   glow(x,y-2,6.5,pu,0.28);
   for(i=0;i<6;i++){var sd=i<3?-1:1,k=i%3,lift=Math.sin(ph+i*2.1)>0?1.2:0,kx=x+sd*(2.2+k*0.9),ky=y+1.2-k*0.5,fx=x+sd*(3.6+k*1.5)+Math.sin(ph+i*2.1)*0.7,fy=y+5.2-lift;
@@ -1139,7 +1139,7 @@ function launchMissiles(){var o=S.limbs[4]&&!S.limbs[4].dead?LIMBS[4].cs[0]:{x:D
     missiles.push({x0:o.x,y0:o.y,tx:tx,ty:ty,t0:S.t+0.5+i*0.32,dur:1.5,x:o.x,y:o.y,px:o.x,py:o.y-1,q:-1});}
   snd('launch');spark(o.x,o.y,40,K.org,220,0.7,-1.57,1.6);}
 function phase(n){var i;S.banner={s:['','POWER SURGE','PSYCHIC DELUGE','CYBER ATTACK','MISSILE STRIKE'][n],
-    sub:['','BALL SPEED X1.3 - SCORES X2','HE IS HUNTING YOUR BALL','CABLES SNAP AT THE BALL','INCOMING! TAKE COVER'][n],t:S.t+2.8};
+    sub:['','OVERDRIVE','THE HUNT','LIVE WIRES','INCOMING!'][n],t:S.t+2.8};
   snd('psi');snd('dlaugh');shake(8);for(i=0;i<10;i++)spark(BOSS.x,BOSS.y,14,NEONS[i%6],300,1);shock(BOSS.x,BOSS.y,90,K.mag,0.6);shock(BOSS.x,BOSS.y,60,K.white,0.4);
   if(n===1)S.surgeT=S.t+20;
   else if(n===2){S.delugeT=S.t+18;S.delNext=S.t+1.5;}
