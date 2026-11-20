@@ -1,0 +1,77 @@
+# Builds Art Gallery Tycoon (jaredrankin1/gallery-tycoon, main) into /tycoon
+# and commits it here, so GitHub Pages serves it at https://jaredrankin.com/tycoon/.
+# Runs every 30 minutes and does nothing unless the game's main branch has moved.
+# Run it by hand from the Actions tab to deploy right away.
+name: Deploy Tycoon
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Rebuild even if the game has not changed
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tycoon-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for a new game commit
+        id: check
+        run: |
+          sha=$(git ls-remote https://github.com/jaredrankin1/gallery-tycoon refs/heads/main | cut -f1)
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          current=$(cat tycoon/version.txt 2>/dev/null || true)
+          if [ "$sha" = "$current" ] && [ "${{ inputs.force }}" != "true" ]; then
+            echo "Game is already at $sha"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.check.outputs.changed == 'true'
+        with:
+          repository: jaredrankin1/gallery-tycoon
+          ref: ${{ steps.check.outputs.sha }}
+          path: game
+
+      - uses: actions/setup-node@v4
+        if: steps.check.outputs.changed == 'true'
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: game/package-lock.json
+
+      - name: Test and build the game
+        if: steps.check.outputs.changed == 'true'
+        working-directory: game
+        run: |
+          npm ci
+          npm test
+          npm run build
+
+      - name: Publish to /tycoon
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          rm -rf tycoon
+          mkdir tycoon
+          cp -r game/dist/index.html game/dist/assets tycoon/
+          echo "${{ steps.check.outputs.sha }}" > tycoon/version.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tycoon
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -m "Deploy Art Gallery Tycoon ${{ steps.check.outputs.sha }}"
+          git push
